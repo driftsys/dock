@@ -1,0 +1,9 @@
+# .hadolint.yaml — hadolint configuration for driftsys/dock
+#
+# DL3018 (pin apk versions) is ignored because:
+# - These are CI toolbox images rebuilt on each release.
+# - Reproducibility is pinned at the OS level (alpine:3.21, debian:bookworm-slim).
+# - Pinning individual apk packages provides no meaningful stability guarantee
+#   and causes unnecessary churn when Alpine security-bumps packages.
+ignore:
+  - DL3018

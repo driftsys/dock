@@ -46,47 +46,47 @@ target "_cache" {
 
 target "core" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/core"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/core/Dockerfile"
   tags       = ["${REGISTRY}:core-${VERSION}", "${REGISTRY}:core"]
 }
 
 target "rust" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/rust"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/rust/Dockerfile"
   tags       = ["${REGISTRY}:rust-${VERSION}", "${REGISTRY}:rust"]
   contexts   = { dock-core = "target:core" }
 }
 
 target "deno" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/deno"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/deno/Dockerfile"
   tags       = ["${REGISTRY}:deno-${VERSION}", "${REGISTRY}:deno"]
   contexts   = { dock-core = "target:core" }
 }
 
 target "node" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/node"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/node/Dockerfile"
   tags       = ["${REGISTRY}:node-${VERSION}", "${REGISTRY}:node"]
   contexts   = { dock-core = "target:core" }
 }
 
 target "python" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/python"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/python/Dockerfile"
   tags       = ["${REGISTRY}:python-${VERSION}", "${REGISTRY}:python"]
   contexts   = { dock-core = "target:core" }
 }
 
 target "polyglot" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/polyglot"
-  dockerfile = "Dockerfile"
+  context    = "."
+  dockerfile = "images/polyglot/Dockerfile"
   tags       = ["${REGISTRY}:polyglot-${VERSION}", "${REGISTRY}:polyglot"]
   contexts   = { dock-rust = "target:rust" }
 }
@@ -97,47 +97,47 @@ target "polyglot" {
 
 target "core-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/core"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/core/Dockerfile.debian"
   tags       = ["${REGISTRY}:core-debian-${VERSION}", "${REGISTRY}:core-debian"]
 }
 
 target "rust-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/rust"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/rust/Dockerfile.debian"
   tags       = ["${REGISTRY}:rust-debian-${VERSION}", "${REGISTRY}:rust-debian"]
   contexts   = { dock-core = "target:core-debian" }
 }
 
 target "deno-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/deno"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/deno/Dockerfile.debian"
   tags       = ["${REGISTRY}:deno-debian-${VERSION}", "${REGISTRY}:deno-debian"]
   contexts   = { dock-core = "target:core-debian" }
 }
 
 target "node-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/node"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/node/Dockerfile.debian"
   tags       = ["${REGISTRY}:node-debian-${VERSION}", "${REGISTRY}:node-debian"]
   contexts   = { dock-core = "target:core-debian" }
 }
 
 target "python-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/python"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/python/Dockerfile.debian"
   tags       = ["${REGISTRY}:python-debian-${VERSION}", "${REGISTRY}:python-debian"]
   contexts   = { dock-core = "target:core-debian" }
 }
 
 target "polyglot-debian" {
   inherits   = ["_common", "_cache"]
-  context    = "./images/polyglot"
-  dockerfile = "Dockerfile.debian"
+  context    = "."
+  dockerfile = "images/polyglot/Dockerfile.debian"
   tags       = ["${REGISTRY}:polyglot-debian-${VERSION}", "${REGISTRY}:polyglot-debian"]
   contexts   = { dock-rust = "target:rust-debian" }
 }
