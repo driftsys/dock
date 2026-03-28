@@ -26,7 +26,7 @@ ENV CARGO_HOME=/usr/local/cargo \
 # hadolint ignore=DL4006
 RUN curl -sSf https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --default-toolchain stable \
-        --component clippy rustfmt
+        --component clippy --component rustfmt
 
 # Install cargo-audit and cargo-deny
 RUN cargo install cargo-audit cargo-deny --locked
