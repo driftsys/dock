@@ -29,6 +29,10 @@ jobs:
           chmod +x /usr/local/bin/hadolint
       - name: hadolint
         run: |
+          curl -sSfL \
+            https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 \
+            -o /usr/local/bin/hadolint
+          chmod +x /usr/local/bin/hadolint
           files=$(find images -name 'Dockerfile*' 2>/dev/null)
           if [ -n "$files" ]; then
             echo "$files" | xargs hadolint
