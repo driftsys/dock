@@ -10,12 +10,6 @@ FROM dock-core
 
 ARG VERSION=dev
 ARG DENO_VERSION=2.3.1
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
 # Deno links against glibc; the official Alpine image bundles glibc in /usr/local/lib.
 # The dynamic linker symlink lives at /lib/ld-linux-* (arm64) or /lib64/ (amd64).

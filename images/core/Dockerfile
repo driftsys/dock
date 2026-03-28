@@ -2,12 +2,6 @@
 FROM alpine:3.21
 
 ARG VERSION=dev
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install all core tools in a single layer.
 # DL3018: CI toolbox images are rebuilt on each release; reproducibility is
 # pinned at the OS level (alpine:3.21), not per-package.

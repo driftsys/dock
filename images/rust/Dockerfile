@@ -3,12 +3,6 @@
 FROM dock-core
 
 ARG VERSION=dev
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install C/C++ toolchain and development libraries
 # DL3018: version pinning is at the OS level (inherited alpine:3.21 base)
 # hadolint ignore=DL3018

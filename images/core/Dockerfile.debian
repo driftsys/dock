@@ -4,12 +4,6 @@ FROM debian:bookworm-slim
 ARG VERSION=dev
 # yq release to install (mikefarah/yq — not in Debian bookworm repos)
 ARG YQ_VERSION=4.45.1
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install all core tools available in Debian bookworm
 # DL3008: version pinning is at the OS level (debian:bookworm-slim base)
 # hadolint ignore=DL3008

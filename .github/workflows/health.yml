@@ -2,6 +2,8 @@ name: Health check
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday at 06:00 UTC
 
 env:
   REGISTRY: ghcr.io/driftsys/dock
@@ -17,7 +19,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: [core, rust, deno, node, python, polyglot, lint]
+        image:
+          - core
+          - rust
+          - deno
+          - node
+          - python
+          - polyglot
+          - lint
+          - core-debian
+          - rust-debian
+          - deno-debian
+          - node-debian
+          - python-debian
+          - polyglot-debian
     steps:
       - uses: actions/checkout@v4
 

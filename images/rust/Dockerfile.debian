@@ -3,12 +3,6 @@
 FROM dock-core
 
 ARG VERSION=dev
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install C/C++ toolchain and development libraries
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \

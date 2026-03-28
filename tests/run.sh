@@ -25,6 +25,12 @@ declare -A TEST_SCRIPTS=(
     [python]="test_python.sh"
     [polyglot]="test_polyglot.sh"
     [lint]="test_lint.sh"
+    [core-debian]="test_core.sh"
+    [rust-debian]="test_rust.sh"
+    [deno-debian]="test_deno.sh"
+    [node-debian]="test_node.sh"
+    [python-debian]="test_python.sh"
+    [polyglot-debian]="test_polyglot.sh"
 )
 
 run_image_tests() {

@@ -25,6 +25,10 @@ variable "PLATFORMS" {
   default = "linux/amd64,linux/arm64"
 }
 
+variable "DENO_VERSION" {
+  default = "2.3.1"
+}
+
 # Appended to every tag during per-arch CI builds (e.g. "-amd64", "-arm64").
 # Left empty for local builds and for the final multi-arch manifest.
 variable "PLATFORM_SUFFIX" {
@@ -91,6 +95,7 @@ target "deno" {
   inherits   = ["_common", "_cache"]
   context    = "."
   dockerfile = "images/deno/Dockerfile"
+  args       = { DENO_VERSION = DENO_VERSION }
   tags = [
     "${REGISTRY}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno${PLATFORM_SUFFIX}",
@@ -124,6 +129,7 @@ target "polyglot" {
   inherits   = ["_common", "_cache"]
   context    = "."
   dockerfile = "images/polyglot/Dockerfile"
+  args       = { DENO_VERSION = DENO_VERSION }
   tags = [
     "${REGISTRY}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot${PLATFORM_SUFFIX}",
@@ -160,6 +166,7 @@ target "deno-debian" {
   inherits   = ["_common", "_cache"]
   context    = "."
   dockerfile = "images/deno/Dockerfile.debian"
+  args       = { DENO_VERSION = DENO_VERSION }
   tags = [
     "${REGISTRY}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno-debian${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno-debian${PLATFORM_SUFFIX}",
@@ -193,6 +200,7 @@ target "polyglot-debian" {
   inherits   = ["_common", "_cache"]
   context    = "."
   dockerfile = "images/polyglot/Dockerfile.debian"
+  args       = { DENO_VERSION = DENO_VERSION }
   tags = [
     "${REGISTRY}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot-debian${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot-debian${PLATFORM_SUFFIX}",

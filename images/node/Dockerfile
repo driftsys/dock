@@ -3,12 +3,6 @@
 FROM dock-core
 
 ARG VERSION=dev
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install Node.js LTS and npm
 # hadolint ignore=DL3018
 RUN apk add --no-cache nodejs npm

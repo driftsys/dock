@@ -10,12 +10,6 @@ FROM dock-rust
 
 ARG VERSION=dev
 ARG DENO_VERSION=2.3.1
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Add Python 3 and ruff
 # hadolint ignore=DL3018,DL3013
 RUN apk add --no-cache python3 py3-pip && \

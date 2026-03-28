@@ -5,12 +5,6 @@ FROM dock-core
 ARG VERSION=dev
 # Deno release to install — keep in sync with images/deno/Dockerfile
 ARG DENO_VERSION=2.3.1
-
-LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
-LABEL org.opencontainers.image.revision=""
-LABEL org.opencontainers.image.version="${VERSION}"
-LABEL org.opencontainers.image.created=""
-
 # Install Deno via official static binary (GitHub releases)
 RUN DPKG_ARCH="$(dpkg --print-architecture)" && \
     case "$DPKG_ARCH" in \
