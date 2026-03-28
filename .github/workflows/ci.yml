@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -96,8 +99,18 @@ jobs:
           fi
 
           # Dependency tree: core→everything, rust→polyglot
-          all_images=(core rust deno node python polyglot lint)
+          # When a directory changes, both Alpine and Debian variants are tested.
+          alpine=(core rust deno node python polyglot lint)
+          debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian)
+          all_images=("${alpine[@]}" "${debian[@]}")
           images=()
+
+          add_unique() {
+            local img="$1"
+            if [[ ! " ${images[*]} " =~ " ${img} " ]]; then
+              images+=("$img")
+            fi
+          }
 
           needs_all() {
             echo "$changed" | grep -qE '^(scripts/|docker-bake\.hcl|tests/)'
@@ -115,16 +128,24 @@ jobs:
             images=("${all_images[@]}")
           else
             if needs_rust; then
-              images+=(rust polyglot)
+              for img in rust polyglot rust-debian polyglot-debian; do
+                add_unique "$img"
+              done
             fi
-            for img in deno node python lint polyglot; do
+            for img in deno node python lint; do
               if echo "$changed" | grep -qE "^images/${img}/"; then
-                # avoid duplicates
-                if [[ ! " ${images[*]} " =~ " ${img} " ]]; then
-                  images+=("$img")
+                add_unique "$img"
+                # Add Debian variant (lint has no Debian variant)
+                if [ "$img" != "lint" ]; then
+                  add_unique "${img}-debian"
                 fi
               fi
             done
+            # polyglot directory changes (without rust)
+            if echo "$changed" | grep -qE "^images/polyglot/"; then
+              add_unique "polyglot"
+              add_unique "polyglot-debian"
+            fi
           fi
 
           if [ ${#images[@]} -eq 0 ]; then

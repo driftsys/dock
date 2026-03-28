@@ -4,7 +4,7 @@ FROM dock-core
 
 ARG VERSION=dev
 # git-std release to install. Only linux/amd64 available from driftsys/git-std releases.
-ARG GIT_STD_VERSION=0.7.0
+ARG GIT_STD_VERSION=0.9.0
 # Install shellcheck and editorconfig-checker via apk
 # hadolint ignore=DL3018
 RUN apk add --no-cache shellcheck editorconfig-checker && \

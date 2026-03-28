@@ -17,8 +17,7 @@ RUN apk add --no-cache \
 ENV CARGO_HOME=/usr/local/cargo \
     RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH
-# DL4006: pipefail is set via ENV — not applicable in this RUN form
-# hadolint ignore=DL4006
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSf https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --default-toolchain stable \
         --component clippy --component rustfmt

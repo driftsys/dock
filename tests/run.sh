@@ -11,6 +11,7 @@
 set -euo pipefail
 
 REGISTRY="${REGISTRY:-ghcr.io/driftsys/dock}"
+TEST_TIMEOUT="${TEST_TIMEOUT:-300}" # 5 minutes per image
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIXTURES_DIR="${TESTS_DIR}/fixtures"
 # Pass -f tap via BASH_UNIT_FLAGS to get TAP output (used by CI for reports).
@@ -46,7 +47,8 @@ run_image_tests() {
     echo "=== Testing ${tag} ==="
 
     # shellcheck disable=SC2086
-    docker run --rm \
+    timeout "${TEST_TIMEOUT}" \
+      docker run --rm \
         -v "${TESTS_DIR}:/tests:ro" \
         -v "${FIXTURES_DIR}:/fixtures:ro" \
         "${tag}" \
