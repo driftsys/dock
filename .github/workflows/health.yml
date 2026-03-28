@@ -1,0 +1,36 @@
+name: Health check
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io/driftsys/dock
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    name: Test (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [core, rust, deno, node, python, polyglot, lint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - name: Build image
+        uses: docker/bake-action@v6
+        with:
+          targets: ${{ matrix.image }}
+          set: |
+            *.platform=linux/amd64
+            *.cache-from=
+            *.cache-to=
+
+      - name: Run tests
+        run: REGISTRY=${{ env.REGISTRY }} bash tests/run.sh ${{ matrix.image }}
