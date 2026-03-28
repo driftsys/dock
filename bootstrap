@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Minimum git-std version required by this project.
-MIN_VERSION="0.4.2"
+MIN_VERSION="0.7.0"
 REPO="driftsys/git-std"
 INSTALL_DIR="${GIT_STD_INSTALL_DIR:-$HOME/.local/bin}"
 
@@ -24,8 +24,8 @@ detect_target() {
   case "$os" in
     Linux)
       case "$arch" in
-        x86_64)  echo "x86_64-unknown-linux-gnu" ;;
-        aarch64) echo "aarch64-unknown-linux-gnu" ;;
+        x86_64)  echo "x86_64-unknown-linux-musl" ;;
+        aarch64) echo "aarch64-unknown-linux-musl" ;;
         *)       die "unsupported architecture: $arch" ;;
       esac
       ;;

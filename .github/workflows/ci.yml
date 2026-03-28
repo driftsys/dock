@@ -89,6 +89,8 @@ jobs:
         with:
           set: |
             *.platform=linux/amd64
+            *.cache-from=
+            *.cache-to=
 
   ci:
     name: CI

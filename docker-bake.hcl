@@ -25,6 +25,12 @@ variable "PLATFORMS" {
   default = "linux/amd64,linux/arm64"
 }
 
+# Appended to every tag during per-arch CI builds (e.g. "-amd64", "-arm64").
+# Left empty for local builds and for the final multi-arch manifest.
+variable "PLATFORM_SUFFIX" {
+  default = ""
+}
+
 # ---------------------------------------------------------------------------
 # Shared defaults
 # ---------------------------------------------------------------------------
@@ -49,8 +55,8 @@ target "lint" {
   context    = "."
   dockerfile = "images/lint/Dockerfile"
   tags = [
-    "${REGISTRY}:lint-${VERSION}", "${REGISTRY}:lint",
-    "${REGISTRY_DH}:lint-${VERSION}", "${REGISTRY_DH}:lint",
+    "${REGISTRY}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:lint${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:lint${PLATFORM_SUFFIX}",
   ]
   contexts  = { dock-core = "target:core" }
   platforms = ["linux/amd64"]
@@ -65,8 +71,8 @@ target "core" {
   context    = "."
   dockerfile = "images/core/Dockerfile"
   tags = [
-    "${REGISTRY}:core-${VERSION}", "${REGISTRY}:core",
-    "${REGISTRY_DH}:core-${VERSION}", "${REGISTRY_DH}:core",
+    "${REGISTRY}:core-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:core${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:core-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:core${PLATFORM_SUFFIX}",
   ]
 }
 
@@ -75,8 +81,8 @@ target "rust" {
   context    = "."
   dockerfile = "images/rust/Dockerfile"
   tags = [
-    "${REGISTRY}:rust-${VERSION}", "${REGISTRY}:rust",
-    "${REGISTRY_DH}:rust-${VERSION}", "${REGISTRY_DH}:rust",
+    "${REGISTRY}:rust-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:rust${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:rust-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:rust${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core" }
 }
@@ -86,8 +92,8 @@ target "deno" {
   context    = "."
   dockerfile = "images/deno/Dockerfile"
   tags = [
-    "${REGISTRY}:deno-${VERSION}", "${REGISTRY}:deno",
-    "${REGISTRY_DH}:deno-${VERSION}", "${REGISTRY_DH}:deno",
+    "${REGISTRY}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core" }
 }
@@ -97,8 +103,8 @@ target "node" {
   context    = "."
   dockerfile = "images/node/Dockerfile"
   tags = [
-    "${REGISTRY}:node-${VERSION}", "${REGISTRY}:node",
-    "${REGISTRY_DH}:node-${VERSION}", "${REGISTRY_DH}:node",
+    "${REGISTRY}:node-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:node${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:node-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:node${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core" }
 }
@@ -108,8 +114,8 @@ target "python" {
   context    = "."
   dockerfile = "images/python/Dockerfile"
   tags = [
-    "${REGISTRY}:python-${VERSION}", "${REGISTRY}:python",
-    "${REGISTRY_DH}:python-${VERSION}", "${REGISTRY_DH}:python",
+    "${REGISTRY}:python-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:python${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:python-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:python${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core" }
 }
@@ -119,8 +125,8 @@ target "polyglot" {
   context    = "."
   dockerfile = "images/polyglot/Dockerfile"
   tags = [
-    "${REGISTRY}:polyglot-${VERSION}", "${REGISTRY}:polyglot",
-    "${REGISTRY_DH}:polyglot-${VERSION}", "${REGISTRY_DH}:polyglot",
+    "${REGISTRY}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-rust = "target:rust" }
 }
@@ -134,8 +140,8 @@ target "core-debian" {
   context    = "."
   dockerfile = "images/core/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:core-debian-${VERSION}", "${REGISTRY}:core-debian",
-    "${REGISTRY_DH}:core-debian-${VERSION}", "${REGISTRY_DH}:core-debian",
+    "${REGISTRY}:core-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:core-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:core-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:core-debian${PLATFORM_SUFFIX}",
   ]
 }
 
@@ -144,8 +150,8 @@ target "rust-debian" {
   context    = "."
   dockerfile = "images/rust/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:rust-debian-${VERSION}", "${REGISTRY}:rust-debian",
-    "${REGISTRY_DH}:rust-debian-${VERSION}", "${REGISTRY_DH}:rust-debian",
+    "${REGISTRY}:rust-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:rust-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:rust-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:rust-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core-debian" }
 }
@@ -155,8 +161,8 @@ target "deno-debian" {
   context    = "."
   dockerfile = "images/deno/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:deno-debian-${VERSION}", "${REGISTRY}:deno-debian",
-    "${REGISTRY_DH}:deno-debian-${VERSION}", "${REGISTRY_DH}:deno-debian",
+    "${REGISTRY}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core-debian" }
 }
@@ -166,8 +172,8 @@ target "node-debian" {
   context    = "."
   dockerfile = "images/node/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:node-debian-${VERSION}", "${REGISTRY}:node-debian",
-    "${REGISTRY_DH}:node-debian-${VERSION}", "${REGISTRY_DH}:node-debian",
+    "${REGISTRY}:node-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:node-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:node-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:node-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core-debian" }
 }
@@ -177,8 +183,8 @@ target "python-debian" {
   context    = "."
   dockerfile = "images/python/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:python-debian-${VERSION}", "${REGISTRY}:python-debian",
-    "${REGISTRY_DH}:python-debian-${VERSION}", "${REGISTRY_DH}:python-debian",
+    "${REGISTRY}:python-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:python-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:python-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:python-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-core = "target:core-debian" }
 }
@@ -188,8 +194,8 @@ target "polyglot-debian" {
   context    = "."
   dockerfile = "images/polyglot/Dockerfile.debian"
   tags = [
-    "${REGISTRY}:polyglot-debian-${VERSION}", "${REGISTRY}:polyglot-debian",
-    "${REGISTRY_DH}:polyglot-debian-${VERSION}", "${REGISTRY_DH}:polyglot-debian",
+    "${REGISTRY}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-rust = "target:rust-debian" }
 }

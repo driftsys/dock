@@ -10,17 +10,28 @@ permissions:
 
 env:
   REGISTRY: ghcr.io/driftsys/dock
+  REGISTRY_DH: docker.io/driftsys/dock
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # ------------------------------------------------------------------
+  # Phase 1 — build each arch on a native runner and push per-arch tags
+  # ------------------------------------------------------------------
   build:
-    name: Build and push images
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -42,12 +53,76 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push all images
+      - name: Build and push per-arch images
         uses: docker/bake-action@v6
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          PLATFORMS: ${{ matrix.platform }}
+          PLATFORM_SUFFIX: -${{ matrix.arch }}
         with:
           push: true
           set: |
             *.labels.org.opencontainers.image.revision=${{ github.sha }}
             *.labels.org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+
+  # ------------------------------------------------------------------
+  # Phase 2 — merge per-arch tags into multi-arch manifests
+  # ------------------------------------------------------------------
+  merge:
+    name: Merge multi-arch manifests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Create multi-arch manifests
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          images=(
+            core
+            rust
+            deno
+            node
+            python
+            polyglot
+            core-debian
+            rust-debian
+            deno-debian
+            node-debian
+            python-debian
+            polyglot-debian
+          )
+
+          # lint is amd64-only, just retag without the suffix
+          for registry in "$REGISTRY" "$REGISTRY_DH"; do
+            docker buildx imagetools create \
+              -t "${registry}:lint-${VERSION}" \
+              -t "${registry}:lint" \
+              "${registry}:lint-${VERSION}-amd64"
+          done
+
+          for img in "${images[@]}"; do
+            for registry in "$REGISTRY" "$REGISTRY_DH"; do
+              docker buildx imagetools create \
+                -t "${registry}:${img}-${VERSION}" \
+                -t "${registry}:${img}" \
+                "${registry}:${img}-${VERSION}-amd64" \
+                "${registry}:${img}-${VERSION}-arm64"
+            done
+          done
