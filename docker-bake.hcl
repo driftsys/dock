@@ -40,6 +40,15 @@ target "_cache" {
   cache-to   = ["type=registry,ref=${REGISTRY}:cache,mode=max"]
 }
 
+target "lint" {
+  inherits   = ["_common", "_cache"]
+  context    = "."
+  dockerfile = "images/lint/Dockerfile"
+  tags       = ["${REGISTRY}:lint-${VERSION}", "${REGISTRY}:lint"]
+  contexts   = { dock-core = "target:core" }
+  platforms  = ["linux/amd64"]
+}
+
 # ---------------------------------------------------------------------------
 # Alpine images
 # ---------------------------------------------------------------------------
@@ -147,7 +156,7 @@ target "polyglot-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot"]
+  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint"]
 }
 
 group "debian" {

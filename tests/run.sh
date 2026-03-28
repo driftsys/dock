@@ -22,6 +22,7 @@ declare -A TEST_SCRIPTS=(
     [node]="test_node.sh"
     [python]="test_python.sh"
     [polyglot]="test_polyglot.sh"
+    [lint]="test_lint.sh"
 )
 
 run_image_tests() {
@@ -47,7 +48,7 @@ run_image_tests() {
 if [[ $# -gt 0 ]]; then
     run_image_tests "$1"
 else
-    for image in core rust deno node python polyglot; do
+    for image in core rust deno node python polyglot lint; do
         run_image_tests "$image"
     done
 fi
