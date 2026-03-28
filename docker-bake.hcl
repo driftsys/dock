@@ -49,13 +49,18 @@ target "_common" {
   }
 }
 
-target "_cache" {
-  cache-from = ["type=registry,ref=${REGISTRY}:cache"]
-  cache-to   = ["type=registry,ref=${REGISTRY}:cache,mode=max"]
+target "_cache-alpine" {
+  cache-from = ["type=registry,ref=${REGISTRY}:cache-alpine"]
+  cache-to   = ["type=registry,ref=${REGISTRY}:cache-alpine,mode=max"]
+}
+
+target "_cache-debian" {
+  cache-from = ["type=registry,ref=${REGISTRY}:cache-debian"]
+  cache-to   = ["type=registry,ref=${REGISTRY}:cache-debian,mode=max"]
 }
 
 target "lint" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/lint/Dockerfile"
   tags = [
@@ -71,7 +76,7 @@ target "lint" {
 # ---------------------------------------------------------------------------
 
 target "core" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/core/Dockerfile"
   tags = [
@@ -81,7 +86,7 @@ target "core" {
 }
 
 target "rust" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/rust/Dockerfile"
   tags = [
@@ -92,7 +97,7 @@ target "rust" {
 }
 
 target "deno" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/deno/Dockerfile"
   args       = { DENO_VERSION = DENO_VERSION }
@@ -104,7 +109,7 @@ target "deno" {
 }
 
 target "node" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/node/Dockerfile"
   tags = [
@@ -115,7 +120,7 @@ target "node" {
 }
 
 target "python" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/python/Dockerfile"
   tags = [
@@ -126,7 +131,7 @@ target "python" {
 }
 
 target "polyglot" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/polyglot/Dockerfile"
   args       = { DENO_VERSION = DENO_VERSION }
@@ -142,7 +147,7 @@ target "polyglot" {
 # ---------------------------------------------------------------------------
 
 target "core-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/core/Dockerfile.debian"
   tags = [
@@ -152,7 +157,7 @@ target "core-debian" {
 }
 
 target "rust-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/rust/Dockerfile.debian"
   tags = [
@@ -163,7 +168,7 @@ target "rust-debian" {
 }
 
 target "deno-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/deno/Dockerfile.debian"
   args       = { DENO_VERSION = DENO_VERSION }
@@ -175,7 +180,7 @@ target "deno-debian" {
 }
 
 target "node-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/node/Dockerfile.debian"
   tags = [
@@ -186,7 +191,7 @@ target "node-debian" {
 }
 
 target "python-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/python/Dockerfile.debian"
   tags = [
@@ -197,7 +202,7 @@ target "python-debian" {
 }
 
 target "polyglot-debian" {
-  inherits   = ["_common", "_cache"]
+  inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/polyglot/Dockerfile.debian"
   args       = { DENO_VERSION = DENO_VERSION }
