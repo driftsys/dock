@@ -33,4 +33,20 @@ jobs:
             *.cache-to=
 
       - name: Run tests
-        run: REGISTRY=${{ env.REGISTRY }} bash tests/run.sh ${{ matrix.image }}
+        run: |
+          BASH_UNIT_FLAGS="-f tap" REGISTRY=${{ env.REGISTRY }} \
+            bash tests/run.sh ${{ matrix.image }} \
+            | tee test-results.tap
+
+      - name: Test report
+        if: always()
+        run: |
+          {
+            echo "## Test results — \`${{ matrix.image }}\`"
+            echo ""
+            echo "| # | Result | Test |"
+            echo "|---|--------|------|"
+            awk '/^ok /     { sub(/^ok /,"");     printf "| %s | :white_check_mark: | %s |\n", NR, $0 }
+                 /^not ok / { sub(/^not ok /,""); printf "| %s | :x: | %s |\n", NR, $0 }' \
+              test-results.tap
+          } >> "$GITHUB_STEP_SUMMARY"

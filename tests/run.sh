@@ -13,6 +13,8 @@ set -euo pipefail
 REGISTRY="${REGISTRY:-ghcr.io/driftsys/dock}"
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIXTURES_DIR="${TESTS_DIR}/fixtures"
+# Pass -f tap via BASH_UNIT_FLAGS to get TAP output (used by CI for reports).
+BASH_UNIT_FLAGS="${BASH_UNIT_FLAGS:-}"
 
 # Map image name → test script
 declare -A TEST_SCRIPTS=(
@@ -37,11 +39,12 @@ run_image_tests() {
     local tag="${REGISTRY}:${image}"
     echo "=== Testing ${tag} ==="
 
+    # shellcheck disable=SC2086
     docker run --rm \
         -v "${TESTS_DIR}:/tests:ro" \
         -v "${FIXTURES_DIR}:/fixtures:ro" \
         "${tag}" \
-        bash /tests/bash_unit "/tests/${script}"
+        bash /tests/bash_unit ${BASH_UNIT_FLAGS} "/tests/${script}"
 }
 
 # If an image name is passed, run only that image; otherwise run all.
