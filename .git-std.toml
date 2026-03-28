@@ -4,3 +4,4 @@ scopes = "auto"
 
 [versioning]
 tag_prefix = "v"
+version_files = ["project.yaml"]
