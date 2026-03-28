@@ -72,10 +72,28 @@ jobs:
           convco check \
             ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
 
+  build:
+    name: Build images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build all images (amd64 only)
+        uses: docker/bake-action@v6
+        with:
+          set: |
+            *.platform=linux/amd64
+
   ci:
     name: CI
     if: always()
-    needs: [dprint, lint, convco]
+    needs: [dprint, lint, convco, build]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
