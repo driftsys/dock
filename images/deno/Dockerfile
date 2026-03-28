@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1
+# hadolint ignore=DL3006
+FROM dock-core
+
+ARG VERSION=dev
+# Deno release to install — update this to pin a specific version
+ARG DENO_VERSION=2.3.1
+
+LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
+LABEL org.opencontainers.image.revision=""
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.created=""
+
+# Install Deno via official static binary (GitHub releases)
+# Deno is not in Alpine apk — official binary is the recommended install method.
+RUN ARCH="$(uname -m)" && \
+    case "$ARCH" in \
+      x86_64)  DENO_ARCH="x86_64-unknown-linux-gnu" ;; \
+      aarch64) DENO_ARCH="aarch64-unknown-linux-gnu" ;; \
+      *)        echo "unsupported arch: $ARCH" && exit 1 ;; \
+    esac && \
+    curl -sSfL \
+      "https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-${DENO_ARCH}.zip" \
+      -o /tmp/deno.zip && \
+    unzip -q /tmp/deno.zip -d /usr/local/bin && \
+    rm /tmp/deno.zip && \
+    chmod +x /usr/local/bin/deno && \
+    deno --version
+
+# Generate manifest
+COPY scripts/manifest.sh /usr/local/bin/manifest.sh
+RUN manifest.sh deno "${VERSION}"
