@@ -208,6 +208,11 @@ group "alpine" {
   targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint"]
 }
 
+# All multi-arch targets (excludes lint which is amd64-only)
+group "multiarch" {
+  targets = ["core", "rust", "deno", "node", "python", "polyglot"]
+}
+
 group "debian" {
   targets = [
     "core-debian",
