@@ -6,10 +6,18 @@ build:
 test:
     @bash tests/run.sh
 
+# Run tests for a single image (e.g. just test-image core)
+test-image image:
+    @bash tests/run.sh {{image}}
+
+# Shorthand: run tests for the core image only
+test-core:
+    @bash tests/run.sh core
+
 # Lint: hadolint + shellcheck + dprint check
 lint:
     @find images -name 'Dockerfile*' | xargs -r hadolint
-    @find scripts -name '*.sh' | xargs -r shellcheck
+    @find scripts tests -name '*.sh' | xargs -r shellcheck
     dprint check
 
 # Format Markdown
