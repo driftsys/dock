@@ -1,0 +1,12 @@
+# git-std hooks — bootstrap.hooks
+#
+# Commands run by `git std bootstrap` after built-in checks.
+# Prefix controls behavior:
+#
+#   !  required   fail bootstrap on failure
+#   ?  advisory   run command, never fail bootstrap
+#
+# Examples:
+#   ! docker buildx version   # verify buildx available
+#   ? just --list             # show available tasks
+#

@@ -130,4 +130,8 @@ won't-fix.
 
 ## Post-clone setup
 
-No additional setup is required beyond having Docker and `just` installed.
+Run `./bootstrap` after `git clone` or `git worktree add`. It installs
+`git-std` (if needed) and wires up the git hooks (`commit-msg`,
+`pre-commit`).
+
+You still need Docker (with BuildKit) and `just` on your `$PATH`.
