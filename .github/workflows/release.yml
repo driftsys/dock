@@ -30,7 +30,9 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
             platform: linux/arm64
-            targets: multiarch debian
+            targets: |-
+              multiarch
+              debian
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
