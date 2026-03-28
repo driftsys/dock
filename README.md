@@ -85,17 +85,6 @@ All images include these tools from `:core`:
 | tzdata                  | tzdata                                     |
 | ca-certificates         | ca-certificates                            |
 
-## Comparison
-
-|               | dock:core     | cimg/base      | ubuntu-latest  |
-| ------------- | ------------- | -------------- | -------------- |
-| Size          | ~32 MB        | ~600 MB        | ~500 MB        |
-| libc          | musl / glibc  | glibc          | glibc          |
-| Git           | ✓             | ✓              | ✓              |
-| jq/yq         | ✓             | —              | —              |
-| Rust          | `:rust` image | manual install | manual install |
-| Manifest JSON | ✓             | —              | —              |
-
 ## Tags
 
 Tags follow the format `ghcr.io/driftsys/dock:{image}-{version}` where
