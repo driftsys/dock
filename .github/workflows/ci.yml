@@ -163,6 +163,7 @@ jobs:
 
       - name: Run tests
         run: |
+          set -o pipefail
           BASH_UNIT_FLAGS="-f tap" REGISTRY=ghcr.io/driftsys/dock \
             bash tests/run.sh ${{ matrix.image }} \
             | tee test-results.tap
