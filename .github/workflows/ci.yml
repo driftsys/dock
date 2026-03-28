@@ -21,15 +21,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install hadolint
+        run: |
+          curl -sSfL \
+            https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 \
+            -o /usr/local/bin/hadolint
+          chmod +x /usr/local/bin/hadolint
       - name: hadolint
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          recursive: true
-          ignore: ""
+        run: |
+          files=$(find images -name 'Dockerfile*' 2>/dev/null)
+          if [ -n "$files" ]; then
+            echo "$files" | xargs hadolint
+          else
+            echo "No Dockerfiles found — skipping hadolint"
+          fi
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
       - name: shellcheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          scandir: ./scripts
+        run: |
+          files=$(find scripts .githooks -name '*.sh' -o -name 'commit-msg' \
+            -o -name 'pre-commit' 2>/dev/null)
+          if [ -n "$files" ]; then
+            echo "$files" | xargs shellcheck
+          else
+            echo "No shell scripts found — skipping shellcheck"
+          fi
+          shellcheck bootstrap
 
   convco:
     name: Conventional commits
