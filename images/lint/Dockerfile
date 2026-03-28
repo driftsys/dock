@@ -13,7 +13,8 @@ LABEL org.opencontainers.image.created=""
 
 # Install shellcheck and editorconfig-checker via apk
 # hadolint ignore=DL3018
-RUN apk add --no-cache shellcheck editorconfig-checker
+RUN apk add --no-cache shellcheck editorconfig-checker && \
+    ln -s /usr/bin/ec /usr/bin/editorconfig-checker
 
 # Install git-std (linux/amd64 only — no aarch64 Linux binary in releases)
 RUN curl -sSfL \
