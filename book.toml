@@ -1,0 +1,10 @@
+[book]
+title = "dock"
+description = "Lean, layered CI Docker images"
+authors = ["DriftSys"]
+language = "en"
+src = "docs"
+
+[output.html]
+git-repository-url = "https://github.com/driftsys/dock"
+edit-url-template = "https://github.com/driftsys/dock/edit/main/docs/{path}"

@@ -1,5 +1,12 @@
 # dock
 
+[![CI](https://github.com/driftsys/dock/actions/workflows/ci.yml/badge.svg)](https://github.com/driftsys/dock/actions/workflows/ci.yml)
+[![Release](https://github.com/driftsys/dock/actions/workflows/release.yml/badge.svg)](https://github.com/driftsys/dock/actions/workflows/release.yml)
+[![GHCR](https://img.shields.io/badge/ghcr.io-driftsys%2Fdock-blue?logo=github)](https://github.com/driftsys/dock/pkgs/container/dock)
+[![Docker Hub](https://img.shields.io/docker/v/driftsys/dock?label=Docker%20Hub&logo=docker&sort=semver)](https://hub.docker.com/r/driftsys/dock)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=mdbook)](https://driftsys.github.io/dock)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Lean, layered CI Docker images published at `ghcr.io/driftsys/dock`.
 
 Each image adds exactly one concern — scripting foundation, compilation
@@ -99,9 +106,13 @@ See [docs/versioning.md](docs/versioning.md) for the full strategy.
 
 ## Documentation
 
-- [Extending images](docs/extending.md) — add packages on top of `:core`
-- [Versioning strategy](docs/versioning.md) — tags, pinning, rebuild policy
-- Per-image docs in [docs/images/](docs/images/)
+Full documentation is available at
+**[driftsys.github.io/dock](https://driftsys.github.io/dock)**.
+
+- [Getting Started](https://driftsys.github.io/dock/getting-started.html)
+- [Extending Images](https://driftsys.github.io/dock/extending.html)
+- [Versioning Strategy](https://driftsys.github.io/dock/versioning.html)
+- [Image Reference](https://driftsys.github.io/dock/images/core.html)
 
 ## Contributing
 

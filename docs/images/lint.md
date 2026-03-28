@@ -37,7 +37,7 @@ jobs:
 
 | Argument          | Default | Description                |
 | ----------------- | ------- | -------------------------- |
-| `GIT_STD_VERSION` | `0.6.0` | git-std release to install |
+| `GIT_STD_VERSION` | `0.7.0` | git-std release to install |
 
 ## Approximate size
 
