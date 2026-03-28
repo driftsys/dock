@@ -4,7 +4,7 @@ FROM dock-core
 
 ARG VERSION=dev
 # git-std release to install. Only linux/amd64 available from driftsys/git-std releases.
-ARG GIT_STD_VERSION=0.6.0
+ARG GIT_STD_VERSION=0.7.0
 
 LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
 LABEL org.opencontainers.image.revision=""

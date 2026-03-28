@@ -72,30 +72,103 @@ jobs:
           convco check \
             ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
 
-  build:
-    name: Build images
+  detect:
+    name: Detect changed images
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.changes.outputs.matrix }}
+      any: ${{ steps.changes.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine affected images
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+
+          changed=$(git diff --name-only "$base" HEAD)
+
+          # Dependency tree: core→everything, rust→polyglot
+          all_images=(core rust deno node python polyglot lint)
+          images=()
+
+          needs_all() {
+            echo "$changed" | grep -qE '^(scripts/|docker-bake\.hcl|tests/)'
+          }
+
+          needs_core() {
+            echo "$changed" | grep -qE '^images/core/'
+          }
+
+          needs_rust() {
+            echo "$changed" | grep -qE '^images/rust/'
+          }
+
+          if needs_all || needs_core; then
+            images=("${all_images[@]}")
+          else
+            if needs_rust; then
+              images+=(rust polyglot)
+            fi
+            for img in deno node python lint polyglot; do
+              if echo "$changed" | grep -qE "^images/${img}/"; then
+                # avoid duplicates
+                if [[ ! " ${images[*]} " =~ " ${img} " ]]; then
+                  images+=("$img")
+                fi
+              fi
+            done
+          fi
+
+          if [ ${#images[@]} -eq 0 ]; then
+            echo "matrix=[]" >> "$GITHUB_OUTPUT"
+            echo "any=false" >> "$GITHUB_OUTPUT"
+          else
+            json=$(printf '%s\n' "${images[@]}" | jq -R . | jq -sc .)
+            echo "matrix=${json}" >> "$GITHUB_OUTPUT"
+            echo "any=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-test:
+    name: Build & test (${{ matrix.image }})
+    needs: detect
+    if: needs.detect.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.detect.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
 
-      - name: Build all images (amd64 only)
+      - name: Build image
         uses: docker/bake-action@v6
         with:
+          targets: ${{ matrix.image }}
           set: |
             *.platform=linux/amd64
             *.cache-from=
             *.cache-to=
 
+      - name: Run tests
+        run: |
+          REGISTRY=ghcr.io/driftsys/dock bash tests/run.sh ${{ matrix.image }}
+
   ci:
     name: CI
     if: always()
-    needs: [dprint, lint, convco, build]
+    needs: [dprint, lint, convco, build-test]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
