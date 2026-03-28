@@ -28,7 +28,8 @@ jobs:
 
       - name: Install mdbook
         run: |
-          curl -sSfL https://github.com/rust-lang/mdBook/releases/latest/download/mdbook-v0.4.47-x86_64-unknown-linux-gnu.tar.gz \
+          MDBOOK_VERSION=$(curl -sSf https://api.github.com/repos/rust-lang/mdBook/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+          curl -sSfL "https://github.com/rust-lang/mdBook/releases/download/${MDBOOK_VERSION}/mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
             | tar -xz -C /usr/local/bin
 
       - name: Build book
