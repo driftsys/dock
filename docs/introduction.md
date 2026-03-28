@@ -22,15 +22,15 @@ covers their pipeline.
 
 ## Image catalog
 
-| Image       | From    | Size (Alpine) | Contents                                   |
-| ----------- | ------- | ------------- | ------------------------------------------ |
+| Image       | From    | Size (Alpine) | Contents                                  |
+| ----------- | ------- | ------------- | ----------------------------------------- |
 | `:core`     | alpine  | ~32 MB        | Shell, Git, curl, jq, yq, gpg             |
-| `:rust`     | `:core` | ~260 MB       | Rust stable, cargo, clippy, rustfmt        |
-| `:deno`     | `:core` | ~120 MB       | Deno runtime                               |
-| `:node`     | `:core` | ~115 MB       | Node.js LTS, npm                           |
-| `:python`   | `:core` | ~55 MB        | Python 3, pip, ruff                        |
-| `:polyglot` | `:rust` | ~382 MB       | Rust + Deno + Python 3                     |
-| `:lint`     | `:core` | ~44 MB        | shellcheck, editorconfig-checker, git-std  |
+| `:rust`     | `:core` | ~260 MB       | Rust stable, cargo, clippy, rustfmt       |
+| `:deno`     | `:core` | ~120 MB       | Deno runtime                              |
+| `:node`     | `:core` | ~115 MB       | Node.js LTS, npm                          |
+| `:python`   | `:core` | ~55 MB        | Python 3, pip, ruff                       |
+| `:polyglot` | `:rust` | ~382 MB       | Rust + Deno + Python 3                    |
+| `:lint`     | `:core` | ~44 MB        | shellcheck, editorconfig-checker, git-std |
 
 ## Inheritance tree
 
