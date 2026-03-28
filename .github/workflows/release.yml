@@ -44,9 +44,10 @@ jobs:
 
       - name: Build and push all images
         uses: docker/bake-action@v6
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         with:
           push: true
           set: |
-            *.version=${{ steps.version.outputs.version }}
             *.labels.org.opencontainers.image.revision=${{ github.sha }}
             *.labels.org.opencontainers.image.created=${{ github.event.repository.updated_at }}
