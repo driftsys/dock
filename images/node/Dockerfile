@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+# hadolint ignore=DL3006
+FROM dock-core
+
+ARG VERSION=dev
+
+LABEL org.opencontainers.image.source="https://github.com/driftsys/dock"
+LABEL org.opencontainers.image.revision=""
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.created=""
+
+# Install Node.js LTS and npm
+# hadolint ignore=DL3018
+RUN apk add --no-cache nodejs npm
+
+# Generate manifest
+COPY scripts/manifest.sh /usr/local/bin/manifest.sh
+RUN manifest.sh node "${VERSION}"
