@@ -24,6 +24,7 @@ You need:
 ```bash
 git clone https://github.com/driftsys/dock.git
 cd dock
+./bootstrap      # installs git-std, wires git hooks
 just build
 ```
 
