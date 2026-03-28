@@ -23,7 +23,10 @@ RUN apk add --no-cache python3 py3-pip && \
 
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
 # Deno links against glibc; the official Alpine image bundles glibc in /usr/local/lib.
+# Copy glibc compat libs for Deno, but remove libgcc_s.so.1 which conflicts
+# with the musl-linked copy used by Rust (causes relocation errors).
 COPY --from=deno-bin /usr/local/lib/ /usr/local/lib/
+RUN rm -f /usr/local/lib/libgcc_s.so.1
 COPY --from=deno-bin /lib/ld-linux-* /lib/
 # On amd64 the loader is referenced via /lib64/ld-linux-x86-64.so.2
 RUN mkdir -p /lib64 && \
