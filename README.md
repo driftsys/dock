@@ -43,6 +43,7 @@ Every image ships in two variants:
 | `:node`     | `:core`       | ~115 MB       | Node.js LTS, npm                                             |
 | `:python`   | `:core`       | ~55 MB        | Python 3, pip, ruff                                          |
 | `:polyglot` | `:rust`       | ~382 MB       | Rust + Deno + Python 3                                       |
+| `:lint`     | `:core`       | ~44 MB        | shellcheck, editorconfig-checker, git-std (linux/amd64 only) |
 
 ## Inheritance Tree
 
