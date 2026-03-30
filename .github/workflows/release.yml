@@ -58,7 +58,7 @@ jobs:
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push per-arch images
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v7
         env:
           VERSION: ${{ steps.version.outputs.version }}
           PLATFORMS: ${{ matrix.platform }}

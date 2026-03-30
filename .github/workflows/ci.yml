@@ -175,7 +175,7 @@ jobs:
           driver: docker
 
       - name: Build image
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v7
         with:
           targets: ${{ matrix.image }}
           set: |
