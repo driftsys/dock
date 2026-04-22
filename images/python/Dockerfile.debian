@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/* \
  && pip install --no-cache-dir --quiet --break-system-packages ruff
 
+# Point pip at the system CA bundle for corporate CA support.
+ENV PIP_CERT=/etc/ssl/certs/ca-certificates.crt
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh python "${VERSION}"

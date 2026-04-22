@@ -20,6 +20,18 @@ test_polyglot_python3_present() { assert "command -v python3"; }
 test_polyglot_ruff_present()    { assert "command -v ruff"; }
 
 # ---------------------------------------------------------------------------
+# CA bundle tests (Deno + pip; Cargo inherited from test_rust.sh)
+# ---------------------------------------------------------------------------
+
+test_polyglot_deno_cert_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$DENO_CERT"
+}
+
+test_polyglot_pip_cert_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$PIP_CERT"
+}
+
+# ---------------------------------------------------------------------------
 # Interop: Deno FFI loads a Rust-compiled shared library
 # ---------------------------------------------------------------------------
 

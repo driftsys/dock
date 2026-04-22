@@ -8,6 +8,9 @@ ARG VERSION=dev
 RUN apk add --no-cache python3 py3-pip && \
     pip install --no-cache-dir --quiet --break-system-packages ruff
 
+# Point pip at the system CA bundle for corporate CA support.
+ENV PIP_CERT=/etc/ssl/certs/ca-certificates.crt
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh python "${VERSION}"

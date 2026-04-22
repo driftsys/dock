@@ -25,6 +25,9 @@ RUN curl -sSf https://sh.rustup.rs \
 # Install cargo-audit and cargo-deny
 RUN cargo install cargo-audit cargo-deny --locked
 
+# Point Cargo at the system CA bundle for corporate CA support.
+ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh rust "${VERSION}"

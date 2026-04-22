@@ -31,6 +31,11 @@ COPY --from=deno-bin /bin/deno /usr/local/bin/deno
 ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN deno --version
 
+# Point Deno and pip at the system CA bundle for corporate CA support.
+# CARGO_HTTP_CAINFO is inherited from :rust; core ENVs from :core.
+ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt \
+    PIP_CERT=/etc/ssl/certs/ca-certificates.crt
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh polyglot "${VERSION}"

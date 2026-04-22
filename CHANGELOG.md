@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `dock-bootstrap` — auto-detects CA certificates from environment
+  variables, drop directory (`/etc/dock/ca.d/`), and
+  `CI_SERVER_TLS_CA_FILE`; imports into the system trust store
+- Pre-configured CA bundle paths for cargo, npm, deno, pip, git,
+  curl across all images
+- Documentation for corporate environments: CA injection, proxy
+  pass-through, registry mirrors, connectivity verification
+
 ## [0.1.3] (2026-03-28)
 
 ### Refactoring
