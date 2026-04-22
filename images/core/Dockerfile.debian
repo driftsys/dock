@@ -41,6 +41,18 @@ RUN ARCH="$(dpkg --print-architecture)" && \
 COPY scripts/dotenv.sh /usr/local/bin/dotenv
 RUN chmod +x /usr/local/bin/dotenv
 
+# Point common tools at the system CA bundle so custom CAs added via
+# dock-bootstrap are trusted automatically.
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    SSL_CERT_DIR=/etc/ssl/certs \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt \
+    CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
+# Install dock-bootstrap helper and create the CA drop-directory.
+COPY scripts/dock-bootstrap.sh /usr/local/bin/dock-bootstrap
+RUN chmod 0755 /usr/local/bin/dock-bootstrap && mkdir -p /etc/dock/ca.d
+
 # Copy manifest helper and generate /etc/dock/manifest.json
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh core "${VERSION}"

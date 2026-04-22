@@ -71,3 +71,73 @@ test_manifest_has_image() {
   result="$(jq -r '.image' /etc/dock/manifest.json)"
   assert_not_equals "" "$result"
 }
+
+# ---------------------------------------------------------------------------
+# Corporate CA support
+# ---------------------------------------------------------------------------
+
+test_dock_bootstrap_present() {
+  assert "command -v dock-bootstrap"
+}
+
+test_ca_drop_dir_exists() {
+  assert "[ -d /etc/dock/ca.d ]"
+}
+
+test_ssl_cert_file_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$SSL_CERT_FILE"
+}
+
+test_ssl_cert_dir_env() {
+  assert_equals "/etc/ssl/certs" "$SSL_CERT_DIR"
+}
+
+test_curl_ca_bundle_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$CURL_CA_BUNDLE"
+}
+
+test_git_ssl_cainfo_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$GIT_SSL_CAINFO"
+}
+
+# dock-bootstrap exits 0 with no certs present (empty ca.d, no PEM env vars)
+test_dock_bootstrap_noop() {
+  assert "dock-bootstrap /etc/dock/ca.d"
+}
+
+# dock-bootstrap imports a certificate file from the drop directory.
+# Uses a pre-generated test fixture cert to avoid requiring openssl.
+test_dock_bootstrap_imports_file() {
+  local ca_dir
+  ca_dir="$(mktemp -d)"
+
+  cp /fixtures/ca/test-ca.crt "$ca_dir/"
+
+  dock-bootstrap "$ca_dir"
+
+  assert "[ -f /usr/local/share/ca-certificates/test-ca.crt ]" \
+    "test cert should be copied to ca-certificates directory"
+
+  rm -rf "$ca_dir"
+}
+
+# dock-bootstrap detects PEM certificates in environment variables.
+test_dock_bootstrap_imports_env_var() {
+  local cert_pem
+  cert_pem="$(cat /fixtures/ca/test-ca.crt)"
+
+  # Export a PEM cert as an env var, run dock-bootstrap, check dest dir
+  DOCK_TEST_CA="$cert_pem" \
+    dock-bootstrap /nonexistent 2>/dev/null
+
+  # shellcheck disable=SC2012
+  assert "ls /usr/local/share/ca-certificates/env-DOCK_TEST_CA-*.crt >/dev/null 2>&1" \
+    "PEM cert from env var should be written to ca-certificates directory"
+}
+
+# dock-bootstrap respects DOCK_SKIP_CA
+test_dock_bootstrap_skip() {
+  local output
+  output="$(DOCK_SKIP_CA=1 dock-bootstrap 2>&1)"
+  assert_equals "dock-bootstrap: DOCK_SKIP_CA=1, skipping" "$output"
+}

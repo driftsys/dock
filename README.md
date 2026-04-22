@@ -85,6 +85,26 @@ All images include these tools from `:core`:
 | tzdata                  | tzdata                                     |
 | ca-certificates         | ca-certificates                            |
 
+## Corporate Environments
+
+All dock images include `dock-bootstrap` for corporate CA certificate
+detection. Add it to your CI `before_script`:
+
+```yaml
+default:
+  before_script:
+    - dock-bootstrap
+```
+
+`dock-bootstrap` auto-detects PEM certificates from environment
+variables, files in `/etc/dock/ca.d/`, and GitLab's
+`CI_SERVER_TLS_CA_FILE`, then imports them into the system trust
+store. All language tools are pre-configured to use the system CA
+bundle.
+
+See [docs/extending.md](docs/extending.md#corporate-environments)
+for full documentation.
+
 ## Tags
 
 Tags follow the format `ghcr.io/driftsys/dock:{image}-{version}` where

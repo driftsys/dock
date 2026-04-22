@@ -24,6 +24,9 @@ COPY --from=deno-bin /bin/deno /usr/local/bin/deno
 ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN deno --version
 
+# Point Deno at the system CA bundle for corporate CA support.
+ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh deno "${VERSION}"

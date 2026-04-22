@@ -18,6 +18,14 @@ test_gcc_present()         { assert "command -v gcc"; }
 test_pkg_config_present()  { assert "command -v pkg-config"; }
 
 # ---------------------------------------------------------------------------
+# CA bundle tests
+# ---------------------------------------------------------------------------
+
+test_cargo_cainfo_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$CARGO_HTTP_CAINFO"
+}
+
+# ---------------------------------------------------------------------------
 # Sanity tests
 # ---------------------------------------------------------------------------
 

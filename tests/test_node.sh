@@ -13,6 +13,14 @@ test_node_present() { assert "command -v node"; }
 test_npm_present()  { assert "command -v npm"; }
 
 # ---------------------------------------------------------------------------
+# CA bundle tests
+# ---------------------------------------------------------------------------
+
+test_node_extra_ca_certs_env() {
+  assert_equals "/etc/ssl/certs/ca-certificates.crt" "$NODE_EXTRA_CA_CERTS"
+}
+
+# ---------------------------------------------------------------------------
 # Sanity tests
 # ---------------------------------------------------------------------------
 
