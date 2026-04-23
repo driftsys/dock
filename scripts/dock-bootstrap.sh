@@ -15,6 +15,15 @@
 #   dock-bootstrap /path/to/dir # scan env + custom directory
 #   DOCK_SKIP_CA=1 dock-bootstrap  # skip CA detection entirely
 #
+# On restricted K8s runners where /etc/ssl/certs is read-only, the
+# script creates a private CA bundle at /etc/dock/ca-bundle.crt and
+# writes /etc/dock/ca.env with export statements. Source that file
+# from your CI script to redirect all TLS tools to the new bundle:
+#
+#   before_script:
+#     - dock-bootstrap
+#     - . /etc/dock/ca.env 2>/dev/null || true
+#
 # Shebang: #!/bin/sh (not bash) — intentionally POSIX-compatible so it
 # works in downstream images that may not install bash.
 set -eu
@@ -91,24 +100,45 @@ fi
 # -------------------------------------------------------------------------
 # 4. Update the system trust store
 # -------------------------------------------------------------------------
-if [ "$COUNT" -gt 0 ]; then
-  if update-ca-certificates 2>/dev/null; then
-    echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
-  else
-    # Fallback for restricted environments (e.g. K8s runners where
-    # /etc/ssl/certs is not writable for temp-file creation).
-    # Manually append new certs to the CA bundle.
-    bundle="${SSL_CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}"
-    if [ -w "$bundle" ]; then
-      for f in "$DEST"/*.crt; do
-        [ -f "$f" ] && cat "$f" >> "$bundle"
-      done
-      echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store (fallback)"
-    else
-      echo "dock-bootstrap: warning: cannot update trust store — read-only filesystem" >&2
-      echo "dock-bootstrap: imported $COUNT cert(s) to $DEST but bundle is unchanged" >&2
-    fi
-  fi
-else
+if [ "$COUNT" -eq 0 ]; then
   echo "dock-bootstrap: no certificates found, trust store unchanged"
+  exit 0
 fi
+
+# Happy path — update-ca-certificates rebuilds /etc/ssl/certs/.
+if update-ca-certificates 2>/dev/null; then
+  echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
+  exit 0
+fi
+
+# Fallback — /etc/ssl/certs/ is read-only (common on K8s runners where
+# the directory is mounted from a ConfigMap).  Build a private CA bundle
+# from the package source certs so we get the full Mozilla root store
+# regardless of what the ConfigMap contains.
+DOCK_BUNDLE="/etc/dock/ca-bundle.crt"
+DOCK_ENV="/etc/dock/ca.env"
+
+# Build from source: Mozilla root CAs + any imported certs.
+: > "$DOCK_BUNDLE"
+for f in /usr/share/ca-certificates/mozilla/*.crt; do
+  [ -f "$f" ] && { cat "$f"; echo; } >> "$DOCK_BUNDLE"
+done
+for f in "$DEST"/*.crt; do
+  [ -f "$f" ] && { cat "$f"; echo; } >> "$DOCK_BUNDLE"
+done
+
+# Write a sourceable env file that redirects all TLS env vars.
+cat > "$DOCK_ENV" << EOF
+export SSL_CERT_FILE=$DOCK_BUNDLE
+export SSL_CERT_DIR=/etc/ssl/certs
+export REQUESTS_CA_BUNDLE=$DOCK_BUNDLE
+export CURL_CA_BUNDLE=$DOCK_BUNDLE
+export GIT_SSL_CAINFO=$DOCK_BUNDLE
+export CARGO_HTTP_CAINFO=$DOCK_BUNDLE
+export NODE_EXTRA_CA_CERTS=$DOCK_BUNDLE
+export DENO_CERT=$DOCK_BUNDLE
+export PIP_CERT=$DOCK_BUNDLE
+EOF
+
+echo "dock-bootstrap: imported $COUNT certificate source(s) (read-only trust store, using $DOCK_BUNDLE)"
+echo "dock-bootstrap: source $DOCK_ENV to apply" >&2
