@@ -25,15 +25,11 @@
 
 ## [Unreleased]
 
-### Added
+### Bug Fixes
 
-- `dock-bootstrap` — auto-detects CA certificates from environment
-  variables, drop directory (`/etc/dock/ca.d/`), and
-  `CI_SERVER_TLS_CA_FILE`; imports into the system trust store
-- Pre-configured CA bundle paths for cargo, npm, deno, pip, git,
-  curl across all images
-- Documentation for corporate environments: CA injection, proxy
-  pass-through, registry mirrors, connectivity verification
+- **core:** ensure newline separators between PEM certs in fallback
+  CA bundle — fixes curl error 77 when `CI_SERVER_TLS_CA_FILE` lacks
+  a trailing newline
 
 ## [0.1.3] (2026-03-28)
 
