@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.7] (2026-04-23)
+
+### Documentation
+
+- document dock-bootstrap layered CA architecture and corporate usage ([#40])
+  ([ccb7b3c])
+
+[0.1.7]: https://github.com/driftsys/dock/compare/v0.1.6...v0.1.7
+[ccb7b3c]: https://github.com/driftsys/dock/commit/ccb7b3c
+[#40]: https://github.com/driftsys/dock/issues/40
+
 ## [0.1.6] (2026-04-23)
 
 ### Bug Fixes
