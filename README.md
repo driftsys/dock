@@ -94,13 +94,19 @@ detection. Add it to your CI `before_script`:
 default:
   before_script:
     - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
 ```
 
 `dock-bootstrap` auto-detects PEM certificates from environment
 variables, files in `/etc/dock/ca.d/`, and GitLab's
 `CI_SERVER_TLS_CA_FILE`, then imports them into the system trust
-store. All language tools are pre-configured to use the system CA
-bundle.
+store. On Kubernetes runners where `/etc/ssl/certs/` is read-only,
+it builds a private bundle and writes `/etc/dock/ca.env` — source
+it to redirect all TLS tools to the new bundle.
+
+Images are published to both GHCR (`ghcr.io/driftsys/dock`) and
+Docker Hub (`docker.io/driftsys/dock`). Use whichever your network
+allows, or mirror to your internal registry.
 
 See [docs/extending.md](docs/extending.md#corporate-environments)
 for full documentation.

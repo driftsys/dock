@@ -60,37 +60,121 @@ COPY --from=builder /src/target/release/myapp /usr/local/bin/
 
 ### CA certificates with `dock-bootstrap`
 
-If your CI runners provide corporate CA certificates (as environment
-variables, files, or via GitLab's `CI_SERVER_TLS_CA_FILE`),
-`dock-bootstrap` detects and imports them into the system trust store
-automatically:
+Corporate networks often use TLS-intercepting proxies or internal CAs
+that standard images don't trust. `dock-bootstrap` solves this with
+a layered approach that works on both standard Docker hosts and
+restricted Kubernetes runners.
+
+#### Quick start
 
 ```yaml
-# GitLab CI — add to your pipeline
+# GitLab CI
 default:
   before_script:
     - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
 ```
 
-That's it. `dock-bootstrap` scans three sources:
+```yaml
+# GitHub Actions
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/driftsys/dock:rust
+    steps:
+      - run: |
+          dock-bootstrap
+          . /etc/dock/ca.env 2>/dev/null || true
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+```
 
-1. **Environment variables** — any env var containing a PEM
-   certificate (`-----BEGIN CERTIFICATE-----`) is detected and
-   imported. This works with GitLab group/instance CI/CD variables
-   that contain CA certificates.
-2. **Drop directory** — `.crt` and `.pem` files in `/etc/dock/ca.d/`
-   (or a custom path passed as `$1`).
-3. **`CI_SERVER_TLS_CA_FILE`** — the GitLab runner-provided CA file,
-   if present.
+#### How it works
 
-All dock images pre-set `SSL_CERT_FILE`, `CURL_CA_BUNDLE`,
-`GIT_SSL_CAINFO`, and language-specific variables
-(`CARGO_HTTP_CAINFO`, `NODE_EXTRA_CA_CERTS`, `DENO_CERT`, `PIP_CERT`)
-to point at `/etc/ssl/certs/ca-certificates.crt` — the file
-`update-ca-certificates` populates. Every tool picks up custom CAs
-without further configuration.
+`dock-bootstrap` operates in four layers:
 
-To skip CA detection (e.g. in jobs that don't need it):
+**Layer 1 — Dockerfile ENV defaults.** Every dock image sets TLS
+environment variables at build time so all tools look at the system
+CA bundle by default:
+
+| Variable              | Tool(s)            |
+| --------------------- | ------------------ |
+| `SSL_CERT_FILE`       | OpenSSL, curl, git |
+| `CURL_CA_BUNDLE`      | curl               |
+| `GIT_SSL_CAINFO`      | git                |
+| `CARGO_HTTP_CAINFO`   | cargo              |
+| `NODE_EXTRA_CA_CERTS` | Node.js            |
+| `DENO_CERT`           | Deno               |
+| `PIP_CERT`            | pip                |
+
+All point at `/etc/ssl/certs/ca-certificates.crt` — the system
+bundle managed by `update-ca-certificates`. No runtime action is
+needed when this file is writable.
+
+**Layer 2 — Certificate source detection.** `dock-bootstrap` scans
+three sources and copies discovered certs into
+`/usr/local/share/ca-certificates/`:
+
+1. **Environment variables** — any env var whose value contains
+   `-----BEGIN CERTIFICATE-----` is extracted. Variables may hold
+   multiple PEM blocks; each is split into a separate file. Works
+   with CI/CD variables set at the group or instance level in
+   GitLab, GitHub Actions secrets, or any platform that injects
+   env vars into containers.
+2. **Drop directory** (`/etc/dock/ca.d/` or a custom path passed
+   as `$1`) — `.crt` and `.pem` files are copied directly. This
+   is the most portable approach: mount a volume, use an init
+   container, or `COPY` certs into the image at build time.
+3. **`CI_SERVER_TLS_CA_FILE`** — the GitLab runner-provided CA
+   file, if present. Ignored on non-GitLab runners.
+
+If your infrastructure doesn't inject certs via environment
+variables, use the drop directory. For example, mount a volume
+from a Kubernetes secret or ConfigMap:
+
+```yaml
+# Kubernetes pod spec / GitLab runner config
+volumes:
+  - name: corp-ca
+    secret:
+      secretName: corporate-ca-certs
+volumeMounts:
+  - name: corp-ca
+    mountPath: /etc/dock/ca.d
+    readOnly: true
+```
+
+Or copy certs at build time in a derived image:
+
+```dockerfile
+FROM ghcr.io/driftsys/dock:core
+COPY my-corp-ca.crt /etc/dock/ca.d/
+```
+
+**Layer 3 — Trust store update.** With certs in place,
+`dock-bootstrap` tries `update-ca-certificates` to rebuild the
+system bundle. If that succeeds (the normal case on Docker hosts
+and VMs), all tools see the new CAs immediately — done.
+
+**Layer 4 — Read-only fallback.** On Kubernetes runners,
+`/etc/ssl/certs/` is often mounted as a read-only ConfigMap.
+When `update-ca-certificates` fails, `dock-bootstrap`:
+
+1. Builds a private bundle at `/etc/dock/ca-bundle.crt` by
+   copying the existing system bundle (preserving any cluster-
+   injected CAs from the ConfigMap) and appending the imported
+   certs.
+2. Writes `/etc/dock/ca.env` with export statements that
+   redirect every variable from Layer 1 to the new bundle.
+
+**You must source `/etc/dock/ca.env`** to activate the fallback
+bundle. The file only exists when the fallback triggers, so the
+`. /etc/dock/ca.env 2>/dev/null || true` line is harmless on
+standard Docker hosts — always include it.
+
+#### Skipping CA detection
+
+Jobs that don't need corporate CAs can skip detection entirely:
 
 ```yaml
 variables:
@@ -170,6 +254,50 @@ Corporate CAs are per-organisation — baking one into a public image
 would be wrong. Instead, dock images are designed to make extension
 trivial: run `dock-bootstrap` and your trust store is ready.
 
+### Pulling dock images from private registries
+
+dock images are published to both GHCR (`ghcr.io/driftsys/dock`) and
+Docker Hub (`docker.io/driftsys/dock`). Use whichever your network
+allows.
+
+If your Kubernetes cluster restricts image pulls to approved
+registries (e.g. via admission policies like Kyverno or
+Gatekeeper), mirror the images through your internal registry:
+
+```bash
+# One-time mirror setup (e.g. via Artifactory, Nexus, or Harbor)
+# Mirror ghcr.io/driftsys/dock → registry.corp/driftsys/dock
+```
+
+Then reference the mirror in your CI configuration:
+
+**GitLab CI:**
+
+```yaml
+variables:
+  DOCK_REGISTRY: "registry.corp/driftsys/dock"
+  DOCK_VERSION: "0.1.6"
+
+default:
+  image: ${DOCK_REGISTRY}:core-${DOCK_VERSION}
+  before_script:
+    - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
+```
+
+**GitHub Actions:**
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: registry.corp/driftsys/dock:rust-0.1.6
+    steps:
+      - run: dock-bootstrap
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+```
+
 ### Registry mirrors
 
 Registry configuration is org-specific. Use the standard environment
@@ -206,6 +334,7 @@ verify-connectivity:
   image: your-corp-image:latest
   before_script:
     - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
   script:
     - "curl -sSf https://registry.npmjs.org/ > /dev/null
         && echo 'npmjs: ok'"
