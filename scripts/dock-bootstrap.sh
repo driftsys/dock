@@ -92,8 +92,23 @@ fi
 # 4. Update the system trust store
 # -------------------------------------------------------------------------
 if [ "$COUNT" -gt 0 ]; then
-  update-ca-certificates 2>/dev/null
-  echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
+  if update-ca-certificates 2>/dev/null; then
+    echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
+  else
+    # Fallback for restricted environments (e.g. K8s runners where
+    # /etc/ssl/certs is not writable for temp-file creation).
+    # Manually append new certs to the CA bundle.
+    bundle="${SSL_CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}"
+    if [ -w "$bundle" ]; then
+      for f in "$DEST"/*.crt; do
+        [ -f "$f" ] && cat "$f" >> "$bundle"
+      done
+      echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store (fallback)"
+    else
+      echo "dock-bootstrap: warning: cannot update trust store — read-only filesystem" >&2
+      echo "dock-bootstrap: imported $COUNT cert(s) to $DEST but bundle is unchanged" >&2
+    fi
+  fi
 else
   echo "dock-bootstrap: no certificates found, trust store unchanged"
 fi
