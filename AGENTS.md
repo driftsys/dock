@@ -5,9 +5,10 @@ Instructions for AI coding agents working in this repository.
 ## Project
 
 dock is a library of lean, layered CI Docker images published at
-`ghcr.io/driftsys/dock`. Each image adds exactly one concern — scripting
-foundation, compilation toolchain, or language runtime — so teams pick the
-smallest image that covers their pipeline.
+`ghcr.io/driftsys/dock` (primary) and `docker.io/driftsys/dock`
+(Docker Hub mirror). Each image adds exactly one concern — scripting
+foundation, compilation toolchain, or language runtime — so teams
+pick the smallest image that covers their pipeline.
 
 Every image ships in two variants:
 
@@ -52,7 +53,9 @@ dock/
 │   ├── python/
 │   └── polyglot/
 ├── tests/              # bash_unit test suites
+│   └── fixtures/ca/    # test CA certificate
 ├── scripts/            # shared shell utilities
+│   └── dock-bootstrap.sh
 └── docs/               # documentation
 ```
 
@@ -67,6 +70,26 @@ Alpine is the default (no suffix). Debian uses `-debian` suffix.
 
 **Runtime versions** are recorded in `/etc/dock/manifest.json` inside each
 image, not in tags.
+
+**Corporate CA trust.** All images ship `dock-bootstrap`, a POSIX shell
+script that auto-detects corporate CA certificates and imports them into
+the system trust store. It operates in four layers:
+
+1. **Dockerfile ENV defaults** — every image sets `SSL_CERT_FILE`,
+   `CURL_CA_BUNDLE`, `GIT_SSL_CAINFO`, and language-specific variables
+   (`CARGO_HTTP_CAINFO`, `NODE_EXTRA_CA_CERTS`, `DENO_CERT`, `PIP_CERT`)
+   pointing at `/etc/ssl/certs/ca-certificates.crt`.
+2. **Cert source detection** — scans env vars containing PEM certs,
+   a drop directory (`/etc/dock/ca.d/`), and `CI_SERVER_TLS_CA_FILE`.
+3. **Trust store update** — runs `update-ca-certificates` to rebuild
+   the system bundle.
+4. **Read-only fallback** — when `/etc/ssl/certs/` is read-only
+   (common on K8s runners), builds a private bundle at
+   `/etc/dock/ca-bundle.crt` and writes `/etc/dock/ca.env` with
+   export statements redirecting all TLS variables to the new bundle.
+
+See [docs/extending.md](docs/extending.md#corporate-environments) for
+full documentation.
 
 ## Workflow
 
@@ -124,7 +147,9 @@ won't-fix.
 - **Installation priority.** Prefer `apk`/`apt` → official static binaries
   → build from source (last resort).
 - **Shell scripts.** All scripts in `scripts/` must pass `shellcheck` with
-  zero warnings. Use `#!/usr/bin/env bash` shebang.
+  zero warnings. Use `#!/usr/bin/env bash` shebang. Exception:
+  `dock-bootstrap.sh` uses `#!/bin/sh` (POSIX sh, no bashisms) because
+  it must run in minimal container environments.
 - **Markdown.** Format with `dprint`. Line length ≤ 80 characters (except
   tables and code blocks).
 
