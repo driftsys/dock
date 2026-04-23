@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.1.4] (2026-04-23)
+
+### Bug Fixes
+
+- **core:** handle update-ca-certificates failure on restricted K8s runners
+  ([#37]) ([26736ad])
+
+### Features
+
+- **core:** add dock-bootstrap for corporate CA auto-detection and trust store
+  setup ([#36]) ([51d0a70])
+
+### Documentation
+
+- **claude:** switch to @AGENTS.md import ([78c2bf0])
+
+[0.1.4]: https://github.com/driftsys/dock/compare/v0.1.3...v0.1.4
+[26736ad]: https://github.com/driftsys/dock/commit/26736ad
+[#37]: https://github.com/driftsys/dock/issues/37
+[51d0a70]: https://github.com/driftsys/dock/commit/51d0a70
+[#36]: https://github.com/driftsys/dock/issues/36
+[78c2bf0]: https://github.com/driftsys/dock/commit/78c2bf0
+
 ## [Unreleased]
 
 ### Added
