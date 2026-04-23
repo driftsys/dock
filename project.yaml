@@ -2,7 +2,7 @@
 name: io.driftsys.dock
 description: Layered developer toolbox images — Alpine & Debian, multi-arch
 category: distribution
-version: "0.1.5"
+version: "0.1.6"
 license: MIT
 keywords:
   - docker

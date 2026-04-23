@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.6] (2026-04-23)
+
+### Bug Fixes
+
+- **core:** preserve cluster-injected CAs in fallback CA bundle ([#39])
+  ([b8aa763])
+
+[0.1.6]: https://github.com/driftsys/dock/compare/v0.1.5...v0.1.6
+[b8aa763]: https://github.com/driftsys/dock/commit/b8aa763
+[#39]: https://github.com/driftsys/dock/issues/39
+
 ## [0.1.5] (2026-04-23)
 
 ### Bug Fixes
