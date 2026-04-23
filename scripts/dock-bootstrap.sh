@@ -113,16 +113,25 @@ fi
 
 # Fallback — /etc/ssl/certs/ is read-only (common on K8s runners where
 # the directory is mounted from a ConfigMap).  Build a private CA bundle
-# from the package source certs so we get the full Mozilla root store
-# regardless of what the ConfigMap contains.
+# and redirect all TLS env vars to it.
 DOCK_BUNDLE="/etc/dock/ca-bundle.crt"
 DOCK_ENV="/etc/dock/ca.env"
+SYS_BUNDLE="${SSL_CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}"
 
-# Build from source: Mozilla root CAs + any imported certs.
+# Start from the existing system bundle when available — it may contain
+# extra CAs injected by the cluster (e.g. corporate proxy CAs in a
+# ConfigMap).  Fall back to the Mozilla source certs shipped by the
+# ca-certificates package only when the system bundle is missing.
 : > "$DOCK_BUNDLE"
-for f in /usr/share/ca-certificates/mozilla/*.crt; do
-  [ -f "$f" ] && { cat "$f"; echo; } >> "$DOCK_BUNDLE"
-done
+if [ -r "$SYS_BUNDLE" ]; then
+  { cat "$SYS_BUNDLE"; echo; } >> "$DOCK_BUNDLE"
+else
+  for f in /usr/share/ca-certificates/mozilla/*.crt; do
+    [ -f "$f" ] && { cat "$f"; echo; } >> "$DOCK_BUNDLE"
+  done
+fi
+
+# Append any imported certs (env vars, drop dir, CI_SERVER_TLS_CA_FILE).
 for f in "$DEST"/*.crt; do
   [ -f "$f" ] && { cat "$f"; echo; } >> "$DOCK_BUNDLE"
 done

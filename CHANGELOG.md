@@ -7,9 +7,12 @@
 - **core:** ensure newline separators between PEM certs in fallback CA bundle
   ([#38]) ([12275ec])
 
-[0.1.5]: https://github.com/driftsys/dock/compare/v0.1.4...v0.1.5
-[12275ec]: https://github.com/driftsys/dock/commit/12275ec
-[#38]: https://github.com/driftsys/dock/issues/38
+## [Unreleased]
+
+### Bug Fixes
+
+- **core:** preserve cluster-injected CA certs in fallback bundle —
+  fixes TLS failures for proxy-intercepted domains (e.g. deno.land)
 
 ## [0.1.4] (2026-04-23)
 
