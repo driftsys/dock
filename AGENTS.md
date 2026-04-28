@@ -39,6 +39,11 @@ alpine:3.21
       ├── :deno          (~120 MB)
       ├── :node          (~115 MB)
       └── :python        (~55 MB)
+
+debian:bookworm-slim (Debian-only images)
+  └── :core-debian
+      └── :jvm-debian    (~290 MB)
+          └── :android-debian (~485 MB)
 ```
 
 **Directory layout:**
@@ -51,7 +56,9 @@ dock/
 │   ├── deno/
 │   ├── node/
 │   ├── python/
-│   └── polyglot/
+│   ├── polyglot/
+│   ├── jvm/
+│   └── android/
 ├── tests/              # bash_unit test suites
 │   └── fixtures/ca/    # test CA certificate
 ├── scripts/            # shared shell utilities

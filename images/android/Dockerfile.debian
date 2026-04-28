@@ -1,0 +1,39 @@
+# syntax=docker/dockerfile:1
+# hadolint ignore=DL3006
+FROM dock-jvm
+
+ARG VERSION=dev
+ARG ANDROID_CMDLINE_TOOLS_VERSION=14742923
+ARG ANDROID_BUILD_TOOLS_VERSION=36.1.0
+ARG ANDROID_PLATFORM_VERSION=36
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Download and install Android command-line tools
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    unzip \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
+ && curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip" \
+    -o /tmp/cmdline-tools.zip \
+ && unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools \
+ && mv /tmp/cmdline-tools/cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest" \
+ && rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
+
+# Accept licenses and install SDK components
+# Note: "yes" exits with SIGPIPE (141) when sdkmanager closes stdin;
+# piping through "true" absorbs the non-zero exit under pipefail.
+RUN yes 2>/dev/null | sdkmanager --licenses > /dev/null 2>&1 || true \
+ && sdkmanager --install \
+    "platform-tools" \
+    "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+    "platforms;android-${ANDROID_PLATFORM_VERSION}"
+
+# Generate manifest
+COPY scripts/manifest.sh /usr/local/bin/manifest.sh
+RUN manifest.sh android "${VERSION}"

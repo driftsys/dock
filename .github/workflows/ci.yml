@@ -98,10 +98,10 @@ jobs:
             changed=$(git diff --name-only "$base" HEAD)
           fi
 
-          # Dependency tree: core→everything, rust→polyglot
+          # Dependency tree: core→everything, rust→polyglot, jvm→android
           # When a directory changes, both Alpine and Debian variants are tested.
           alpine=(core rust deno node python polyglot lint)
-          debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian)
+          debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian jvm-debian android-debian)
           all_images=("${alpine[@]}" "${debian[@]}")
           images=()
 
@@ -124,11 +124,21 @@ jobs:
             echo "$changed" | grep -qE '^images/rust/'
           }
 
+          needs_jvm() {
+            echo "$changed" | grep -qE '^images/jvm/'
+          }
+
           if needs_all || needs_core; then
             images=("${all_images[@]}")
           else
             if needs_rust; then
               for img in rust polyglot rust-debian polyglot-debian; do
+                add_unique "$img"
+              done
+            fi
+            # jvm changes rebuild jvm-debian + android-debian (dependency)
+            if needs_jvm; then
+              for img in jvm-debian android-debian; do
                 add_unique "$img"
               done
             fi
@@ -145,6 +155,10 @@ jobs:
             if echo "$changed" | grep -qE "^images/polyglot/"; then
               add_unique "polyglot"
               add_unique "polyglot-debian"
+            fi
+            # android directory changes (without jvm)
+            if echo "$changed" | grep -qE "^images/android/"; then
+              add_unique "android-debian"
             fi
           fi
 

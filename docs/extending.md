@@ -30,6 +30,56 @@ FROM ghcr.io/driftsys/dock:rust
 RUN cargo install cargo-nextest --locked
 ```
 
+## Using the JVM image
+
+The `:jvm-debian` image includes JDK 17 headless. Projects using
+Gradle should rely on the Gradle Wrapper (`./gradlew`), which
+downloads the correct Gradle version automatically:
+
+```yaml
+# GitLab CI
+build:
+  image: ghcr.io/driftsys/dock:jvm-debian
+  before_script:
+    - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
+  script:
+    - ./gradlew build
+```
+
+## Using the Android image
+
+The `:android-debian` image includes JDK 17, Android SDK
+command-line tools, build-tools 36.1.0, and platform SDK
+android-36. Install additional platform SDKs at CI time if
+your project targets older API levels:
+
+```yaml
+# GitLab CI
+android-build:
+  image: ghcr.io/driftsys/dock:android-debian
+  before_script:
+    - dock-bootstrap
+    - . /etc/dock/ca.env 2>/dev/null || true
+    - sdkmanager "platforms;android-34" "platforms;android-35"
+  script:
+    - ./gradlew assembleDebug
+```
+
+```yaml
+# GitHub Actions
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/driftsys/dock:android-debian
+    steps:
+      - run: |
+          dock-bootstrap
+          . /etc/dock/ca.env 2>/dev/null || true
+      - uses: actions/checkout@v4
+      - run: ./gradlew assembleDebug
+```
+
 ## Pinning a runtime version
 
 All runtime images accept build arguments for version pinning:
