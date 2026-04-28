@@ -42,15 +42,17 @@ Every image ships in two variants:
 
 ### Available images
 
-| Image       | From          | Size (Alpine) | Contents                                                     |
-| ----------- | ------------- | ------------- | ------------------------------------------------------------ |
-| `:core`     | `alpine:3.21` | ~32 MB        | Shell, Git, curl, jq, yq, gpg, …                             |
-| `:rust`     | `:core`       | ~260 MB       | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny |
-| `:deno`     | `:core`       | ~120 MB       | Deno                                                         |
-| `:node`     | `:core`       | ~115 MB       | Node.js LTS, npm                                             |
-| `:python`   | `:core`       | ~55 MB        | Python 3, pip, ruff                                          |
-| `:polyglot` | `:rust`       | ~382 MB       | Rust + Deno + Python 3                                       |
-| `:lint`     | `:core`       | ~44 MB        | shellcheck, editorconfig-checker, git-std (linux/amd64 only) |
+| Image       | From          | Size (Alpine) | Contents                                                           |
+| ----------- | ------------- | ------------- | ------------------------------------------------------------------ |
+| `:core`     | `alpine:3.21` | ~32 MB        | Shell, Git, curl, jq, yq, gpg, …                                   |
+| `:rust`     | `:core`       | ~260 MB       | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny       |
+| `:deno`     | `:core`       | ~120 MB       | Deno                                                               |
+| `:node`     | `:core`       | ~115 MB       | Node.js LTS, npm                                                   |
+| `:python`   | `:core`       | ~55 MB        | Python 3, pip, ruff                                                |
+| `:polyglot` | `:rust`       | ~382 MB       | Rust + Deno + Python 3                                             |
+| `:lint`     | `:core`       | ~44 MB        | shellcheck, editorconfig-checker, git-std (linux/amd64 only)       |
+| `:jvm`      | `:core`       | —             | JDK 17 headless (Debian only)                                      |
+| `:android`  | `:jvm`        | —             | Android SDK cmdline-tools, build-tools, platform SDK (Debian only) |
 
 ## Inheritance Tree
 
@@ -62,6 +64,11 @@ alpine:3.21
       ├── :deno          (~120 MB)
       ├── :node          (~115 MB)
       └── :python        (~55 MB)
+
+debian:bookworm-slim (Debian-only images)
+  └── :core-debian
+      └── :jvm-debian        (~290 MB)
+          └── :android-debian (~485 MB)
 ```
 
 ## Core Package List

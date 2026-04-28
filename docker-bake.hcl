@@ -213,6 +213,28 @@ target "polyglot-debian" {
   contexts = { dock-rust = "target:rust-debian" }
 }
 
+target "jvm-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/jvm/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:jvm-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:jvm-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:jvm-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:jvm-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts = { dock-core = "target:core-debian" }
+}
+
+target "android-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/android/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:android-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:android-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:android-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts = { dock-jvm = "target:jvm-debian" }
+}
+
 # ---------------------------------------------------------------------------
 # Groups
 # ---------------------------------------------------------------------------
@@ -234,6 +256,8 @@ group "debian" {
     "node-debian",
     "python-debian",
     "polyglot-debian",
+    "jvm-debian",
+    "android-debian",
   ]
 }
 

@@ -107,6 +107,8 @@ fi
 
 # Happy path — update-ca-certificates rebuilds /etc/ssl/certs/.
 if update-ca-certificates 2>/dev/null; then
+  # On JVM images the ca-certificates-java hook automatically rebuilds
+  # the JKS truststore, so no extra keytool work is needed here.
   echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
   exit 0
 fi
@@ -148,6 +150,28 @@ export NODE_EXTRA_CA_CERTS=$DOCK_BUNDLE
 export DENO_CERT=$DOCK_BUNDLE
 export PIP_CERT=$DOCK_BUNDLE
 EOF
+
+# -------------------------------------------------------------------------
+# 5. JKS truststore fallback (JVM images on read-only K8s runners)
+# -------------------------------------------------------------------------
+if command -v keytool >/dev/null 2>&1 && [ -n "${JAVA_HOME:-}" ]; then
+  JKS_SRC="${JAVA_HOME}/lib/security/cacerts"
+  JKS_DST="/etc/dock/cacerts"
+  if [ -f "$JKS_SRC" ]; then
+    cp "$JKS_SRC" "$JKS_DST"
+    for f in "$DEST"/*.crt; do
+      [ -f "$f" ] || continue
+      alias="dock-$(basename "$f" .crt)"
+      keytool -importcert -noprompt -trustcacerts \
+        -keystore "$JKS_DST" -storepass changeit \
+        -alias "$alias" -file "$f" 2>/dev/null || true
+    done
+    # shellcheck disable=SC2016
+    printf 'export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Djavax.net.ssl.trustStore=%s"\n' \
+      "$JKS_DST" >> "$DOCK_ENV"
+    echo "dock-bootstrap: updated JKS truststore at $JKS_DST"
+  fi
+fi
 
 echo "dock-bootstrap: imported $COUNT certificate source(s) (read-only trust store, using $DOCK_BUNDLE)"
 echo "dock-bootstrap: source $DOCK_ENV to apply" >&2
