@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.8] (2026-04-28)
+
+### Features
+
+- add jvm-debian and android-debian images ([#41]) ([b9ced11])
+
+[0.1.8]: https://github.com/driftsys/dock/compare/v0.1.7...v0.1.8
+[b9ced11]: https://github.com/driftsys/dock/commit/b9ced11
+[#41]: https://github.com/driftsys/dock/pull/41
+
 ## [0.1.7] (2026-04-23)
 
 ### Documentation

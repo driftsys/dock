@@ -112,6 +112,8 @@ jobs:
             node-debian
             python-debian
             polyglot-debian
+            jvm-debian
+            android-debian
           )
 
           # lint is amd64-only, just retag without the suffix
