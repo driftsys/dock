@@ -41,4 +41,10 @@ jobs:
 
 ## Approximate size
 
-~44 MB (Alpine, linux/amd64 only)
+| Variant | Size   |
+| ------- | ------ |
+| Alpine  | ~44 MB |
+| Debian  | —      |
+
+> **Alpine only, linux/amd64 only.** `git-std` only provides a
+> Linux x86_64 binary. No Debian variant is published.

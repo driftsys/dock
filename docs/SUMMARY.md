@@ -17,3 +17,5 @@
 - [python](images/python.md)
 - [polyglot](images/polyglot.md)
 - [lint](images/lint.md)
+- [jvm](images/jvm.md)
+- [android](images/android.md)

@@ -4,7 +4,12 @@ Rust compilation toolchain. Inherits all `:core` tools.
 
 ## Base
 
-`FROM ghcr.io/driftsys/dock:core` (via build context)
+| Variant          | Base                                       |
+| ---------------- | ------------------------------------------ |
+| Alpine (default) | `ghcr.io/driftsys/dock:core` (build        |
+|                  | context)                                   |
+| Debian           | `ghcr.io/driftsys/dock:core-debian` (build |
+|                  | context)                                   |
 
 ## Installed tools
 
@@ -36,4 +41,7 @@ jobs:
 
 ## Approximate size
 
-~260 MB (Alpine)
+| Variant | Size    |
+| ------- | ------- |
+| Alpine  | ~260 MB |
+| Debian  | ~330 MB |

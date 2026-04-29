@@ -41,5 +41,7 @@ docker run --rm ghcr.io/driftsys/dock:core jq . /etc/dock/manifest.json
 
 ## Approximate size
 
-- Alpine: ~32 MB
-- Debian: ~80 MB
+| Variant | Size   |
+| ------- | ------ |
+| Alpine  | ~32 MB |
+| Debian  | ~80 MB |

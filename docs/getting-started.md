@@ -55,6 +55,10 @@ Every image ships in two variants:
 Use the Debian variant when your tools require glibc (e.g. pre-built
 binaries that don't support musl).
 
+Some images are **Debian-only** because their upstream toolchain
+requires glibc: `:jvm-debian` (JDK 17) and `:android-debian`
+(Android SDK). These have no Alpine variant.
+
 ## Pin a version
 
 Floating tags (`:core`, `:rust`, ...) always point to the latest release.

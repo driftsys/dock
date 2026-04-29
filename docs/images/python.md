@@ -4,7 +4,12 @@ Python 3 runtime with ruff. Inherits all `:core` tools.
 
 ## Base
 
-`FROM ghcr.io/driftsys/dock:core` (via build context)
+| Variant          | Base                                       |
+| ---------------- | ------------------------------------------ |
+| Alpine (default) | `ghcr.io/driftsys/dock:core` (build        |
+|                  | context)                                   |
+| Debian           | `ghcr.io/driftsys/dock:core-debian` (build |
+|                  | context)                                   |
 
 ## Installed tools
 
@@ -29,4 +34,7 @@ jobs:
 
 ## Approximate size
 
-~55 MB (Alpine)
+| Variant | Size    |
+| ------- | ------- |
+| Alpine  | ~55 MB  |
+| Debian  | ~135 MB |

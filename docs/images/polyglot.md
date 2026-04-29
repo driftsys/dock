@@ -5,7 +5,12 @@ All-in-one image for mixed-language pipelines. Inherits all `:rust` tools
 
 ## Base
 
-`FROM ghcr.io/driftsys/dock:rust` (via build context)
+| Variant          | Base                                       |
+| ---------------- | ------------------------------------------ |
+| Alpine (default) | `ghcr.io/driftsys/dock:rust` (build        |
+|                  | context)                                   |
+| Debian           | `ghcr.io/driftsys/dock:rust-debian` (build |
+|                  | context)                                   |
 
 ## Installed tools
 
@@ -47,4 +52,7 @@ jobs:
 
 ## Approximate size
 
-~382 MB (Alpine)
+| Variant | Size    |
+| ------- | ------- |
+| Alpine  | ~382 MB |
+| Debian  | ~460 MB |

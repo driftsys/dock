@@ -4,7 +4,12 @@ Deno runtime. Inherits all `:core` tools.
 
 ## Base
 
-`FROM ghcr.io/driftsys/dock:core` (via build context)
+| Variant          | Base                                       |
+| ---------------- | ------------------------------------------ |
+| Alpine (default) | `ghcr.io/driftsys/dock:core` (build        |
+|                  | context)                                   |
+| Debian           | `ghcr.io/driftsys/dock:core-debian` (build |
+|                  | context)                                   |
 
 ## Installed tools
 
@@ -37,4 +42,7 @@ jobs:
 
 ## Approximate size
 
-~120 MB (Alpine)
+| Variant | Size    |
+| ------- | ------- |
+| Alpine  | ~120 MB |
+| Debian  | ~175 MB |
