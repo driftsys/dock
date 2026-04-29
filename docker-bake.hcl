@@ -29,6 +29,10 @@ variable "DENO_VERSION" {
   default = "2.3.1"
 }
 
+variable "ANDROID_PLATFORM_VERSION" {
+  default = "36"
+}
+
 # Appended to every tag during per-arch CI builds (e.g. "-amd64", "-arm64").
 # Left empty for local builds and for the final multi-arch manifest.
 variable "PLATFORM_SUFFIX" {
@@ -228,9 +232,18 @@ target "android-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/android/Dockerfile.debian"
+  args = {
+    ANDROID_PLATFORM_VERSION = ANDROID_PLATFORM_VERSION
+  }
   tags = [
-    "${REGISTRY}:android-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:android-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:android-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-${ANDROID_PLATFORM_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-${ANDROID_PLATFORM_VERSION}-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-${ANDROID_PLATFORM_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-${ANDROID_PLATFORM_VERSION}-debian${PLATFORM_SUFFIX}",
   ]
   contexts = { dock-jvm = "target:jvm-debian" }
 }

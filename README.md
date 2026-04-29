@@ -42,17 +42,17 @@ Every image ships in two variants:
 
 ### Available images
 
-| Image       | From          | Alpine  | Debian  | Contents                                                           |
-| ----------- | ------------- | ------- | ------- | ------------------------------------------------------------------ |
-| `:core`     | `alpine:3.21` | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg, …                                   |
-| `:rust`     | `:core`       | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny       |
-| `:deno`     | `:core`       | ~120 MB | ~175 MB | Deno                                                               |
-| `:node`     | `:core`       | ~115 MB | ~195 MB | Node.js LTS, npm                                                   |
-| `:python`   | `:core`       | ~55 MB  | ~135 MB | Python 3, pip, ruff                                                |
-| `:polyglot` | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                             |
-| `:lint`     | `:core`       | ~44 MB  | —       | shellcheck, editorconfig-checker, git-std (linux/amd64 only)       |
-| `:jvm`      | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                      |
-| `:android`  | `:jvm`        | —       | ~485 MB | Android SDK cmdline-tools, build-tools, platform SDK (Debian only) |
+| Image       | From          | Alpine  | Debian  | Contents                                                     |
+| ----------- | ------------- | ------- | ------- | ------------------------------------------------------------ |
+| `:core`     | `alpine:3.21` | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg, …                             |
+| `:rust`     | `:core`       | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny |
+| `:deno`     | `:core`       | ~120 MB | ~175 MB | Deno                                                         |
+| `:node`     | `:core`       | ~115 MB | ~195 MB | Node.js LTS, npm                                             |
+| `:python`   | `:core`       | ~55 MB  | ~135 MB | Python 3, pip, ruff                                          |
+| `:polyglot` | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                       |
+| `:lint`     | `:core`       | ~44 MB  | —       | shellcheck, editorconfig-checker, git-std (linux/amd64 only) |
+| `:jvm`      | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                |
+| `:android`  | `:jvm`        | —       | ~485 MB | Android SDK (Debian only · pin: `:android-36-debian`)        |
 
 ## Inheritance Tree
 

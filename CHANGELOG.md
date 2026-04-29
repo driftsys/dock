@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.9] (2026-04-29)
+
+### Features
+
+- add API-level-pinned tags for android image (`:android-36-debian`)
+
+[0.1.9]: https://github.com/driftsys/dock/compare/v0.1.8...v0.1.9
+
 ## [0.1.8] (2026-04-28)
 
 ### Features
