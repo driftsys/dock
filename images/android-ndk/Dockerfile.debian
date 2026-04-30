@@ -15,6 +15,16 @@ RUN sdkmanager --install \
 
 ENV ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${NDK_VERSION}"
 
+# Install C/C++ toolchain required for compiling Rust build scripts on the host
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libc-dev \
+    pkg-config \
+    libssl-dev \
+ && rm -rf /var/lib/apt/lists/*
+
 # Install Rust via rustup (stable toolchain with clippy + rustfmt),
 # add Android cross-compilation targets, and install cargo-ndk.
 ENV CARGO_HOME=/usr/local/cargo \
