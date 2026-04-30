@@ -33,6 +33,10 @@ variable "ANDROID_PLATFORM_VERSION" {
   default = "36"
 }
 
+variable "ANDROID_NDK_VERSION" {
+  default = "27"
+}
+
 # Appended to every tag during per-arch CI builds (e.g. "-amd64", "-arm64").
 # Left empty for local builds and for the final multi-arch manifest.
 variable "PLATFORM_SUFFIX" {
@@ -248,6 +252,26 @@ target "android-debian" {
   contexts = { dock-jvm = "target:jvm-debian" }
 }
 
+target "android-ndk-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/android-ndk/Dockerfile.debian"
+  args = {
+    NDK_VERSION = "27.2.12479018"
+  }
+  tags = [
+    "${REGISTRY}:android-ndk-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-ndk-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-ndk-${ANDROID_NDK_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY}:android-ndk-${ANDROID_NDK_VERSION}-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-ndk-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-ndk-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-ndk-${ANDROID_NDK_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:android-ndk-${ANDROID_NDK_VERSION}-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts = { dock-android = "target:android-debian" }
+}
+
 # ---------------------------------------------------------------------------
 # Groups
 # ---------------------------------------------------------------------------
@@ -271,6 +295,7 @@ group "debian" {
     "polyglot-debian",
     "jvm-debian",
     "android-debian",
+    "android-ndk-debian",
   ]
 }
 

@@ -1,0 +1,41 @@
+# syntax=docker/dockerfile:1
+# hadolint ignore=DL3006
+FROM dock-android
+
+ARG VERSION=dev
+ARG NDK_VERSION=27.2.12479018
+ARG CMAKE_VERSION=3.22.1
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Install NDK and CMake via sdkmanager
+RUN sdkmanager --install \
+    "ndk;${NDK_VERSION}" \
+    "cmake;${CMAKE_VERSION}"
+
+ENV ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${NDK_VERSION}"
+
+# Install Rust via rustup (stable toolchain with clippy + rustfmt)
+ENV CARGO_HOME=/usr/local/cargo \
+    RUSTUP_HOME=/usr/local/rustup \
+    PATH=/usr/local/cargo/bin:$PATH
+RUN curl -sSf https://sh.rustup.rs \
+    | sh -s -- -y --no-modify-path --default-toolchain stable \
+        --component clippy --component rustfmt
+
+# Add Android cross-compilation targets
+RUN rustup target add \
+    aarch64-linux-android \
+    armv7-linux-androideabi \
+    x86_64-linux-android \
+    i686-linux-android
+
+# Install cargo-ndk for Android cross-compilation
+RUN cargo install cargo-ndk --locked
+
+# Point Cargo at the system CA bundle for corporate CA support.
+ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
+
+# Generate manifest
+COPY scripts/manifest.sh /usr/local/bin/manifest.sh
+RUN manifest.sh android-ndk "${VERSION}"

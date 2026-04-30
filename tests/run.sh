@@ -34,6 +34,7 @@ declare -A TEST_SCRIPTS=(
     [polyglot-debian]="test_polyglot.sh"
     [jvm-debian]="test_jvm.sh"
     [android-debian]="test_android.sh"
+    [android-ndk-debian]="test_android_ndk.sh"
 )
 
 run_image_tests() {

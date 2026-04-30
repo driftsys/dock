@@ -36,6 +36,13 @@ level:
 When the API level is bumped (e.g., to 37), the old pinned tag
 remains in the registry but stops receiving updates (deprecated).
 
+## Android NDK tags
+
+The `:android-ndk` image also uses pinned tags:
+
+- `:android-ndk-debian` — floating, latest NDK
+- `:android-ndk-27-debian` — pinned to NDK 27
+
 ## Semantic versioning
 
 Releases follow [Semantic Versioning](https://semver.org):

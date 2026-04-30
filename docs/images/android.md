@@ -147,3 +147,9 @@ image: ghcr.io/driftsys/dock:android-36-debian-0.1.9
 | ------- | ------- |
 | Alpine  | —       |
 | Debian  | ~485 MB |
+
+## Related images
+
+For native (C/C++/Rust) cross-compilation, use
+[`:android-ndk`](android-ndk.md) which adds the NDK, CMake, Rust,
+and cargo-ndk on top of this image.

@@ -101,7 +101,7 @@ jobs:
           # Dependency tree: core→everything, rust→polyglot, jvm→android
           # When a directory changes, both Alpine and Debian variants are tested.
           alpine=(core rust deno node python polyglot lint)
-          debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian jvm-debian android-debian)
+          debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian jvm-debian android-debian android-ndk-debian)
           all_images=("${alpine[@]}" "${debian[@]}")
           images=()
 
@@ -136,9 +136,9 @@ jobs:
                 add_unique "$img"
               done
             fi
-            # jvm changes rebuild jvm-debian + android-debian (dependency)
+            # jvm changes rebuild jvm-debian + android-debian + android-ndk-debian (dependency)
             if needs_jvm; then
-              for img in jvm-debian android-debian; do
+              for img in jvm-debian android-debian android-ndk-debian; do
                 add_unique "$img"
               done
             fi
@@ -159,6 +159,11 @@ jobs:
             # android directory changes (without jvm)
             if echo "$changed" | grep -qE "^images/android/"; then
               add_unique "android-debian"
+              add_unique "android-ndk-debian"
+            fi
+            # android-ndk directory changes
+            if echo "$changed" | grep -qE "^images/android-ndk/"; then
+              add_unique "android-ndk-debian"
             fi
           fi
 

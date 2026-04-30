@@ -104,6 +104,13 @@ jobs:
             | grep default | sed 's/.*"\([0-9]*\)".*/\1/')
           echo "api=${api}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve Android NDK version
+        id: ndk
+        run: |
+          ndk=$(grep -A1 'variable "ANDROID_NDK_VERSION"' docker-bake.hcl \
+            | grep default | sed 's/.*"\([0-9]*\)".*/\1/')
+          echo "ndk=${ndk}" >> "$GITHUB_OUTPUT"
+
       - name: Create multi-arch manifests
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -124,6 +131,8 @@ jobs:
             jvm-debian
             android-debian
             android-${{ steps.android.outputs.api }}-debian
+            android-ndk-debian
+            android-ndk-${{ steps.ndk.outputs.ndk }}-debian
           )
 
           # lint is amd64-only, just retag without the suffix

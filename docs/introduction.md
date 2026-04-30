@@ -63,4 +63,5 @@ debian:bookworm-slim
       ├── :python-debian        (~135 MB)
       └── :jvm-debian           (~290 MB)
           └── :android-debian   (~485 MB)
+              └── :android-ndk-debian (~2.5 GB)
 ```

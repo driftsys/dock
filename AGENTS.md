@@ -44,6 +44,7 @@ debian:bookworm-slim (Debian-only images)
   └── :core-debian
       └── :jvm-debian    (~290 MB)
           └── :android-debian (~485 MB)
+              └── :android-ndk-debian (~2.5 GB)
 ```
 
 **Directory layout:**
@@ -58,7 +59,8 @@ dock/
 │   ├── python/
 │   ├── polyglot/
 │   ├── jvm/
-│   └── android/
+│   ├── android/
+│   └── android-ndk/
 ├── tests/              # bash_unit test suites
 │   └── fixtures/ca/    # test CA certificate
 ├── scripts/            # shared shell utilities
