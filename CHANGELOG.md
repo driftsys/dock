@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0] (2026-04-30)
+
+### Features
+
+- add android-ndk-debian image with NDK 27 + Rust + cargo-ndk
+
+[0.2.0]: https://github.com/driftsys/dock/compare/v0.1.9...v0.2.0
+
 ## [0.1.9] (2026-04-29)
 
 ### Features
