@@ -13,7 +13,8 @@ RUN sdkmanager --install \
     "ndk;${NDK_VERSION}" \
     "cmake;${CMAKE_VERSION}"
 
-ENV ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${NDK_VERSION}"
+ENV ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${NDK_VERSION}" \
+    PATH="${ANDROID_HOME}/cmake/${CMAKE_VERSION}/bin:$PATH"
 
 # Install C/C++ toolchain required for compiling Rust build scripts on the host
 # hadolint ignore=DL3008
