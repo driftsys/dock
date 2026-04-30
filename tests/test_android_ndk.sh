@@ -76,7 +76,7 @@ test_cargo_ndk_build_arm64() {
   local dir
   dir="$(mktemp -d)"
   cp -r /fixtures/android-ndk/. "$dir/"
-  cargo ndk -t arm64-v8a build --manifest-path "${dir}/Cargo.toml"
+  (cd "$dir" && cargo ndk -t arm64-v8a build)
   assert "find \"$dir\" -name '*.so' | grep -q '.so'"
   rm -rf "$dir"
 }
