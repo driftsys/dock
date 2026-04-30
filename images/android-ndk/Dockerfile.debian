@@ -15,23 +15,20 @@ RUN sdkmanager --install \
 
 ENV ANDROID_NDK_HOME="${ANDROID_HOME}/ndk/${NDK_VERSION}"
 
-# Install Rust via rustup (stable toolchain with clippy + rustfmt)
+# Install Rust via rustup (stable toolchain with clippy + rustfmt),
+# add Android cross-compilation targets, and install cargo-ndk.
 ENV CARGO_HOME=/usr/local/cargo \
     RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH
 RUN curl -sSf https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --default-toolchain stable \
-        --component clippy --component rustfmt
-
-# Add Android cross-compilation targets
-RUN rustup target add \
+        --component clippy --component rustfmt \
+ && rustup target add \
     aarch64-linux-android \
     armv7-linux-androideabi \
     x86_64-linux-android \
-    i686-linux-android
-
-# Install cargo-ndk for Android cross-compilation
-RUN cargo install cargo-ndk --locked
+    i686-linux-android \
+ && cargo install cargo-ndk --locked
 
 # Point Cargo at the system CA bundle for corporate CA support.
 ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
