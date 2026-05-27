@@ -317,7 +317,6 @@ group "debian" {
     "node-debian",
     "python-debian",
     "polyglot-debian",
-    "pages-debian",
     "jvm-debian",
     "android-debian",
     "android-ndk-debian",
@@ -325,5 +324,5 @@ group "debian" {
 }
 
 group "default" {
-  targets = ["alpine", "debian"]
+  targets = ["alpine", "debian", "pages-debian"]
 }
