@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1] (2026-05-27)
+
+### Features
+
+- add dock:pages image + npx shim for dock:deno ([#43]) ([b74e844])
+
+[0.2.1]: https://github.com/driftsys/dock/compare/v0.2.0...v0.2.1
+[b74e844]: https://github.com/driftsys/dock/commit/b74e844
+[#43]: https://github.com/driftsys/dock/issues/43
+
 ## [0.2.0] (2026-04-30)
 
 ### Features
