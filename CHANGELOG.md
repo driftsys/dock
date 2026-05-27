@@ -6,6 +6,21 @@
 
 - add dock:pages image + npx shim for dock:deno ([#43]) ([b74e844])
 
+### Bug Fixes
+
+- **ci:** exclude pages-debian from arm64 release build ([074876c])
+
+[0.2.1]: https://github.com/driftsys/dock/compare/v0.2.0...v0.2.1
+[b74e844]: https://github.com/driftsys/dock/commit/b74e844
+[#43]: https://github.com/driftsys/dock/issues/43
+[074876c]: https://github.com/driftsys/dock/commit/074876c
+
+## [0.2.1] (2026-05-27)
+
+### Features
+
+- add dock:pages image + npx shim for dock:deno ([#43]) ([b74e844])
+
 [0.2.1]: https://github.com/driftsys/dock/compare/v0.2.0...v0.2.1
 [b74e844]: https://github.com/driftsys/dock/commit/b74e844
 [#43]: https://github.com/driftsys/dock/issues/43
