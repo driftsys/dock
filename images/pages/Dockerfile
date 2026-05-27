@@ -12,6 +12,9 @@ FROM dock-deno
 
 ARG VERSION=dev
 
+# Use pipefail so curl failures in pipes are caught.
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 # ---------------------------------------------------------------------------
 # Tool versions (pinned for reproducibility)
 # ---------------------------------------------------------------------------
