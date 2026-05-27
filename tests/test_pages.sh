@@ -116,7 +116,8 @@ test_brotli_compress() {
 }
 
 test_fonts_installed() {
-  # Noto fonts should be available for typst PDF generation
-  assert "[ -d /usr/share/fonts/noto ]" \
+  # Noto fonts should be available for typst PDF generation.
+  # Alpine: /usr/share/fonts/noto  Debian: /usr/share/fonts/truetype/noto
+  assert "[ -d /usr/share/fonts/noto ] || [ -d /usr/share/fonts/truetype/noto ]" \
     "Noto fonts directory should exist"
 }
