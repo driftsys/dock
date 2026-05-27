@@ -79,6 +79,18 @@ target "lint" {
   platforms = ["linux/amd64"]
 }
 
+target "pages" {
+  inherits   = ["_common", "_cache-alpine"]
+  context    = "."
+  dockerfile = "images/pages/Dockerfile"
+  tags = [
+    "${REGISTRY}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages${PLATFORM_SUFFIX}",
+  ]
+  contexts  = { dock-deno = "target:deno" }
+  platforms = ["linux/amd64"]
+}
+
 # ---------------------------------------------------------------------------
 # Alpine images
 # ---------------------------------------------------------------------------
@@ -277,7 +289,7 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint"]
+  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint", "pages"]
 }
 
 # All multi-arch targets (excludes lint which is amd64-only)
