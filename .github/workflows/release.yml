@@ -135,8 +135,8 @@ jobs:
             android-ndk-${{ steps.ndk.outputs.ndk }}-debian
           )
 
-          # lint, pages, and pages-debian are amd64-only, just retag without the suffix
-          for img in lint pages pages-debian; do
+          # lint, lint-debian, pages, and pages-debian are amd64-only, just retag without the suffix
+          for img in lint lint-debian pages pages-debian; do
             for registry in "$REGISTRY" "$REGISTRY_DH"; do
               docker buildx imagetools create \
                 -t "${registry}:${img}-${VERSION}" \

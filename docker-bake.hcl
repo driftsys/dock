@@ -26,7 +26,7 @@ variable "PLATFORMS" {
 }
 
 variable "DENO_VERSION" {
-  default = "2.3.1"
+  default = "2.8.1"
 }
 
 variable "ANDROID_PLATFORM_VERSION" {
@@ -75,7 +75,19 @@ target "lint" {
     "${REGISTRY}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:lint${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:lint${PLATFORM_SUFFIX}",
   ]
-  contexts  = { dock-core = "target:core" }
+  contexts  = { dock-deno = "target:deno" }
+  platforms = ["linux/amd64"]
+}
+
+target "lint-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/lint/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:lint-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:lint-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:lint-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:lint-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts  = { dock-deno = "target:deno-debian" }
   platforms = ["linux/amd64"]
 }
 
@@ -324,5 +336,5 @@ group "debian" {
 }
 
 group "default" {
-  targets = ["alpine", "debian", "pages-debian"]
+  targets = ["alpine", "debian", "pages-debian", "lint-debian"]
 }

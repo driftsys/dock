@@ -26,6 +26,7 @@ declare -A TEST_SCRIPTS=(
     [python]="test_python.sh"
     [polyglot]="test_polyglot.sh"
     [lint]="test_lint.sh"
+    [lint-debian]="test_lint.sh"
     [pages]="test_pages.sh"
     [core-debian]="test_core.sh"
     [rust-debian]="test_rust.sh"

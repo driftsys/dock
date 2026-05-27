@@ -33,15 +33,19 @@ just clean     # Remove local build artefacts
 ```text
 alpine:3.21
   └── :core              (~32 MB)
-      ├── :lint          (~44 MB)   [low prio]
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
+      │   ├── :lint      (~150 MB)
+      │   └── :pages     (~188 MB)
       ├── :node          (~115 MB)
       └── :python        (~55 MB)
 
 debian:bookworm-slim (Debian-only images)
   └── :core-debian
+      ├── :deno-debian
+      │   ├── :lint-debian
+      │   └── :pages-debian
       └── :jvm-debian    (~290 MB)
           └── :android-debian (~485 MB)
               └── :android-ndk-debian (~2.5 GB)
@@ -55,6 +59,8 @@ dock/
 │   ├── core/
 │   ├── rust/
 │   ├── deno/
+│   ├── lint/
+│   ├── pages/
 │   ├── node/
 │   ├── python/
 │   ├── polyglot/

@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 #
-# dock:lint — code and documentation linting toolbox (Alpine).
+# dock:lint-debian — code and documentation linting toolbox (Debian).
 #
-# Inherits from dock:deno (Alpine + Deno runtime + npx/npm shims).
+# Inherits from dock:deno-debian (Debian + Deno runtime + npx/npm shims).
 # Adds: shellcheck, editorconfig-checker, git-std, dprint, gomdlint.
 # npx gives access to markdownlint-cli2, prettier, and any npm linter.
 #
@@ -13,7 +13,7 @@ FROM dock-deno
 
 ARG VERSION=dev
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 # ---------------------------------------------------------------------------
 # Tool versions (pinned for reproducibility)
@@ -23,17 +23,30 @@ ARG DPRINT_VERSION=0.54.0
 ARG GOMDLINT_VERSION=0.2.1
 
 # ---------------------------------------------------------------------------
-# System packages: shellcheck + editorconfig-checker
+# System packages: shellcheck
 # ---------------------------------------------------------------------------
-# hadolint ignore=DL3018
-RUN apk add --no-cache shellcheck editorconfig-checker && \
-    ln -s /usr/bin/ec /usr/bin/editorconfig-checker
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      shellcheck \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------------------
+# editorconfig-checker — not in Debian repos, install from GitHub
+# Tarball layout: bin/ec-linux-amd64 (plus docs at root)
+# ---------------------------------------------------------------------------
+RUN curl -sSfL \
+      "https://github.com/editorconfig-checker/editorconfig-checker/releases/latest/download/ec-linux-amd64.tar.gz" \
+      | tar -xz --strip-components=1 -C /usr/local/bin bin/ec-linux-amd64 && \
+    mv /usr/local/bin/ec-linux-amd64 /usr/local/bin/ec && \
+    chmod +x /usr/local/bin/ec && \
+    ln -sf /usr/local/bin/ec /usr/local/bin/editorconfig-checker && \
+    editorconfig-checker --version
 
 # ---------------------------------------------------------------------------
 # dprint — fast code formatter (Rust binary, covers md/json/toml/yaml)
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
-      "https://github.com/dprint/dprint/releases/download/${DPRINT_VERSION}/dprint-x86_64-unknown-linux-musl.zip" \
+      "https://github.com/dprint/dprint/releases/download/${DPRINT_VERSION}/dprint-x86_64-unknown-linux-gnu.zip" \
       -o /tmp/dprint.zip && \
     unzip -o /tmp/dprint.zip -d /usr/local/bin && \
     rm /tmp/dprint.zip && \
