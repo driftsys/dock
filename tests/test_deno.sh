@@ -56,3 +56,31 @@ test_npx_no_args_shows_usage() {
     fail "npx with no args should exit non-zero"
   fi
 }
+
+# ---------------------------------------------------------------------------
+# npm shim tests
+# ---------------------------------------------------------------------------
+
+test_npm_present() { assert "command -v npm"; }
+
+test_npm_no_args_shows_usage() {
+  # npm with no arguments should exit non-zero and print usage
+  if npm 2>/dev/null; then
+    fail "npm with no args should exit non-zero"
+  fi
+}
+
+test_npm_unsupported_command_errors() {
+  if npm publish 2>/dev/null; then
+    fail "npm shim should reject unsupported commands"
+  fi
+}
+
+test_npm_init() {
+  local dir
+  dir="$(mktemp -d)"
+  npm init "$dir"
+  assert "[ -f ${dir}/main.ts ] || [ -f ${dir}/deno.json ]" \
+    "npm init should scaffold a project"
+  rm -rf "$dir"
+}
