@@ -23,21 +23,21 @@ ARG DPRINT_VERSION=0.54.0
 ARG GOMDLINT_VERSION=0.2.1
 
 # ---------------------------------------------------------------------------
-# System packages: shellcheck + editorconfig-checker
+# System packages: shellcheck
 # ---------------------------------------------------------------------------
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
       shellcheck \
-      editorconfig \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -sf /usr/bin/editorconfig /usr/bin/ec
+    && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------
 # editorconfig-checker — not in Debian repos, install from GitHub
+# Tarball layout: bin/ec-linux-amd64 (plus docs at root)
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
       "https://github.com/editorconfig-checker/editorconfig-checker/releases/latest/download/ec-linux-amd64.tar.gz" \
-      | tar -xz --strip-components=1 -C /usr/local/bin && \
+      | tar -xz --strip-components=1 -C /usr/local/bin bin/ec-linux-amd64 && \
+    mv /usr/local/bin/ec-linux-amd64 /usr/local/bin/ec && \
     chmod +x /usr/local/bin/ec && \
     ln -sf /usr/local/bin/ec /usr/local/bin/editorconfig-checker && \
     editorconfig-checker --version

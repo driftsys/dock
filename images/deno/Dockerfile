@@ -11,17 +11,17 @@ FROM dock-core
 ARG VERSION=dev
 ARG DENO_VERSION=2.8.1
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
-# Deno links against glibc; the official Alpine image bundles glibc in /usr/local/lib.
-# The dynamic linker symlink lives at /lib/ld-linux-* (arm64) or /lib64/ (amd64).
+# Since Deno 2.8.x the official Alpine image places glibc in /usr/local/lib/glibc/
+# and patches the binary's RPATH with patchelf. The dynamic linker lives at
+# /lib/ld-linux-* with a /lib64/ symlink for the amd64 ELF interpreter path.
 COPY --from=deno-bin /usr/local/lib/ /usr/local/lib/
 COPY --from=deno-bin /lib/ld-linux-* /lib/
-# On amd64 the loader is referenced via /lib64/ld-linux-x86-64.so.2
+# On amd64 the ELF interpreter is /lib64/ld-linux-x86-64.so.2
 RUN mkdir -p /lib64 && \
-    for f in /usr/local/lib/ld-linux-*.so.*; do \
-      [ -e "$f" ] && ln -sf "$f" "/lib64/$(basename "$f")"; \
-    done
+    ln -sf /usr/local/lib/glibc/ld-linux-* /lib64/ 2>/dev/null || \
+    ln -sf /lib/ld-linux-* /lib64/ 2>/dev/null || true
 COPY --from=deno-bin /bin/deno /usr/local/bin/deno
-ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib/glibc
 RUN deno --version
 
 # Point Deno at the system CA bundle for corporate CA support.
