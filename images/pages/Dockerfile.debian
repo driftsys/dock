@@ -57,7 +57,7 @@ RUN curl -sSfL \
 # tera-cli — Jinja2/Twig-like template engine
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
-      "https://github.com/chevdor/tera-cli/releases/download/v${TERA_CLI_VERSION}/tera-cli-x86_64-unknown-linux-gnu.tar.gz" \
+      "https://github.com/chevdor/tera-cli/releases/download/v${TERA_CLI_VERSION}/tera-cli-x86_64-unknown-linux-musl.tar.gz" \
       | tar -xz -C /usr/local/bin && \
     chmod +x /usr/local/bin/tera && \
     tera --version
