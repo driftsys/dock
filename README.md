@@ -46,11 +46,12 @@ Every image ships in two variants:
 | -------------- | ------------- | ------- | ------- | -------------------------------------------------------------------- |
 | `:core`        | `alpine:3.21` | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg, …                                     |
 | `:rust`        | `:core`       | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny         |
-| `:deno`        | `:core`       | ~120 MB | ~175 MB | Deno                                                                 |
+| `:deno`        | `:core`       | ~120 MB | ~175 MB | Deno, npx shim                                                       |
 | `:node`        | `:core`       | ~115 MB | ~195 MB | Node.js LTS, npm                                                     |
 | `:python`      | `:core`       | ~55 MB  | ~135 MB | Python 3, pip, ruff                                                  |
 | `:polyglot`    | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                               |
 | `:lint`        | `:core`       | ~44 MB  | —       | shellcheck, editorconfig-checker, git-std (linux/amd64 only)         |
+| `:pages`       | `:deno`       | ~190 MB | —       | mdbook, typst, tera-cli, git-std, brotli, mdbook plugins (amd64)     |
 | `:jvm`         | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                        |
 | `:android`     | `:jvm`        | —       | ~485 MB | Android SDK (Debian only · pin: `:android-36-debian`)                |
 | `:android-ndk` | `:android`    | —       | ~2.5 GB | NDK + Rust + cargo-ndk (Debian only · pin: `:android-ndk-27-debian`) |
@@ -65,6 +66,7 @@ alpine:3.21
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
+      │   └── :pages     (~190 MB)
       ├── :node          (~115 MB)
       └── :python        (~55 MB)
 ```

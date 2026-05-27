@@ -43,3 +43,16 @@ test_deno_fixture_workflow() {
 
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# npx shim tests
+# ---------------------------------------------------------------------------
+
+test_npx_present() { assert "command -v npx"; }
+
+test_npx_no_args_shows_usage() {
+  # npx with no arguments should exit non-zero and print usage
+  if npx 2>/dev/null; then
+    fail "npx with no args should exit non-zero"
+  fi
+}

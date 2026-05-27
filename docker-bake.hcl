@@ -79,6 +79,18 @@ target "lint" {
   platforms = ["linux/amd64"]
 }
 
+target "pages" {
+  inherits   = ["_common", "_cache-alpine"]
+  context    = "."
+  dockerfile = "images/pages/Dockerfile"
+  tags = [
+    "${REGISTRY}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages${PLATFORM_SUFFIX}",
+  ]
+  contexts  = { dock-deno = "target:deno" }
+  platforms = ["linux/amd64"]
+}
+
 # ---------------------------------------------------------------------------
 # Alpine images
 # ---------------------------------------------------------------------------
@@ -187,6 +199,18 @@ target "deno-debian" {
   contexts = { dock-core = "target:core-debian" }
 }
 
+target "pages-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/pages/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts  = { dock-deno = "target:deno-debian" }
+  platforms = ["linux/amd64"]
+}
+
 target "node-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
@@ -277,7 +301,7 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint"]
+  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint", "pages"]
 }
 
 # All multi-arch targets (excludes lint which is amd64-only)
@@ -293,6 +317,7 @@ group "debian" {
     "node-debian",
     "python-debian",
     "polyglot-debian",
+    "pages-debian",
     "jvm-debian",
     "android-debian",
     "android-ndk-debian",
