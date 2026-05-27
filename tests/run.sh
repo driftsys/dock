@@ -33,6 +33,7 @@ declare -A TEST_SCRIPTS=(
     [node-debian]="test_node.sh"
     [python-debian]="test_python.sh"
     [polyglot-debian]="test_polyglot.sh"
+    [pages-debian]="test_pages.sh"
     [jvm-debian]="test_jvm.sh"
     [android-debian]="test_android.sh"
     [android-ndk-debian]="test_android_ndk.sh"

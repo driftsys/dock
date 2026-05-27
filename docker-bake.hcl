@@ -199,6 +199,18 @@ target "deno-debian" {
   contexts = { dock-core = "target:core-debian" }
 }
 
+target "pages-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/pages/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts  = { dock-deno = "target:deno-debian" }
+  platforms = ["linux/amd64"]
+}
+
 target "node-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
@@ -305,6 +317,7 @@ group "debian" {
     "node-debian",
     "python-debian",
     "polyglot-debian",
+    "pages-debian",
     "jvm-debian",
     "android-debian",
     "android-ndk-debian",
