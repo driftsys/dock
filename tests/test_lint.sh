@@ -66,6 +66,10 @@ test_gomdlint_lint_clean_file() {
 }
 
 test_npx_markdownlint_available() {
-  # Verify markdownlint-cli2 can be invoked via npx shim
-  assert "npx markdownlint-cli2 --help >/dev/null 2>&1"
+  # Verify markdownlint-cli2 can be invoked via npx shim on a clean file.
+  local dir
+  dir="$(mktemp -d)"
+  printf '# Heading\n\nSome text.\n' > "$dir/clean.md"
+  npx markdownlint-cli2 "$dir/clean.md"
+  rm -rf "$dir"
 }
