@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.2] (2026-05-27)
+
+### Features
+
+- **lint:** rebase on deno, add dprint + gomdlint + lint-debian ([871308b])
+- **deno:** add npm shim delegating to Deno equivalents ([#44]) ([a463410])
+
+[0.2.2]: https://github.com/driftsys/dock/compare/v0.2.1...v0.2.2
+[871308b]: https://github.com/driftsys/dock/commit/871308b
+[a463410]: https://github.com/driftsys/dock/commit/a463410
+[#44]: https://github.com/driftsys/dock/issues/44
+
 ## [0.2.1] (2026-05-27)
 
 ### Features
