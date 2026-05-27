@@ -16,19 +16,19 @@ RUN apk add --no-cache python3 py3-pip && \
     pip install --no-cache-dir --quiet --break-system-packages ruff
 
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
-# Deno links against glibc; the official Alpine image bundles glibc in /usr/local/lib.
-# Copy glibc compat libs for Deno, but remove libgcc_s.so.1 which conflicts
-# with the musl-linked copy used by Rust (causes relocation errors).
+# Since Deno 2.8.x the official Alpine image places glibc in /usr/local/lib/glibc/
+# and patches the binary's RPATH with patchelf. The dynamic linker lives at
+# /lib/ld-linux-* with a /lib64/ symlink for the amd64 ELF interpreter path.
+# Remove libgcc_s.so.1 which conflicts with the musl-linked copy used by Rust.
 COPY --from=deno-bin /usr/local/lib/ /usr/local/lib/
-RUN rm -f /usr/local/lib/libgcc_s.so.1
+RUN rm -f /usr/local/lib/libgcc_s.so.1 /usr/local/lib/glibc/libgcc_s.so.1
 COPY --from=deno-bin /lib/ld-linux-* /lib/
-# On amd64 the loader is referenced via /lib64/ld-linux-x86-64.so.2
+# On amd64 the ELF interpreter is /lib64/ld-linux-x86-64.so.2
 RUN mkdir -p /lib64 && \
-    for f in /usr/local/lib/ld-linux-*.so.*; do \
-      [ -e "$f" ] && ln -sf "$f" "/lib64/$(basename "$f")"; \
-    done
+    ln -sf /usr/local/lib/glibc/ld-linux-* /lib64/ 2>/dev/null || \
+    ln -sf /lib/ld-linux-* /lib64/ 2>/dev/null || true
 COPY --from=deno-bin /bin/deno /usr/local/bin/deno
-ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib/glibc
 RUN deno --version
 
 # Point Deno and pip at the system CA bundle for corporate CA support.
