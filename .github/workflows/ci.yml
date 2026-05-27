@@ -98,9 +98,9 @@ jobs:
             changed=$(git diff --name-only "$base" HEAD)
           fi
 
-          # Dependency tree: core→everything, rust→polyglot, jvm→android
+          # Dependency tree: core→everything, rust→polyglot, jvm→android, deno→pages
           # When a directory changes, both Alpine and Debian variants are tested.
-          alpine=(core rust deno node python polyglot lint)
+          alpine=(core rust deno node python polyglot lint pages)
           debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian jvm-debian android-debian android-ndk-debian)
           all_images=("${alpine[@]}" "${debian[@]}")
           images=()
@@ -142,12 +142,16 @@ jobs:
                 add_unique "$img"
               done
             fi
-            for img in deno node python lint; do
+            for img in deno node python lint pages; do
               if echo "$changed" | grep -qE "^images/${img}/"; then
                 add_unique "$img"
-                # Add Debian variant (lint has no Debian variant)
-                if [ "$img" != "lint" ]; then
+                # Add Debian variant (lint and pages have no Debian variant)
+                if [ "$img" != "lint" ] && [ "$img" != "pages" ]; then
                   add_unique "${img}-debian"
+                fi
+                # deno changes also rebuild pages (dependency)
+                if [ "$img" = "deno" ]; then
+                  add_unique "pages"
                 fi
               fi
             done
