@@ -27,6 +27,9 @@ RUN deno --version
 # Point Deno at the system CA bundle for corporate CA support.
 ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt
 
+# Install npx shim — delegates `npx <pkg> [args...]` to `deno run -A npm:<pkg> [args...]`
+COPY scripts/npx.sh /usr/local/bin/npx
+
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh deno "${VERSION}"
