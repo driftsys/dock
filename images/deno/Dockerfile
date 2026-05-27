@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: grab the Deno binary from the official Alpine image (musl-compatible)
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 FROM denoland/deno:alpine-${DENO_VERSION} AS deno-bin
 
 # Stage 2: build the dock-deno image
@@ -9,7 +9,7 @@ FROM denoland/deno:alpine-${DENO_VERSION} AS deno-bin
 FROM dock-core
 
 ARG VERSION=dev
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
 # Deno links against glibc; the official Alpine image bundles glibc in /usr/local/lib.
 # The dynamic linker symlink lives at /lib/ld-linux-* (arm64) or /lib64/ (amd64).

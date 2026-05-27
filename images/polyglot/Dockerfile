@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: grab the Deno binary from the official Alpine image (musl-compatible)
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 FROM denoland/deno:alpine-${DENO_VERSION} AS deno-bin
 
 # Stage 2: build the dock-polyglot image
@@ -9,7 +9,7 @@ FROM denoland/deno:alpine-${DENO_VERSION} AS deno-bin
 FROM dock-rust
 
 ARG VERSION=dev
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 # Add Python 3 and ruff
 # hadolint ignore=DL3018,DL3013
 RUN apk add --no-cache python3 py3-pip && \

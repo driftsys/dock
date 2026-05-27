@@ -4,7 +4,7 @@ FROM dock-core
 
 ARG VERSION=dev
 # Deno release to install — keep in sync with images/deno/Dockerfile
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 # Install Deno via official static binary (GitHub releases)
 RUN DPKG_ARCH="$(dpkg --print-architecture)" && \
     case "$DPKG_ARCH" in \

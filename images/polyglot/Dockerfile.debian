@@ -4,7 +4,7 @@ FROM dock-rust
 
 ARG VERSION=dev
 # Deno release to install — keep in sync with images/deno/Dockerfile.debian
-ARG DENO_VERSION=2.3.1
+ARG DENO_VERSION=2.8.1
 # Add Python 3, pip, and ruff
 # hadolint ignore=DL3008,DL3013
 RUN apt-get update && apt-get install -y --no-install-recommends \

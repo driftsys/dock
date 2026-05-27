@@ -26,7 +26,7 @@ variable "PLATFORMS" {
 }
 
 variable "DENO_VERSION" {
-  default = "2.3.1"
+  default = "2.8.1"
 }
 
 variable "ANDROID_PLATFORM_VERSION" {
