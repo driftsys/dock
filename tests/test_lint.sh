@@ -13,7 +13,6 @@ test_shellcheck_present()           { assert "command -v shellcheck"; }
 test_editorconfig_checker_present() { assert "command -v editorconfig-checker"; }
 test_git_std_present()              { assert "command -v git-std"; }
 test_dprint_present()               { assert "command -v dprint"; }
-test_gomdlint_present()             { assert "command -v gomdlint"; }
 
 # ---------------------------------------------------------------------------
 # Version sanity tests
@@ -35,10 +34,6 @@ test_dprint_version() {
   assert "dprint --version"
 }
 
-test_gomdlint_version() {
-  assert "gomdlint version"
-}
-
 # ---------------------------------------------------------------------------
 # Functional tests
 # ---------------------------------------------------------------------------
@@ -52,16 +47,6 @@ test_dprint_check_valid_json() {
 
   # dprint check should pass on well-formatted JSON
   dprint check --config "$dir/dprint.json" "$dir/test.json" || true
-  rm -rf "$dir"
-}
-
-test_gomdlint_lint_clean_file() {
-  local dir
-  dir="$(mktemp -d)"
-
-  printf '# Heading\n\nSome text.\n' > "$dir/clean.md"
-  gomdlint lint "$dir/clean.md"
-
   rm -rf "$dir"
 }
 

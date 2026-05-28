@@ -3,7 +3,7 @@
 # dock:lint — code and documentation linting toolbox (Alpine).
 #
 # Inherits from dock:deno (Alpine + Deno runtime + npx/npm shims).
-# Adds: shellcheck, editorconfig-checker, git-std, dprint, gomdlint.
+# Adds: shellcheck, editorconfig-checker, git-std, dprint.
 # npx gives access to markdownlint-cli2, prettier, and any npm linter.
 #
 # Platform: linux/amd64 only (git-std lacks arm64 Linux builds).
@@ -20,7 +20,6 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # ---------------------------------------------------------------------------
 ARG GIT_STD_VERSION=0.11.12
 ARG DPRINT_VERSION=0.54.0
-ARG GOMDLINT_VERSION=0.2.1
 
 # ---------------------------------------------------------------------------
 # System packages: shellcheck + editorconfig-checker
@@ -39,15 +38,6 @@ RUN curl -sSfL \
     rm /tmp/dprint.zip && \
     chmod +x /usr/local/bin/dprint && \
     dprint --version
-
-# ---------------------------------------------------------------------------
-# gomdlint — fast markdown linter (Go static binary, 40+ rules, auto-fix)
-# ---------------------------------------------------------------------------
-RUN curl -sSfL \
-      "https://github.com/yaklabco/gomdlint/releases/download/v${GOMDLINT_VERSION}/gomdlint_${GOMDLINT_VERSION}_Linux_x86_64.tar.gz" \
-      | tar -xz -C /usr/local/bin gomdlint && \
-    chmod +x /usr/local/bin/gomdlint && \
-    gomdlint version
 
 # ---------------------------------------------------------------------------
 # git-std — git commit conventions + hooks
