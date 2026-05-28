@@ -28,6 +28,8 @@ declare -A TEST_SCRIPTS=(
     [lint]="test_lint.sh"
     [lint-debian]="test_lint.sh"
     [pages]="test_pages.sh"
+    [prose]="test_prose.sh"
+    [prose-debian]="test_prose.sh"
     [core-debian]="test_core.sh"
     [rust-debian]="test_rust.sh"
     [deno-debian]="test_deno.sh"
@@ -65,7 +67,7 @@ run_image_tests() {
 if [[ $# -gt 0 ]]; then
     run_image_tests "$1"
 else
-    for image in core rust deno node python polyglot lint; do
+    for image in core rust deno node python polyglot lint prose; do
         run_image_tests "$image"
     done
 fi

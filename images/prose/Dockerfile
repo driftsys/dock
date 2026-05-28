@@ -1,0 +1,112 @@
+# syntax=docker/dockerfile:1
+#
+# dock:prose — English prose quality toolbox (Alpine).
+#
+# Inherits from dock:deno (Alpine + Deno runtime + npx shim).
+# Adds: vale (style/usage), typos (typo detection), harper-cli (grammar),
+# plus pre-installed Vale style packs (Microsoft, Google, write-good,
+# proselint) at /usr/local/share/vale/styles.
+#
+# Platform: linux/amd64 + linux/arm64 (all three tools ship both arches).
+
+# hadolint ignore=DL3006
+FROM dock-deno
+
+ARG VERSION=dev
+
+# Use pipefail so curl failures in pipes are caught.
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# ---------------------------------------------------------------------------
+# Tool versions (pinned for reproducibility)
+# ---------------------------------------------------------------------------
+ARG VALE_VERSION=3.14.2
+ARG TYPOS_VERSION=1.46.3
+ARG HARPER_VERSION=2.2.1
+
+# Vale style pack versions
+ARG VALE_MICROSOFT_VERSION=0.14.2
+ARG VALE_GOOGLE_VERSION=0.6.3
+ARG VALE_WRITE_GOOD_VERSION=0.4.1
+ARG VALE_PROSELINT_VERSION=0.3.4
+
+# ---------------------------------------------------------------------------
+# vale — configurable prose/style linter (Go binary, multi-arch)
+# Asset naming: vale_<ver>_Linux_64-bit.tar.gz / vale_<ver>_Linux_arm64.tar.gz
+# ---------------------------------------------------------------------------
+RUN APK_ARCH="$(apk --print-arch)" && \
+    case "$APK_ARCH" in \
+      x86_64)  VALE_ARCH="64-bit" ;; \
+      aarch64) VALE_ARCH="arm64" ;; \
+      *)       echo "unsupported arch: $APK_ARCH" && exit 1 ;; \
+    esac && \
+    curl -sSfL \
+      "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_${VALE_ARCH}.tar.gz" \
+      | tar -xz -C /usr/local/bin vale && \
+    chmod +x /usr/local/bin/vale && \
+    vale --version
+
+# ---------------------------------------------------------------------------
+# typos — fast typo detector (Rust binary, static musl, multi-arch)
+# ---------------------------------------------------------------------------
+RUN APK_ARCH="$(apk --print-arch)" && \
+    case "$APK_ARCH" in \
+      x86_64)  TYPOS_ARCH="x86_64-unknown-linux-musl" ;; \
+      aarch64) TYPOS_ARCH="aarch64-unknown-linux-musl" ;; \
+      *)       echo "unsupported arch: $APK_ARCH" && exit 1 ;; \
+    esac && \
+    curl -sSfL \
+      "https://github.com/crate-ci/typos/releases/download/v${TYPOS_VERSION}/typos-v${TYPOS_VERSION}-${TYPOS_ARCH}.tar.gz" \
+      | tar -xz -C /usr/local/bin ./typos && \
+    chmod +x /usr/local/bin/typos && \
+    typos --version
+
+# ---------------------------------------------------------------------------
+# harper-cli — English grammar checker (Rust binary, static musl, multi-arch)
+# ---------------------------------------------------------------------------
+RUN APK_ARCH="$(apk --print-arch)" && \
+    case "$APK_ARCH" in \
+      x86_64)  HARPER_ARCH="x86_64-unknown-linux-musl" ;; \
+      aarch64) HARPER_ARCH="aarch64-unknown-linux-musl" ;; \
+      *)       echo "unsupported arch: $APK_ARCH" && exit 1 ;; \
+    esac && \
+    curl -sSfL \
+      "https://github.com/Automattic/harper/releases/download/v${HARPER_VERSION}/harper-cli-${HARPER_ARCH}.tar.gz" \
+      | tar -xz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/harper-cli && \
+    harper-cli --version
+
+# ---------------------------------------------------------------------------
+# Vale style packs (baked in so CI runs offline)
+# Layout: each pack extracts a top-level folder matching the style name.
+# ---------------------------------------------------------------------------
+RUN mkdir -p /usr/local/share/vale/styles && \
+    for pack in \
+      "Microsoft:${VALE_MICROSOFT_VERSION}:Microsoft.zip" \
+      "Google:${VALE_GOOGLE_VERSION}:Google.zip" \
+      "write-good:${VALE_WRITE_GOOD_VERSION}:write-good.zip" \
+      "proselint:${VALE_PROSELINT_VERSION}:proselint.zip" \
+    ; do \
+      name="${pack%%:*}" ; \
+      rest="${pack#*:}" ; \
+      ver="${rest%%:*}" ; \
+      asset="${rest#*:}" ; \
+      curl -sSfL \
+        "https://github.com/errata-ai/${name}/releases/download/v${ver}/${asset}" \
+        -o "/tmp/${asset}" && \
+      unzip -q -o "/tmp/${asset}" -d /usr/local/share/vale/styles && \
+      rm "/tmp/${asset}" ; \
+    done && \
+    ls /usr/local/share/vale/styles
+
+# ---------------------------------------------------------------------------
+# Default Vale config — projects override by dropping .vale.ini at repo root
+# ---------------------------------------------------------------------------
+COPY images/prose/config/vale.ini /etc/vale/.vale.ini
+ENV VALE_CONFIG_PATH=/etc/vale/.vale.ini
+
+# ---------------------------------------------------------------------------
+# Generate manifest
+# ---------------------------------------------------------------------------
+COPY scripts/manifest.sh /usr/local/bin/manifest.sh
+RUN manifest.sh prose "${VERSION}"
