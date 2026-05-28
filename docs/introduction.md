@@ -24,18 +24,18 @@ covers their pipeline.
 
 ## Image catalog
 
-| Image       | From    | Alpine  | Debian  | Contents                                        |
-| ----------- | ------- | ------- | ------- | ----------------------------------------------- |
-| `:core`     | alpine  | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg                   |
-| `:rust`     | `:core` | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt              |
-| `:deno`     | `:core` | ~120 MB | ~175 MB | Deno runtime, npx/npm shims                      |
-| `:node`     | `:core` | ~115 MB | ~195 MB | Node.js LTS, npm                                 |
-| `:python`   | `:core` | ~55 MB  | ~135 MB | Python 3, pip, ruff                              |
-| `:polyglot` | `:rust` | ~382 MB | ~460 MB | Rust + Deno + Python 3                           |
+| Image       | From    | Alpine  | Debian  | Contents                                            |
+| ----------- | ------- | ------- | ------- | --------------------------------------------------- |
+| `:core`     | alpine  | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg                       |
+| `:rust`     | `:core` | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt                 |
+| `:deno`     | `:core` | ~120 MB | ~175 MB | Deno runtime, npx/npm shims                         |
+| `:node`     | `:core` | ~115 MB | ~195 MB | Node.js LTS, npm                                    |
+| `:python`   | `:core` | ~55 MB  | ~135 MB | Python 3, pip, ruff                                 |
+| `:polyglot` | `:rust` | ~382 MB | ~460 MB | Rust + Deno + Python 3                              |
 | `:lint`     | `:deno` | ~155 MB | ~210 MB | dprint, gomdlint, shellcheck, editorconfig, git-std |
-| `:pages`    | `:deno` | ~190 MB | ~225 MB | mdbook, typst, tera-cli, git-std, brotli         |
-| `:jvm`      | `:core` | —       | ~290 MB | JDK 17 headless (Debian only)                    |
-| `:android`  | `:jvm`  | —       | ~485 MB | Android SDK, build-tools (Debian only)            |
+| `:pages`    | `:deno` | ~190 MB | ~225 MB | mdbook, typst, tera-cli, git-std, brotli            |
+| `:jvm`      | `:core` | —       | ~290 MB | JDK 17 headless (Debian only)                       |
+| `:android`  | `:jvm`  | —       | ~485 MB | Android SDK, build-tools (Debian only)              |
 
 ## Inheritance tree
 

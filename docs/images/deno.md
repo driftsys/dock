@@ -13,9 +13,9 @@ Deno runtime. Inherits all `:core` tools.
 
 ## Installed tools
 
-| Tool | Install method         | Purpose                              |
-| ---- | ---------------------- | ------------------------------------ |
-| deno | official static binary | TypeScript/JavaScript runtime        |
+| Tool | Install method         | Purpose                                      |
+| ---- | ---------------------- | -------------------------------------------- |
+| deno | official static binary | TypeScript/JavaScript runtime                |
 | npx  | shell shim             | Run npm packages via `deno run -A npm:<pkg>` |
 | npm  | shell shim             | Delegates supported npm commands to Deno     |
 

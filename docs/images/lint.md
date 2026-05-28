@@ -13,13 +13,13 @@ Linting toolbox. Inherits all `:deno` tools (including npx/npm shims).
 
 ## Installed tools
 
-| Tool                 | Install method           | Purpose                          |
-| -------------------- | ------------------------ | -------------------------------- |
+| Tool                 | Install method           | Purpose                                 |
+| -------------------- | ------------------------ | --------------------------------------- |
 | dprint               | binary (GitHub releases) | Fast code formatter (md/json/toml/yaml) |
 | gomdlint             | binary (GitHub releases) | Markdown linter (40+ rules, auto-fix)   |
-| shellcheck           | apk                      | Shell script linter              |
-| editorconfig-checker | apk                      | EditorConfig rule checker        |
-| git-std              | binary (GitHub releases) | Conventional commits + git hooks |
+| shellcheck           | apk                      | Shell script linter                     |
+| editorconfig-checker | apk                      | EditorConfig rule checker               |
+| git-std              | binary (GitHub releases) | Conventional commits + git hooks        |
 
 Because `:lint` inherits from `:deno`, you also have access to
 `npx` and `npm` shims. This means any npm-based linter is available
@@ -53,11 +53,11 @@ jobs:
 
 ## Build arguments
 
-| Argument           | Default  | Description                   |
-| ------------------ | -------- | ----------------------------- |
-| `DPRINT_VERSION`   | `0.54.0` | dprint release to install     |
-| `GOMDLINT_VERSION` | `0.2.1`  | gomdlint release to install   |
-| `GIT_STD_VERSION`  | `0.11.12`| git-std release to install    |
+| Argument           | Default   | Description                 |
+| ------------------ | --------- | --------------------------- |
+| `DPRINT_VERSION`   | `0.54.0`  | dprint release to install   |
+| `GOMDLINT_VERSION` | `0.2.1`   | gomdlint release to install |
+| `GIT_STD_VERSION`  | `0.11.12` | git-std release to install  |
 
 ## Approximate size
 
