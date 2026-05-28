@@ -103,6 +103,17 @@ target "pages" {
   platforms = ["linux/amd64"]
 }
 
+target "prose" {
+  inherits   = ["_common", "_cache-alpine"]
+  context    = "."
+  dockerfile = "images/prose/Dockerfile"
+  tags = [
+    "${REGISTRY}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose${PLATFORM_SUFFIX}",
+  ]
+  contexts = { dock-deno = "target:deno" }
+}
+
 # ---------------------------------------------------------------------------
 # Alpine images
 # ---------------------------------------------------------------------------
@@ -223,6 +234,17 @@ target "pages-debian" {
   platforms = ["linux/amd64"]
 }
 
+target "prose-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/prose/Dockerfile.debian"
+  tags = [
+    "${REGISTRY}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose-debian${PLATFORM_SUFFIX}",
+    "${REGISTRY_DH}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose-debian${PLATFORM_SUFFIX}",
+  ]
+  contexts = { dock-deno = "target:deno-debian" }
+}
+
 target "node-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
@@ -313,12 +335,12 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint", "pages"]
+  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint", "pages", "prose"]
 }
 
-# All multi-arch targets (excludes lint which is amd64-only)
+# All multi-arch targets (excludes lint and pages which are amd64-only)
 group "multiarch" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot"]
+  targets = ["core", "rust", "deno", "node", "python", "polyglot", "prose"]
 }
 
 group "debian" {
@@ -336,5 +358,5 @@ group "debian" {
 }
 
 group "default" {
-  targets = ["alpine", "debian", "pages-debian", "lint-debian"]
+  targets = ["alpine", "debian", "pages-debian", "lint-debian", "prose-debian"]
 }
