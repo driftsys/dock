@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.6] (2026-05-28)
+
+### Bug Fixes
+
+- **githooks:** align hook scripts with current git-std subcommands ([fcc6d2c])
+
+[0.2.6]: https://github.com/driftsys/dock/compare/v0.2.5...v0.2.6
+[fcc6d2c]: https://github.com/driftsys/dock/commit/fcc6d2c
+
 ## [0.2.5] (2026-05-28)
 
 ### Refactoring
