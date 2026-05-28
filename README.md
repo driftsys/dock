@@ -52,6 +52,7 @@ Every image ships in two variants:
 | `:polyglot`    | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                               |
 | `:lint`        | `:deno`       | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig-checker, git-std (amd64)            |
 | `:pages`       | `:deno`       | ~190 MB | ~225 MB | mdbook, typst, tera-cli, git-std, brotli, mdbook plugins (amd64)     |
+| `:prose`       | `:deno`       | ~160 MB | ~215 MB | vale, typos, harper-cli, Vale style packs (Microsoft/Google/...)     |
 | `:jvm`         | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                        |
 | `:android`     | `:jvm`        | —       | ~485 MB | Android SDK (Debian only · pin: `:android-36-debian`)                |
 | `:android-ndk` | `:android`    | —       | ~2.5 GB | NDK + Rust + cargo-ndk (Debian only · pin: `:android-ndk-27-debian`) |
@@ -67,7 +68,8 @@ alpine:3.21
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
       │   ├── :pages     (~190 MB)
-      │   └── :lint      (~145 MB)
+      │   ├── :lint      (~145 MB)
+      │   └── :prose     (~160 MB)
       ├── :node          (~115 MB)
       └── :python        (~55 MB)
 ```
@@ -81,7 +83,8 @@ debian:bookworm-slim
       │   └── :polyglot-debian  (~460 MB)
       ├── :deno-debian          (~175 MB)
       │   ├── :pages-debian     (~225 MB)
-      │   └── :lint-debian      (~200 MB)
+      │   ├── :lint-debian      (~200 MB)
+      │   └── :prose-debian     (~215 MB)
       ├── :node-debian          (~195 MB)
       ├── :python-debian        (~135 MB)
       └── :jvm-debian           (~290 MB)
