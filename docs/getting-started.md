@@ -59,6 +59,9 @@ Some images are **Debian-only** because their upstream toolchain
 requires glibc: `:jvm-debian` (JDK 17) and `:android-debian`
 (Android SDK). These have no Alpine variant.
 
+Some images are **amd64-only** because upstream tools lack arm64
+builds: `:lint` and `:pages`. Both ship Alpine and Debian variants.
+
 ## Pin a version
 
 Floating tags (`:core`, `:rust`, ...) always point to the latest release.
