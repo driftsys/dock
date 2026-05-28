@@ -17,6 +17,7 @@
 - [python](images/python.md)
 - [polyglot](images/polyglot.md)
 - [lint](images/lint.md)
+- [prose](images/prose.md)
 - [jvm](images/jvm.md)
 - [android](images/android.md)
 - [android-ndk](images/android-ndk.md)
