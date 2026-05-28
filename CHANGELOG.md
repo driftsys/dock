@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.5] (2026-05-28)
+
+### Refactoring
+
+- **lint:** remove gomdlint, use npx markdownlint-cli2 instead ([ee967b5])
+
+### Documentation
+
+- **prose:** document :prose image ([#47]) ([35ff07c])
+
+### Features
+
+- **prose:** add :prose image with vale, typos, harper-cli ([#46]) ([8696955])
+
+[0.2.5]: https://github.com/driftsys/dock/compare/v0.2.4...v0.2.5
+[ee967b5]: https://github.com/driftsys/dock/commit/ee967b5
+[35ff07c]: https://github.com/driftsys/dock/commit/35ff07c
+[#47]: https://github.com/driftsys/dock/issues/47
+[8696955]: https://github.com/driftsys/dock/commit/8696955
+[#46]: https://github.com/driftsys/dock/issues/46
+
 ## [0.2.2] (2026-05-27)
 
 ### Features
