@@ -1,26 +1,31 @@
 # :prose
 
 English prose quality toolbox for technical documentation pipelines.
-Inherits all `:deno` tools (including npx/npm shims).
+Inherits the `:core` scripting foundation (git, jq, yq, curl, CA trust).
 
 ## Base
 
 | Variant          | Base                                       |
 | ---------------- | ------------------------------------------ |
-| Alpine (default) | `ghcr.io/driftsys/dock:deno` (build        |
+| Alpine (default) | `ghcr.io/driftsys/dock:core` (build        |
 |                  | context)                                   |
-| Debian           | `ghcr.io/driftsys/dock:deno-debian` (build |
+| Debian           | `ghcr.io/driftsys/dock:core-debian` (build |
 |                  | context)                                   |
 
 ## Installed tools
 
-| Tool       | Install method           | Purpose                                       |
-| ---------- | ------------------------ | --------------------------------------------- |
-| vale       | binary (GitHub releases) | Configurable style and usage linter           |
-| typos      | binary (GitHub releases) | Fast typo detector (no dictionaries required) |
-| harper-cli | binary (GitHub releases) | English grammar checker                       |
+| Tool       | Variant     | Install method           | Purpose                              |
+| ---------- | ----------- | ------------------------ | ------------------------------------ |
+| typos      | both        | binary (GitHub releases) | Fast typo detector (no dictionaries) |
+| harper-cli | both        | binary (GitHub releases) | English grammar checker              |
+| vale       | Debian only | binary (GitHub releases) | Configurable style and usage linter  |
 
-## Pre-installed Vale style packs
+> **vale is Debian-only.** It ships only gnu builds (needs glibc and
+> `libstdc++`), so the Alpine variant omits it and provides the two static
+> musl tools (typos, harper-cli). Use `:prose-debian` for vale and its
+> style packs.
+
+## Pre-installed Vale style packs (Debian only)
 
 Baked into `/usr/local/share/vale/styles/` so CI runs fully offline:
 
@@ -31,7 +36,7 @@ Baked into `/usr/local/share/vale/styles/` so CI runs fully offline:
 | write-good | `errata-ai/write-good` v0.4.1 |
 | proselint  | `errata-ai/proselint` v0.3.4  |
 
-## Default configuration
+## Default configuration (Debian only)
 
 A starter Vale config ships at `/etc/vale/.vale.ini` and is exposed
 via the `VALE_CONFIG_PATH` environment variable:
@@ -69,7 +74,8 @@ full coverage.
 jobs:
   prose:
     runs-on: ubuntu-latest
-    container: ghcr.io/driftsys/dock:prose
+    # vale is Debian-only; :prose (Alpine) provides typos + harper-cli.
+    container: ghcr.io/driftsys/dock:prose-debian
     steps:
       - uses: actions/checkout@v4
       - run: vale docs/
@@ -98,5 +104,5 @@ and `:pages`, all upstream tools publish arm64 binaries.
 
 | Variant | Size    |
 | ------- | ------- |
-| Alpine  | ~160 MB |
+| Alpine  | ~50 MB  |
 | Debian  | ~215 MB |

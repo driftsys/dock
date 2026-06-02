@@ -2,7 +2,7 @@
 #
 # dock:prose-debian — English prose quality toolbox (Debian).
 #
-# Inherits from dock:deno-debian (Debian + Deno runtime + npx shim).
+# Inherits from dock:core-debian (Debian scripting foundation).
 # Adds: vale (style/usage), typos (typo detection), harper-cli (grammar),
 # plus pre-installed Vale style packs (Microsoft, Google, write-good,
 # proselint) at /usr/local/share/vale/styles.
@@ -10,7 +10,7 @@
 # Platform: linux/amd64 + linux/arm64 (all three tools ship both arches).
 
 # hadolint ignore=DL3006
-FROM dock-deno
+FROM dock-core
 
 ARG VERSION=dev
 

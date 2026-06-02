@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Pages tests — presence + sanity for the :pages image.
-# Sources test_deno.sh so all deno (and core) tests also run.
+# Sources test_core.sh so all core tests also run.
 
-# shellcheck source=tests/test_deno.sh
-source "$(dirname "$0")/test_deno.sh"
+# shellcheck source=tests/test_core.sh
+source "$(dirname "$0")/test_core.sh"
 
 # ---------------------------------------------------------------------------
 # Presence tests
@@ -12,12 +12,10 @@ source "$(dirname "$0")/test_deno.sh"
 test_mdbook_present()          { assert "command -v mdbook"; }
 test_typst_present()           { assert "command -v typst"; }
 test_tera_present()            { assert "command -v tera"; }
-test_git_std_present()         { assert "command -v git-std"; }
 test_brotli_present()          { assert "command -v brotli"; }
-test_npx_present()             { assert "command -v npx"; }
-test_mdbook_admonish_present() { assert "command -v mdbook-admonish"; }
+test_mdbook_alerts_present()   { assert "command -v mdbook-alerts"; }
 test_mdbook_katex_present()    { assert "command -v mdbook-katex"; }
-test_mdbook_linkcheck_present() { assert "command -v mdbook-linkcheck"; }
+test_lychee_present()          { assert "command -v lychee"; }
 
 # ---------------------------------------------------------------------------
 # Version sanity tests
@@ -35,33 +33,21 @@ test_tera_version() {
   assert "tera --version"
 }
 
-test_git_std_version() {
-  assert "git-std --version"
-}
-
-test_mdbook_admonish_version() {
-  assert "mdbook-admonish --version"
+test_mdbook_alerts_version() {
+  assert "mdbook-alerts --version"
 }
 
 test_mdbook_katex_version() {
   assert "mdbook-katex --version"
 }
 
-test_mdbook_linkcheck_version() {
-  assert "mdbook-linkcheck --version"
+test_lychee_version() {
+  assert "lychee --version"
 }
 
 # ---------------------------------------------------------------------------
 # Functional tests
 # ---------------------------------------------------------------------------
-
-test_npx_shim_forwards_args() {
-  # npx must delegate to deno run npm:<pkg> and forward args
-  result="$(npx mustache --version 2>/dev/null || true)"
-  # If mustache is not cached, it will be downloaded on first run.
-  # We just verify npx doesn't error with "Usage:" (i.e., it got a package name).
-  assert "[ $? -eq 0 ] || npx mustache --help >/dev/null 2>&1"
-}
 
 test_mdbook_init_and_build() {
   local dir
@@ -120,4 +106,17 @@ test_fonts_installed() {
   # Alpine: /usr/share/fonts/noto  Debian: /usr/share/fonts/truetype/noto
   assert "[ -d /usr/share/fonts/noto ] || [ -d /usr/share/fonts/truetype/noto ]" \
     "Noto fonts directory should exist"
+}
+
+# lychee detects a broken local link. --offline skips network URLs so the
+# test is hermetic; a dangling relative link must make lychee exit non-zero.
+test_lychee_detects_broken_link() {
+  local dir
+  dir="$(mktemp -d)"
+
+  printf '[broken](./missing.md)\n' > "$dir/index.md"
+  assert_fails "lychee --offline --no-progress ${dir}/index.md" \
+    "lychee should fail on a dangling local link"
+
+  rm -rf "$dir"
 }

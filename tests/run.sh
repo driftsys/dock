@@ -67,7 +67,7 @@ run_image_tests() {
 if [[ $# -gt 0 ]]; then
     run_image_tests "$1"
 else
-    for image in core rust deno node python polyglot lint prose; do
+    for image in core rust deno node python polyglot lint pages prose; do
         run_image_tests "$image"
     done
 fi

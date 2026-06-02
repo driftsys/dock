@@ -22,7 +22,7 @@ tools every CI pipeline needs.
 | jq              | jq              | jq              | JSON processor                    |
 | yq              | yq-go           | binary install  | YAML/TOML/JSON processor          |
 | envsubst        | gettext         | gettext-base    | Environment variable substitution |
-| dotenv          | dotenv          | shell script    | .env file loader                  |
+| dotenv          | shell script    | shell script    | .env file loader                  |
 | ssh             | openssh-client  | openssh-client  | SSH client                        |
 | patch           | patch           | patch           | File patching                     |
 | find            | findutils       | findutils       | File search                       |
@@ -43,5 +43,5 @@ docker run --rm ghcr.io/driftsys/dock:core jq . /etc/dock/manifest.json
 
 | Variant | Size   |
 | ------- | ------ |
-| Alpine  | ~32 MB |
+| Alpine  | ~37 MB |
 | Debian  | ~80 MB |
