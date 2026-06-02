@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.7] (2026-06-02)
+
+### Refactoring
+
+- **images:** slim core, rationalize glibc, swap linkcheck→lychee ([#51])
+  ([c942e2b])
+
+[0.2.7]: https://github.com/driftsys/dock/compare/v0.2.6...v0.2.7
+[c942e2b]: https://github.com/driftsys/dock/commit/c942e2b
+[#51]: https://github.com/driftsys/dock/issues/51
+
 ## [0.2.6] (2026-05-28)
 
 ### Bug Fixes
