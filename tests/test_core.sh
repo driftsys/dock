@@ -15,6 +15,7 @@ test_ssh_present()       { assert "command -v ssh"; }
 test_jq_present()        { assert "command -v jq"; }
 test_yq_present()        { assert "command -v yq"; }
 test_envsubst_present()  { assert "command -v envsubst"; }
+test_dotenv_present()    { assert "command -v dotenv"; }
 test_patch_present()     { assert "command -v patch"; }
 test_find_present()      { assert "command -v find"; }
 test_tree_present()      { assert "command -v tree"; }
@@ -53,6 +54,16 @@ test_envsubst_works() {
   local template="hello \$FOO"
   result="$(FOO=bar envsubst <<< "$template")"
   assert_equals "hello bar" "$result"
+}
+
+# dotenv shim loads a .env file and execs the wrapped command with it applied.
+test_dotenv_loads_env() {
+  local env_file
+  env_file="$(mktemp)"
+  printf 'DOCK_TEST_KEY=loaded\n' > "$env_file"
+  result="$(dotenv -f "$env_file" run -- printenv DOCK_TEST_KEY)"
+  rm -f "$env_file"
+  assert_equals "loaded" "$result"
 }
 
 test_timezone_data() {

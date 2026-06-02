@@ -99,7 +99,7 @@ target "pages" {
     "${REGISTRY}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages${PLATFORM_SUFFIX}",
   ]
-  contexts  = { dock-deno = "target:deno" }
+  contexts  = { dock-core = "target:core" }
   platforms = ["linux/amd64"]
 }
 
@@ -111,7 +111,7 @@ target "prose" {
     "${REGISTRY}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose${PLATFORM_SUFFIX}",
   ]
-  contexts = { dock-deno = "target:deno" }
+  contexts = { dock-core = "target:core" }
 }
 
 # ---------------------------------------------------------------------------
@@ -230,7 +230,7 @@ target "pages-debian" {
     "${REGISTRY}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages-debian${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages-debian${PLATFORM_SUFFIX}",
   ]
-  contexts  = { dock-deno = "target:deno-debian" }
+  contexts  = { dock-core = "target:core-debian" }
   platforms = ["linux/amd64"]
 }
 
@@ -242,7 +242,7 @@ target "prose-debian" {
     "${REGISTRY}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose-debian${PLATFORM_SUFFIX}",
     "${REGISTRY_DH}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose-debian${PLATFORM_SUFFIX}",
   ]
-  contexts = { dock-deno = "target:deno-debian" }
+  contexts = { dock-core = "target:core-debian" }
 }
 
 target "node-debian" {
@@ -351,6 +351,7 @@ group "debian" {
     "node-debian",
     "python-debian",
     "polyglot-debian",
+    "prose-debian",
     "jvm-debian",
     "android-debian",
     "android-ndk-debian",
@@ -358,5 +359,5 @@ group "debian" {
 }
 
 group "default" {
-  targets = ["alpine", "debian", "pages-debian", "lint-debian", "prose-debian"]
+  targets = ["alpine", "debian", "pages-debian", "lint-debian"]
 }

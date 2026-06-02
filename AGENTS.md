@@ -36,18 +36,18 @@ alpine:3.21
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
-      │   ├── :lint      (~150 MB)
-      │   ├── :pages     (~188 MB)
-      │   └── :prose     (~160 MB)
+      │   └── :lint      (~150 MB)
       ├── :node          (~115 MB)
-      └── :python        (~55 MB)
+      ├── :python        (~55 MB)
+      ├── :pages         (~85 MB)
+      └── :prose         (~50 MB)
 
 debian:bookworm-slim (Debian-only images)
   └── :core-debian
       ├── :deno-debian
-      │   ├── :lint-debian
-      │   ├── :pages-debian
-      │   └── :prose-debian
+      │   └── :lint-debian
+      ├── :pages-debian
+      ├── :prose-debian
       └── :jvm-debian    (~290 MB)
           └── :android-debian (~485 MB)
               └── :android-ndk-debian (~2.5 GB)

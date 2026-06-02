@@ -51,8 +51,8 @@ Every image ships in two variants:
 | `:python`      | `:core`       | ~55 MB  | ~135 MB | Python 3, pip, ruff                                                  |
 | `:polyglot`    | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                               |
 | `:lint`        | `:deno`       | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig-checker, git-std (amd64)            |
-| `:pages`       | `:deno`       | ~190 MB | ~225 MB | mdbook, typst, tera-cli, git-std, brotli, mdbook plugins (amd64)     |
-| `:prose`       | `:deno`       | ~160 MB | ~215 MB | vale, typos, harper-cli, Vale style packs (Microsoft/Google/...)     |
+| `:pages`       | `:core`       | ~85 MB  | ~140 MB | mdbook, typst, tera-cli, brotli, mdbook plugins (amd64)              |
+| `:prose`       | `:core`       | ~50 MB  | ~215 MB | typos, harper-cli (vale + Vale style packs on Debian only)           |
 | `:jvm`         | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                        |
 | `:android`     | `:jvm`        | —       | ~485 MB | Android SDK (Debian only · pin: `:android-36-debian`)                |
 | `:android-ndk` | `:android`    | —       | ~2.5 GB | NDK + Rust + cargo-ndk (Debian only · pin: `:android-ndk-27-debian`) |
@@ -67,11 +67,11 @@ alpine:3.21
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
-      │   ├── :pages     (~190 MB)
-      │   ├── :lint      (~145 MB)
-      │   └── :prose     (~160 MB)
+      │   └── :lint      (~145 MB)
       ├── :node          (~115 MB)
-      └── :python        (~55 MB)
+      ├── :python        (~55 MB)
+      ├── :pages         (~85 MB)
+      └── :prose         (~50 MB)
 ```
 
 ### Debian
@@ -82,11 +82,11 @@ debian:bookworm-slim
       ├── :rust-debian          (~330 MB)
       │   └── :polyglot-debian  (~460 MB)
       ├── :deno-debian          (~175 MB)
-      │   ├── :pages-debian     (~225 MB)
-      │   ├── :lint-debian      (~200 MB)
-      │   └── :prose-debian     (~215 MB)
+      │   └── :lint-debian      (~200 MB)
       ├── :node-debian          (~195 MB)
       ├── :python-debian        (~135 MB)
+      ├── :pages-debian         (~140 MB)
+      ├── :prose-debian         (~215 MB)
       └── :jvm-debian           (~290 MB)
           └── :android-debian   (~485 MB)
 ```
@@ -105,7 +105,7 @@ All images include these tools from `:core`:
 | jq                      | jq                                         |
 | yq                      | yq-go (Alpine) / mikefarah binary (Debian) |
 | envsubst                | gettext / gettext-base                     |
-| dotenv                  | dotenv (Alpine) / shell script (Debian)    |
+| dotenv                  | shell script (both)                        |
 | ssh                     | openssh-client                             |
 | patch, find, tree, diff | patch, findutils, tree, diffutils          |
 | zip, unzip              | zip, unzip                                 |

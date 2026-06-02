@@ -2,13 +2,13 @@
 #
 # dock:pages — static site generation and documentation tooling.
 #
-# Inherits from dock:deno (Alpine + Deno runtime + npx shim).
-# Adds: mdbook, typst, tera-cli, git-std, mdbook plugins, brotli, fonts.
+# Inherits from dock:core (Alpine scripting foundation).
+# Adds: mdbook, typst, tera-cli, mdbook plugins, lychee, brotli, fonts.
 #
-# Platform: linux/amd64 only (git-std and mdbook-linkcheck lack arm64 Linux builds).
+# Platform: linux/amd64 only (tool binaries are pinned to x86_64).
 
 # hadolint ignore=DL3006
-FROM dock-deno
+FROM dock-core
 
 ARG VERSION=dev
 
@@ -21,10 +21,9 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG MDBOOK_VERSION=0.5.3
 ARG TYPST_VERSION=0.14.2
 ARG TERA_CLI_VERSION=0.5.0
-ARG GIT_STD_VERSION=0.11.12
-ARG MDBOOK_ADMONISH_VERSION=1.20.0
+ARG MDBOOK_ALERTS_VERSION=0.8.0
 ARG MDBOOK_KATEX_VERSION=0.10.0-alpha
-ARG MDBOOK_LINKCHECK_VERSION=0.7.7
+ARG LYCHEE_VERSION=0.24.2
 
 # ---------------------------------------------------------------------------
 # System packages: compression + fonts
@@ -63,24 +62,14 @@ RUN curl -sSfL \
     tera --version
 
 # ---------------------------------------------------------------------------
-# git-std — git commit conventions + hooks
+# mdbook-alerts — GitHub-style > [!NOTE] / > [!WARNING] blockquote alerts
+# NOTE: Release ships a bare binary (no archive); download straight to PATH.
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
-      "https://github.com/driftsys/git-std/releases/download/v${GIT_STD_VERSION}/git-std-x86_64-unknown-linux-musl.tar.gz" \
-      -o /tmp/git-std.tar.gz && \
-    tar -xzf /tmp/git-std.tar.gz -C /usr/local/bin && \
-    rm /tmp/git-std.tar.gz && \
-    chmod +x /usr/local/bin/git-std && \
-    git-std --version
-
-# ---------------------------------------------------------------------------
-# mdbook-admonish — callout/admonition blocks (note, warning, tip, danger)
-# ---------------------------------------------------------------------------
-RUN curl -sSfL \
-      "https://github.com/tommilligan/mdbook-admonish/releases/download/v${MDBOOK_ADMONISH_VERSION}/mdbook-admonish-v${MDBOOK_ADMONISH_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
-      | tar -xz -C /usr/local/bin && \
-    chmod +x /usr/local/bin/mdbook-admonish && \
-    mdbook-admonish --version
+      "https://github.com/lambdalisue/rs-mdbook-alerts/releases/download/v${MDBOOK_ALERTS_VERSION}/mdbook-alerts-x86_64-unknown-linux-musl" \
+      -o /usr/local/bin/mdbook-alerts && \
+    chmod +x /usr/local/bin/mdbook-alerts && \
+    mdbook-alerts --version
 
 # ---------------------------------------------------------------------------
 # mdbook-katex — server-side LaTeX math rendering
@@ -92,16 +81,15 @@ RUN curl -sSfL \
     mdbook-katex --version
 
 # ---------------------------------------------------------------------------
-# mdbook-linkcheck — broken link validation at build time
-# NOTE: Only gnu build available; works via glibc compat layer from dock:deno.
+# lychee — fast async broken-link checker (native musl, replaces
+# mdbook-linkcheck). Run as `lychee ./book` after `mdbook build`.
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
-      "https://github.com/Michael-F-Bryan/mdbook-linkcheck/releases/download/v${MDBOOK_LINKCHECK_VERSION}/mdbook-linkcheck.x86_64-unknown-linux-gnu.zip" \
-      -o /tmp/mdbook-linkcheck.zip && \
-    unzip -o /tmp/mdbook-linkcheck.zip -d /usr/local/bin && \
-    rm /tmp/mdbook-linkcheck.zip && \
-    chmod +x /usr/local/bin/mdbook-linkcheck && \
-    mdbook-linkcheck --version
+      "https://github.com/lycheeverse/lychee/releases/download/lychee-v${LYCHEE_VERSION}/lychee-x86_64-unknown-linux-musl.tar.gz" \
+      | tar -xz --strip-components=1 -C /usr/local/bin \
+          lychee-x86_64-unknown-linux-musl/lychee && \
+    chmod +x /usr/local/bin/lychee && \
+    lychee --version
 
 # ---------------------------------------------------------------------------
 # Generate manifest

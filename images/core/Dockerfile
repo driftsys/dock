@@ -12,7 +12,6 @@ RUN apk add --no-cache \
     coreutils \
     curl \
     diffutils \
-    dotenv \
     findutils \
     gettext \
     git \
@@ -26,6 +25,13 @@ RUN apk add --no-cache \
     unzip \
     yq-go \
     zip
+
+# Install dotenv CLI — provides `dotenv run -- <cmd>` for CI pipelines.
+# Uses the shared shell shim (scripts/dotenv.sh) instead of the py3-dotenv
+# package, which would pull in the full python3 runtime (~32 MB uncompressed)
+# and cascade that weight to every descendant image. Matches Debian core.
+COPY scripts/dotenv.sh /usr/local/bin/dotenv
+RUN chmod +x /usr/local/bin/dotenv
 
 # Point common tools at the system CA bundle so custom CAs added via
 # dock-bootstrap are trusted automatically.

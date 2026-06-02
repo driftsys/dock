@@ -33,7 +33,7 @@ covers their pipeline.
 | `:python`   | `:core` | ~55 MB  | ~135 MB | Python 3, pip, ruff                       |
 | `:polyglot` | `:rust` | ~382 MB | ~460 MB | Rust + Deno + Python 3                    |
 | `:lint`     | `:deno` | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig, git-std |
-| `:pages`    | `:deno` | ~190 MB | ~225 MB | mdbook, typst, tera-cli, git-std, brotli  |
+| `:pages`    | `:core` | ~85 MB  | ~140 MB | mdbook, typst, tera-cli, brotli           |
 | `:jvm`      | `:core` | —       | ~290 MB | JDK 17 headless (Debian only)             |
 | `:android`  | `:jvm`  | —       | ~485 MB | Android SDK, build-tools (Debian only)    |
 
@@ -47,10 +47,11 @@ alpine:3.21
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
-      │   ├── :pages     (~190 MB)
       │   └── :lint      (~145 MB, amd64 only)
       ├── :node          (~115 MB)
-      └── :python        (~55 MB)
+      ├── :python        (~55 MB)
+      ├── :pages         (~85 MB, amd64 only)
+      └── :prose         (~50 MB)
 ```
 
 ### Debian
@@ -61,10 +62,11 @@ debian:bookworm-slim
       ├── :rust-debian          (~330 MB)
       │   └── :polyglot-debian  (~460 MB)
       ├── :deno-debian          (~175 MB)
-      │   ├── :pages-debian     (~225 MB)
       │   └── :lint-debian      (~200 MB)
       ├── :node-debian          (~195 MB)
       ├── :python-debian        (~135 MB)
+      ├── :pages-debian         (~140 MB, amd64 only)
+      ├── :prose-debian         (~215 MB)
       └── :jvm-debian           (~290 MB)
           └── :android-debian   (~485 MB)
               └── :android-ndk-debian (~2.5 GB)

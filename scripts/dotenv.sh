@@ -8,6 +8,11 @@
 # This covers the common CI pattern where dotenv is used to inject
 # .env variables into a subprocess. Mirrors the python-dotenv CLI API
 # used by the Alpine dotenv package.
+#
+# Limitation: values are loaded via shell `source`, so an unquoted value
+# containing shell metacharacters (space, &, ;, $) aborts the run, and
+# command substitution in .env is evaluated. Quote your values. A line-parser
+# rewrite that removes these limitations is tracked in driftsys/dock#50.
 
 set -euo pipefail
 

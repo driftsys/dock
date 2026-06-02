@@ -122,12 +122,14 @@ jobs:
             node
             python
             polyglot
+            prose
             core-debian
             rust-debian
             deno-debian
             node-debian
             python-debian
             polyglot-debian
+            prose-debian
             jvm-debian
             android-debian
             android-${{ steps.android.outputs.api }}-debian
