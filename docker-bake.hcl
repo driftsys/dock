@@ -44,6 +44,31 @@ variable "PLATFORM_SUFFIX" {
 }
 
 # ---------------------------------------------------------------------------
+# Tag scheme
+# ---------------------------------------------------------------------------
+# Every variant publishes an explicit suffixed tag (`:image-alpine`,
+# `:image-debian`). The variant we recommend for an image (see README →
+# "Choosing a variant") additionally claims the bare `:image` tag by passing
+# bare = true. Exactly one variant per image sets bare = true.
+function "img_tags" {
+  params = [image, variant, bare]
+  result = concat(
+    [
+      "${REGISTRY}:${image}-${variant}-${VERSION}${PLATFORM_SUFFIX}",
+      "${REGISTRY}:${image}-${variant}${PLATFORM_SUFFIX}",
+      "${REGISTRY_DH}:${image}-${variant}-${VERSION}${PLATFORM_SUFFIX}",
+      "${REGISTRY_DH}:${image}-${variant}${PLATFORM_SUFFIX}",
+    ],
+    bare ? [
+      "${REGISTRY}:${image}-${VERSION}${PLATFORM_SUFFIX}",
+      "${REGISTRY}:${image}${PLATFORM_SUFFIX}",
+      "${REGISTRY_DH}:${image}-${VERSION}${PLATFORM_SUFFIX}",
+      "${REGISTRY_DH}:${image}${PLATFORM_SUFFIX}",
+    ] : []
+  )
+}
+
+# ---------------------------------------------------------------------------
 # Shared defaults
 # ---------------------------------------------------------------------------
 
@@ -67,53 +92,6 @@ target "_cache-debian" {
   cache-to   = ["type=registry,ref=${REGISTRY}:cache-debian,mode=max"]
 }
 
-target "lint" {
-  inherits   = ["_common", "_cache-alpine"]
-  context    = "."
-  dockerfile = "images/lint/Dockerfile"
-  tags = [
-    "${REGISTRY}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:lint${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:lint-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:lint${PLATFORM_SUFFIX}",
-  ]
-  contexts  = { dock-deno = "target:deno" }
-  platforms = ["linux/amd64"]
-}
-
-target "lint-debian" {
-  inherits   = ["_common", "_cache-debian"]
-  context    = "."
-  dockerfile = "images/lint/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:lint-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:lint-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:lint-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:lint-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts  = { dock-deno = "target:deno-debian" }
-  platforms = ["linux/amd64"]
-}
-
-target "pages" {
-  inherits   = ["_common", "_cache-alpine"]
-  context    = "."
-  dockerfile = "images/pages/Dockerfile"
-  tags = [
-    "${REGISTRY}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:pages-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages${PLATFORM_SUFFIX}",
-  ]
-  contexts  = { dock-core = "target:core" }
-  platforms = ["linux/amd64"]
-}
-
-target "prose" {
-  inherits   = ["_common", "_cache-alpine"]
-  context    = "."
-  dockerfile = "images/prose/Dockerfile"
-  tags = [
-    "${REGISTRY}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:prose-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core" }
-}
-
 # ---------------------------------------------------------------------------
 # Alpine images
 # ---------------------------------------------------------------------------
@@ -122,21 +100,15 @@ target "core" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/core/Dockerfile"
-  tags = [
-    "${REGISTRY}:core-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:core${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:core-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:core${PLATFORM_SUFFIX}",
-  ]
+  tags       = img_tags("core", "alpine", true)
 }
 
 target "rust" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/rust/Dockerfile"
-  tags = [
-    "${REGISTRY}:rust-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:rust${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:rust-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:rust${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core" }
+  tags       = img_tags("rust", "alpine", false)
+  contexts   = { dock-core = "target:core" }
 }
 
 target "deno" {
@@ -144,45 +116,34 @@ target "deno" {
   context    = "."
   dockerfile = "images/deno/Dockerfile"
   args       = { DENO_VERSION = DENO_VERSION }
-  tags = [
-    "${REGISTRY}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:deno-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core" }
+  tags       = img_tags("deno", "alpine", true)
+  contexts   = { dock-core = "target:core" }
 }
 
 target "node" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
   dockerfile = "images/node/Dockerfile"
-  tags = [
-    "${REGISTRY}:node-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:node${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:node-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:node${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core" }
+  tags       = img_tags("node", "alpine", true)
+  contexts   = { dock-core = "target:core" }
 }
 
-target "python" {
+target "lint" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
-  dockerfile = "images/python/Dockerfile"
-  tags = [
-    "${REGISTRY}:python-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:python${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:python-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:python${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core" }
+  dockerfile = "images/lint/Dockerfile"
+  tags       = img_tags("lint", "alpine", true)
+  contexts   = { dock-deno = "target:deno" }
+  platforms  = ["linux/amd64"]
 }
 
-target "polyglot" {
+target "pages" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
-  dockerfile = "images/polyglot/Dockerfile"
-  args       = { DENO_VERSION = DENO_VERSION }
-  tags = [
-    "${REGISTRY}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:polyglot-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-rust = "target:rust" }
+  dockerfile = "images/pages/Dockerfile"
+  tags       = img_tags("pages", "alpine", true)
+  contexts   = { dock-core = "target:core" }
+  platforms  = ["linux/amd64"]
 }
 
 # ---------------------------------------------------------------------------
@@ -193,21 +154,15 @@ target "core-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/core/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:core-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:core-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:core-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:core-debian${PLATFORM_SUFFIX}",
-  ]
+  tags       = img_tags("core", "debian", false)
 }
 
 target "rust-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/rust/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:rust-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:rust-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:rust-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:rust-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
+  tags       = img_tags("rust", "debian", true)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "deno-debian" {
@@ -215,56 +170,24 @@ target "deno-debian" {
   context    = "."
   dockerfile = "images/deno/Dockerfile.debian"
   args       = { DENO_VERSION = DENO_VERSION }
-  tags = [
-    "${REGISTRY}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:deno-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:deno-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:deno-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
-}
-
-target "pages-debian" {
-  inherits   = ["_common", "_cache-debian"]
-  context    = "."
-  dockerfile = "images/pages/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:pages-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:pages-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:pages-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts  = { dock-core = "target:core-debian" }
-  platforms = ["linux/amd64"]
-}
-
-target "prose-debian" {
-  inherits   = ["_common", "_cache-debian"]
-  context    = "."
-  dockerfile = "images/prose/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:prose-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:prose-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:prose-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
+  tags       = img_tags("deno", "debian", false)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "node-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/node/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:node-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:node-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:node-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:node-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
+  tags       = img_tags("node", "debian", false)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "python-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/python/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:python-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:python-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:python-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:python-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
+  tags       = img_tags("python", "debian", true)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "polyglot-debian" {
@@ -272,22 +195,42 @@ target "polyglot-debian" {
   context    = "."
   dockerfile = "images/polyglot/Dockerfile.debian"
   args       = { DENO_VERSION = DENO_VERSION }
-  tags = [
-    "${REGISTRY}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:polyglot-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:polyglot-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:polyglot-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-rust = "target:rust-debian" }
+  tags       = img_tags("polyglot", "debian", true)
+  contexts   = { dock-rust = "target:rust-debian" }
+}
+
+target "lint-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/lint/Dockerfile.debian"
+  tags       = img_tags("lint", "debian", false)
+  contexts   = { dock-deno = "target:deno-debian" }
+  platforms  = ["linux/amd64"]
+}
+
+target "pages-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/pages/Dockerfile.debian"
+  tags       = img_tags("pages", "debian", false)
+  contexts   = { dock-core = "target:core-debian" }
+  platforms  = ["linux/amd64"]
+}
+
+target "prose-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/prose/Dockerfile.debian"
+  tags       = img_tags("prose", "debian", true)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "jvm-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
   dockerfile = "images/jvm/Dockerfile.debian"
-  tags = [
-    "${REGISTRY}:jvm-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY}:jvm-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:jvm-debian-${VERSION}${PLATFORM_SUFFIX}", "${REGISTRY_DH}:jvm-debian${PLATFORM_SUFFIX}",
-  ]
-  contexts = { dock-core = "target:core-debian" }
+  tags       = img_tags("jvm", "debian", true)
+  contexts   = { dock-core = "target:core-debian" }
 }
 
 target "android-debian" {
@@ -297,16 +240,10 @@ target "android-debian" {
   args = {
     ANDROID_PLATFORM_VERSION = ANDROID_PLATFORM_VERSION
   }
-  tags = [
-    "${REGISTRY}:android-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-${ANDROID_PLATFORM_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-${ANDROID_PLATFORM_VERSION}-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-${ANDROID_PLATFORM_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-${ANDROID_PLATFORM_VERSION}-debian${PLATFORM_SUFFIX}",
-  ]
+  tags = concat(
+    img_tags("android", "debian", true),
+    img_tags("android-${ANDROID_PLATFORM_VERSION}", "debian", true),
+  )
   contexts = { dock-jvm = "target:jvm-debian" }
 }
 
@@ -317,16 +254,10 @@ target "android-ndk-debian" {
   args = {
     NDK_VERSION = "27.2.12479018"
   }
-  tags = [
-    "${REGISTRY}:android-ndk-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-ndk-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-ndk-${ANDROID_NDK_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY}:android-ndk-${ANDROID_NDK_VERSION}-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-ndk-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-ndk-debian${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-ndk-${ANDROID_NDK_VERSION}-debian-${VERSION}${PLATFORM_SUFFIX}",
-    "${REGISTRY_DH}:android-ndk-${ANDROID_NDK_VERSION}-debian${PLATFORM_SUFFIX}",
-  ]
+  tags = concat(
+    img_tags("android-ndk", "debian", true),
+    img_tags("android-ndk-${ANDROID_NDK_VERSION}", "debian", true),
+  )
   contexts = { dock-android = "target:android-debian" }
 }
 
@@ -335,12 +266,12 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot", "lint", "pages", "prose"]
+  targets = ["core", "rust", "deno", "node", "lint", "pages"]
 }
 
-# All multi-arch targets (excludes lint and pages which are amd64-only)
+# Multi-arch targets (excludes lint and pages which are amd64-only)
 group "multiarch" {
-  targets = ["core", "rust", "deno", "node", "python", "polyglot", "prose"]
+  targets = ["core", "rust", "deno", "node"]
 }
 
 group "debian" {

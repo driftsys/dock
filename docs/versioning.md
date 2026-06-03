@@ -6,24 +6,29 @@
 ghcr.io/driftsys/dock:{image}-{variant}-{version}
 ```
 
-- `{image}` — `core`, `rust`, `deno`, `node`, `python`, `polyglot`,
-  `jvm`, `android`
-- `{variant}` — omitted for Alpine (default); `-debian` for the Debian variant
-- `{version}` — semantic version tag, e.g. `v1.2.3`
+- `{image}` — `core`, `rust`, `deno`, `node`, `python`, `polyglot`, `lint`,
+  `pages`, `prose`, `jvm`, `android`, `android-ndk`
+- `{variant}` — `alpine` or `debian`. May be omitted: the bare `:{image}` tag
+  points at the recommended variant for that image (see README → "Choosing a
+  variant"). Debian-only images have no `-alpine` tag.
+- `{version}` — semantic release version, e.g. `0.2.7`
 
 ### Examples
 
 ```
-ghcr.io/driftsys/dock:core           # latest Alpine core
-ghcr.io/driftsys/dock:core-v1.2.3   # pinned Alpine core
-ghcr.io/driftsys/dock:rust-debian    # latest Debian rust
-ghcr.io/driftsys/dock:android-36-debian  # pinned to API 36
+ghcr.io/driftsys/dock:core            # recommended core (Alpine)
+ghcr.io/driftsys/dock:core-alpine     # explicit Alpine core
+ghcr.io/driftsys/dock:core-debian     # explicit Debian core
+ghcr.io/driftsys/dock:rust            # recommended rust (Debian)
+ghcr.io/driftsys/dock:rust-alpine     # explicit Alpine rust (static musl)
+ghcr.io/driftsys/dock:core-0.2.7      # pinned recommended core
+ghcr.io/driftsys/dock:android-36-debian   # pinned to API 36
 ```
 
 ## Floating tags
 
-Floating tags (`:core`, `:rust`, …) always point to the latest release.
-Use them in prototyping; pin to a version tag in production.
+The unversioned tags (`:core`, `:core-alpine`, `:core-debian`, …) always point
+to the latest release. Use them in prototyping; pin to a version in production.
 
 ## Android API-level tags
 

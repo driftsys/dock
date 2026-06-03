@@ -115,30 +115,27 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
+          # Bare tags (:core, :rust, …) are pushed by whichever variant is the
+          # recommended default (see docker-bake.hcl img_tags), so they appear
+          # here as their own basenames alongside the -alpine / -debian tags.
           images=(
-            core
-            rust
-            deno
-            node
-            python
-            polyglot
-            prose
-            core-debian
-            rust-debian
-            deno-debian
-            node-debian
-            python-debian
-            polyglot-debian
-            prose-debian
-            jvm-debian
-            android-debian
-            android-${{ steps.android.outputs.api }}-debian
-            android-ndk-debian
-            android-ndk-${{ steps.ndk.outputs.ndk }}-debian
+            core core-alpine core-debian
+            rust rust-alpine rust-debian
+            deno deno-alpine deno-debian
+            node node-alpine node-debian
+            python python-debian
+            polyglot polyglot-debian
+            prose prose-debian
+            jvm jvm-debian
+            android android-debian
+            android-${{ steps.android.outputs.api }} android-${{ steps.android.outputs.api }}-debian
+            android-ndk android-ndk-debian
+            android-ndk-${{ steps.ndk.outputs.ndk }} android-ndk-${{ steps.ndk.outputs.ndk }}-debian
           )
 
-          # lint, lint-debian, pages, and pages-debian are amd64-only, just retag without the suffix
-          for img in lint lint-debian pages pages-debian; do
+          # lint and pages (bare, -alpine, and -debian) are amd64-only; retag
+          # the amd64 build directly instead of merging a multi-arch manifest.
+          for img in lint lint-alpine lint-debian pages pages-alpine pages-debian; do
             for registry in "$REGISTRY" "$REGISTRY_DH"; do
               docker buildx imagetools create \
                 -t "${registry}:${img}-${VERSION}" \

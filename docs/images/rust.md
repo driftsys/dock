@@ -2,13 +2,17 @@
 
 Rust compilation toolchain. Inherits all `:core` tools.
 
+The bare **`:rust` tag is the Debian (gnu) variant** — the Rust tier-1 target
+with the widest crate compatibility. Use **`:rust-alpine`** when you want
+static musl binaries.
+
 ## Base
 
 | Variant          | Base                                       |
 | ---------------- | ------------------------------------------ |
-| Alpine (default) | `ghcr.io/driftsys/dock:core` (build        |
+| Alpine           | `ghcr.io/driftsys/dock:core` (build        |
 |                  | context)                                   |
-| Debian           | `ghcr.io/driftsys/dock:core-debian` (build |
+| Debian (default) | `ghcr.io/driftsys/dock:core-debian` (build |
 |                  | context)                                   |
 
 ## Installed tools
