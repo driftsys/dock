@@ -24,18 +24,20 @@ covers their pipeline.
 
 ## Image catalog
 
-| Image       | From    | Alpine  | Debian  | Contents                                  |
-| ----------- | ------- | ------- | ------- | ----------------------------------------- |
-| `:core`     | alpine  | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg             |
-| `:rust`     | `:core` | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt       |
-| `:deno`     | `:core` | ~120 MB | ~175 MB | Deno runtime, npx/npm shims               |
-| `:node`     | `:core` | ~115 MB | ~195 MB | Node.js LTS, npm                          |
-| `:python`   | `:core` | ~55 MB  | ~135 MB | Python 3, pip, ruff                       |
-| `:polyglot` | `:rust` | ~382 MB | ~460 MB | Rust + Deno + Python 3                    |
-| `:lint`     | `:deno` | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig, git-std |
-| `:pages`    | `:core` | ~85 MB  | ~140 MB | mdbook, typst, tera-cli, brotli           |
-| `:jvm`      | `:core` | —       | ~290 MB | JDK 17 headless (Debian only)             |
-| `:android`  | `:jvm`  | —       | ~485 MB | Android SDK, build-tools (Debian only)    |
+| Image          | From       | Alpine  | Debian  | Contents                                  |
+| -------------- | ---------- | ------- | ------- | ----------------------------------------- |
+| `:core`        | alpine     | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg             |
+| `:rust`        | `:core`    | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt       |
+| `:deno`        | `:core`    | ~120 MB | ~175 MB | Deno runtime, npx/npm shims               |
+| `:node`        | `:core`    | ~115 MB | ~195 MB | Node.js LTS, npm                          |
+| `:python`      | `:core`    | ~55 MB  | ~135 MB | Python 3, pip, ruff                       |
+| `:polyglot`    | `:rust`    | ~382 MB | ~460 MB | Rust + Deno + Python 3                    |
+| `:lint`        | `:deno`    | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig, git-std |
+| `:pages`       | `:core`    | ~85 MB  | ~140 MB | mdbook, typst, tera-cli, brotli           |
+| `:prose`       | `:core`    | ~50 MB  | ~215 MB | typos, harper-cli (vale on Debian only)   |
+| `:jvm`         | `:core`    | —       | ~290 MB | JDK 17 headless (Debian only)             |
+| `:android`     | `:jvm`     | —       | ~485 MB | Android SDK, build-tools (Debian only)    |
+| `:android-ndk` | `:android` | —       | ~2.5 GB | NDK + Rust + cargo-ndk (Debian only)      |
 
 ## Inheritance tree
 
