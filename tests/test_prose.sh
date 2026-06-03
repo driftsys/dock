@@ -101,14 +101,16 @@ test_vale_lints_clean_markdown() {
 }
 
 test_typos_detects_known_typo() {
-  local dir output
+  local dir
   dir="$(mktemp -d)"
 
   printf 'This is teh wrong word.\n' > "$dir/typo.md"
 
-  # typos exits non-zero when issues are found.
-  output="$(typos "$dir/typo.md" 2>&1 || true)"
-  assert "echo '$output' | grep -qi 'teh'" \
+  # typos exits non-zero when issues are found. Write to a file and grep it
+  # rather than interpolating the captured output into the assert string,
+  # which would break if the output ever contained a quote.
+  typos "$dir/typo.md" > "$dir/out.txt" 2>&1 || true
+  assert "grep -qi teh '$dir/out.txt'" \
     "typos should flag 'teh' as a typo"
 
   rm -rf "$dir"
@@ -124,15 +126,19 @@ test_typos_passes_clean_text() {
   rm -rf "$dir"
 }
 
-test_harper_cli_runs_on_markdown() {
+test_harper_cli_flags_grammar_error() {
   local dir
   dir="$(mktemp -d)"
 
-  printf '# Heading\n\nThis is a test sentence.\n' > "$dir/clean.md"
-  # harper-cli `lint` exits 0 on success. We only check that it runs.
-  harper-cli lint "$dir/clean.md" >/dev/null 2>&1 || true
-  assert "harper-cli --help" \
-    "harper-cli should expose its help"
+  # "a apple" is an obvious article error harper should catch. Capture both
+  # streams and assert the lint emits a finding, rather than the previous
+  # test which swallowed the result and only re-checked `--help` (a no-op
+  # already covered by the presence/version tests). We assert on output
+  # presence rather than the exit code, which varies across harper versions.
+  printf '# Heading\n\nThis is a apple.\n' > "$dir/bad.md"
+  harper-cli lint "$dir/bad.md" > "$dir/out.txt" 2>&1 || true
+  assert "[ -s '$dir/out.txt' ]" \
+    "harper-cli lint should emit a finding for 'a apple'"
 
   rm -rf "$dir"
 }
