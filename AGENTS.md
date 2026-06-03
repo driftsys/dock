@@ -36,7 +36,7 @@ alpine:3.21
       ├── :rust          (~260 MB)
       │   └── :polyglot  (~382 MB)
       ├── :deno          (~120 MB)
-      │   └── :lint      (~150 MB)
+      │   └── :lint      (~145 MB)
       ├── :node          (~115 MB)
       ├── :python        (~55 MB)
       ├── :pages         (~85 MB)

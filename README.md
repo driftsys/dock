@@ -89,6 +89,7 @@ debian:bookworm-slim
       ├── :prose-debian         (~215 MB)
       └── :jvm-debian           (~290 MB)
           └── :android-debian   (~485 MB)
+              └── :android-ndk-debian (~2.5 GB)
 ```
 
 ## Core Package List
@@ -104,6 +105,7 @@ All images include these tools from `:core`:
 | gpg                     | gnupg                                      |
 | jq                      | jq                                         |
 | yq                      | yq-go (Alpine) / mikefarah binary (Debian) |
+| coreutils               | coreutils                                  |
 | envsubst                | gettext / gettext-base                     |
 | dotenv                  | shell script (both)                        |
 | ssh                     | openssh-client                             |
@@ -141,8 +143,8 @@ for full documentation.
 ## Tags
 
 Tags follow the format `ghcr.io/driftsys/dock:{image}-{version}` where
-`version` is the semantic release tag (e.g. `v1.2.3`). Floating tags
-(`:core`, `:rust`, …) always point to the latest release.
+`version` is the unprefixed semantic release version (e.g. `0.2.7`).
+Floating tags (`:core`, `:rust`, …) always point to the latest release.
 
 See [docs/versioning.md](docs/versioning.md) for the full strategy.
 

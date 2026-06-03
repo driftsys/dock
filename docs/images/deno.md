@@ -13,14 +13,15 @@ Deno runtime. Inherits all `:core` tools.
 
 ## Installed tools
 
-| Tool | Install method         | Purpose                                      |
-| ---- | ---------------------- | -------------------------------------------- |
-| deno | official static binary | TypeScript/JavaScript runtime                |
-| npx  | shell shim             | Run npm packages via `deno run -A npm:<pkg>` |
-| npm  | shell shim             | Delegates supported npm commands to Deno     |
+| Tool | Install method        | Purpose                                      |
+| ---- | --------------------- | -------------------------------------------- |
+| deno | official Docker image | TypeScript/JavaScript runtime                |
+| npx  | shell shim            | Run npm packages via `deno run -A npm:<pkg>` |
+| npm  | shell shim            | Delegates supported npm commands to Deno     |
 
-Deno is installed from the official GitHub release binary. The version
-is controlled by the `DENO_VERSION` build argument.
+Deno is copied from the official `denoland/deno` Docker image via a
+multi-stage build (along with its bundled runtime libraries). The
+version is controlled by the `DENO_VERSION` build argument.
 
 The `npx` and `npm` shims allow using npm ecosystem tools without
 installing Node.js. They delegate to Deno under the hood:

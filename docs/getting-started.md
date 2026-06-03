@@ -56,8 +56,9 @@ Use the Debian variant when your tools require glibc (e.g. pre-built
 binaries that don't support musl).
 
 Some images are **Debian-only** because their upstream toolchain
-requires glibc: `:jvm-debian` (JDK 17) and `:android-debian`
-(Android SDK). These have no Alpine variant.
+requires glibc: `:jvm-debian` (JDK 17), `:android-debian`
+(Android SDK), and `:android-ndk-debian` (NDK + Rust). These have no
+Alpine variant.
 
 Some images are **amd64-only** because upstream tools lack arm64
 builds: `:lint` and `:pages`. Both ship Alpine and Debian variants.
@@ -68,7 +69,7 @@ Floating tags (`:core`, `:rust`, ...) always point to the latest release.
 For reproducible builds, pin to a version tag:
 
 ```yaml
-container: ghcr.io/driftsys/dock:rust-0.1.0
+container: ghcr.io/driftsys/dock:rust-0.2.7
 ```
 
 ## Inspect the manifest
@@ -83,7 +84,7 @@ docker run --rm ghcr.io/driftsys/dock:rust \
 ```json
 {
   "image": "rust",
-  "version": "0.1.0",
+  "version": "0.2.7",
   "tools": {
     "rustc": "1.83.0",
     "cargo": "1.83.0",

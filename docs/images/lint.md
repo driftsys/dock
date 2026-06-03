@@ -13,12 +13,12 @@ Linting toolbox. Inherits all `:deno` tools (including npx/npm shims).
 
 ## Installed tools
 
-| Tool                 | Install method           | Purpose                                 |
-| -------------------- | ------------------------ | --------------------------------------- |
-| dprint               | binary (GitHub releases) | Fast code formatter (md/json/toml/yaml) |
-| shellcheck           | apk                      | Shell script linter                     |
-| editorconfig-checker | apk                      | EditorConfig rule checker               |
-| git-std              | binary (GitHub releases) | Conventional commits + git hooks        |
+| Tool                 | Install method                 | Purpose                                 |
+| -------------------- | ------------------------------ | --------------------------------------- |
+| dprint               | binary (GitHub releases)       | Fast code formatter (md/json/toml/yaml) |
+| shellcheck           | apk                            | Shell script linter                     |
+| editorconfig-checker | apk (Alpine) / binary (Debian) | EditorConfig rule checker               |
+| git-std              | binary (GitHub releases)       | Conventional commits + git hooks        |
 
 Because `:lint` inherits from `:deno`, you also have access to
 `npx` and `npm` shims. This means any npm-based linter is available
