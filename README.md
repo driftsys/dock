@@ -33,64 +33,87 @@ jobs:
 
 ## Image Catalog
 
-Every image ships in two variants:
+Each image publishes up to three tags:
 
-| Tag             | Base                   | libc  | Use when                    |
-| --------------- | ---------------------- | ----- | --------------------------- |
-| `:image`        | `alpine:3.21`          | musl  | smallest footprint, default |
-| `:image-debian` | `debian:bookworm-slim` | glibc | broader compatibility       |
+| Tag             | Variant             | libc  | Use when                                                                        |
+| --------------- | ------------------- | ----- | ------------------------------------------------------------------------------- |
+| `:image-alpine` | Alpine              | musl  | smallest footprint, where the toolchain supports musl                           |
+| `:image-debian` | Debian              | glibc | broadest compatibility (always available)                                       |
+| `:image`        | recommended default | —     | points to the variant we recommend per image (see the **Default** column below) |
+
+Some images are **Debian-only** (`python`, `prose`, `polyglot`, `jvm`,
+`android`, `android-ndk`) — their toolchains require glibc, so there is no
+`-alpine` tag and the bare `:image` resolves to Debian.
 
 ### Available images
 
-| Image          | From          | Alpine  | Debian  | Contents                                                             |
-| -------------- | ------------- | ------- | ------- | -------------------------------------------------------------------- |
-| `:core`        | `alpine:3.21` | ~32 MB  | ~80 MB  | Shell, Git, curl, jq, yq, gpg, …                                     |
-| `:rust`        | `:core`       | ~260 MB | ~330 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny         |
-| `:deno`        | `:core`       | ~120 MB | ~175 MB | Deno, npx shim, npm shim                                             |
-| `:node`        | `:core`       | ~115 MB | ~195 MB | Node.js LTS, npm                                                     |
-| `:python`      | `:core`       | ~55 MB  | ~135 MB | Python 3, pip, ruff                                                  |
-| `:polyglot`    | `:rust`       | ~382 MB | ~460 MB | Rust + Deno + Python 3                                               |
-| `:lint`        | `:deno`       | ~145 MB | ~200 MB | dprint, shellcheck, editorconfig-checker, git-std (amd64)            |
-| `:pages`       | `:core`       | ~85 MB  | ~140 MB | mdbook, typst, tera-cli, brotli, mdbook plugins (amd64)              |
-| `:prose`       | `:core`       | ~50 MB  | ~215 MB | typos, harper-cli (vale + Vale style packs on Debian only)           |
-| `:jvm`         | `:core`       | —       | ~290 MB | JDK 17 headless (Debian only)                                        |
-| `:android`     | `:jvm`        | —       | ~485 MB | Android SDK (Debian only · pin: `:android-36-debian`)                |
-| `:android-ndk` | `:android`    | —       | ~2.5 GB | NDK + Rust + cargo-ndk (Debian only · pin: `:android-ndk-27-debian`) |
+Sizes are compressed (download) size, amd64.
+
+| Image          | From          | `:image` → | Alpine  | Debian  | Contents                                                     |
+| -------------- | ------------- | ---------- | ------- | ------- | ------------------------------------------------------------ |
+| `:core`        | `alpine:3.21` | **alpine** | ~30 MB  | ~76 MB  | Shell, Git, curl, jq, yq, gpg, …                             |
+| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny |
+| `:deno`        | `:core`       | **alpine** | ~78 MB  | ~121 MB | Deno, npx shim, npm shim                                     |
+| `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js LTS, npm                                             |
+| `:lint`        | `:deno`       | **alpine** | ~94 MB  | ~138 MB | dprint, shellcheck, editorconfig-checker, git-std (amd64)    |
+| `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)              |
+| `:python`      | `:core`       | **debian** | —       | ~104 MB | Python 3, pip, ruff                                          |
+| `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                    |
+| `:polyglot`    | `:rust`       | **debian** | —       | ~625 MB | Rust + Deno + Python 3                                       |
+| `:jvm`         | `:core`       | **debian** | —       | ~218 MB | JDK 17 headless                                              |
+| `:android`     | `:jvm`        | **debian** | —       | ~489 MB | Android SDK (pin: `:android-36-debian`)                      |
+| `:android-ndk` | `:android`    | **debian** | —       | ~1.7 GB | NDK + Rust + cargo-ndk (pin: `:android-ndk-27-debian`)       |
+
+The **`:image` →** column is which variant the bare `:image` tag resolves to.
+`python`, `prose`, `polyglot`, and the JVM/Android images are Debian-only (no
+`-alpine` tag). See [Choosing a variant](#choosing-a-variant).
 
 ## Inheritance Tree
 
-### Alpine (default)
+### Alpine
 
 ```
 alpine:3.21
-  └── :core              (~32 MB)
-      ├── :rust          (~260 MB)
-      │   └── :polyglot  (~382 MB)
-      ├── :deno          (~120 MB)
-      │   └── :lint      (~145 MB)
-      ├── :node          (~115 MB)
-      ├── :python        (~55 MB)
-      ├── :pages         (~85 MB)
-      └── :prose         (~50 MB)
+  └── :core          (~30 MB)
+      ├── :rust      (~557 MB)
+      ├── :deno      (~78 MB)
+      │   └── :lint  (~94 MB)
+      ├── :node      (~54 MB)
+      └── :pages     (~77 MB)
 ```
 
 ### Debian
 
 ```
 debian:bookworm-slim
-  └── :core-debian              (~80 MB)
-      ├── :rust-debian          (~330 MB)
-      │   └── :polyglot-debian  (~460 MB)
-      ├── :deno-debian          (~175 MB)
-      │   └── :lint-debian      (~200 MB)
-      ├── :node-debian          (~195 MB)
-      ├── :python-debian        (~135 MB)
-      ├── :pages-debian         (~140 MB)
-      ├── :prose-debian         (~215 MB)
-      └── :jvm-debian           (~290 MB)
-          └── :android-debian   (~485 MB)
-              └── :android-ndk-debian (~2.5 GB)
+  └── :core-debian              (~76 MB)
+      ├── :rust-debian          (~551 MB)
+      │   └── :polyglot-debian  (~625 MB)
+      ├── :deno-debian          (~121 MB)
+      │   └── :lint-debian      (~138 MB)
+      ├── :node-debian          (~135 MB)
+      ├── :python-debian        (~104 MB)
+      ├── :pages-debian         (~134 MB)
+      ├── :prose-debian         (~106 MB)
+      └── :jvm-debian           (~218 MB)
+          └── :android-debian   (~489 MB)
+              └── :android-ndk-debian (~1.7 GB)
 ```
+
+## Choosing a variant
+
+Default to **`:image`** — it points to the variant we recommend. Override only
+when you have a specific reason:
+
+- **Alpine (`-alpine`)** — smallest footprint; the default for `core`, `deno`,
+  `node`, `lint`, and `pages`. Pick `:rust-alpine` when you want static musl
+  binaries.
+- **Debian (`-debian`)** — broadest compatibility; the default for `rust` (the
+  gnu tier-1 target), and the only option for `python`, `prose`, `polyglot`,
+  and the JVM/Android images.
+
+Rule of thumb: **Alpine for size, Debian when you need glibc** — Python wheels
+(numpy/pandas), glibc-only tools (vale), or native addons without musl builds.
 
 ## Core Package List
 
@@ -142,9 +165,14 @@ for full documentation.
 
 ## Tags
 
-Tags follow the format `ghcr.io/driftsys/dock:{image}-{version}` where
-`version` is the unprefixed semantic release version (e.g. `0.2.7`).
-Floating tags (`:core`, `:rust`, …) always point to the latest release.
+Each image publishes:
+
+- `:{image}-alpine` / `:{image}-debian` — the explicit variants, plus their
+  versioned forms `:{image}-{variant}-{version}`.
+- `:{image}` — the recommended default variant, plus `:{image}-{version}`.
+
+`{version}` is the unprefixed semantic release (e.g. `0.2.7`); the unversioned
+tags float to the latest release.
 
 See [docs/versioning.md](docs/versioning.md) for the full strategy.
 

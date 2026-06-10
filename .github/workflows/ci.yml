@@ -100,7 +100,8 @@ jobs:
 
           # Dependency tree: core→everything, rust→polyglot, jvm→android, deno→lint
           # When a directory changes, both Alpine and Debian variants are tested.
-          alpine=(core rust deno node python polyglot lint pages prose)
+          # python, prose, and polyglot are Debian-only (no Alpine build).
+          alpine=(core rust deno node lint pages)
           debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-debian lint-debian pages-debian prose-debian jvm-debian android-debian android-ndk-debian)
           all_images=("${alpine[@]}" "${debian[@]}")
           images=()
@@ -132,7 +133,7 @@ jobs:
             images=("${all_images[@]}")
           else
             if needs_rust; then
-              for img in rust polyglot rust-debian polyglot-debian; do
+              for img in rust rust-debian polyglot-debian; do
                 add_unique "$img"
               done
             fi
@@ -142,23 +143,23 @@ jobs:
                 add_unique "$img"
               done
             fi
-            for img in deno node python lint pages prose; do
+            for img in deno node lint pages; do
               if echo "$changed" | grep -qE "^images/${img}/"; then
                 add_unique "$img"
                 add_unique "${img}-debian"
-                # deno changes also rebuild lint (lint is FROM deno;
-                # pages/prose are FROM core and covered by needs_core)
+                # deno changes also rebuild lint (lint is FROM deno)
                 if [ "$img" = "deno" ]; then
                   add_unique "lint"
                   add_unique "lint-debian"
                 fi
               fi
             done
-            # polyglot directory changes (without rust)
-            if echo "$changed" | grep -qE "^images/polyglot/"; then
-              add_unique "polyglot"
-              add_unique "polyglot-debian"
-            fi
+            # python, prose, polyglot are Debian-only (no Alpine target)
+            for img in python prose polyglot; do
+              if echo "$changed" | grep -qE "^images/${img}/"; then
+                add_unique "${img}-debian"
+              fi
+            done
             # android directory changes (without jvm)
             if echo "$changed" | grep -qE "^images/android/"; then
               add_unique "android-debian"

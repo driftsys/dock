@@ -23,12 +23,9 @@ declare -A TEST_SCRIPTS=(
     [rust]="test_rust.sh"
     [deno]="test_deno.sh"
     [node]="test_node.sh"
-    [python]="test_python.sh"
-    [polyglot]="test_polyglot.sh"
     [lint]="test_lint.sh"
     [lint-debian]="test_lint.sh"
     [pages]="test_pages.sh"
-    [prose]="test_prose.sh"
     [prose-debian]="test_prose.sh"
     [core-debian]="test_core.sh"
     [rust-debian]="test_rust.sh"
@@ -51,7 +48,13 @@ run_image_tests() {
         return 1
     fi
 
-    local tag="${REGISTRY}:${image}"
+    # Alpine targets (core, rust, …) publish the variant-suffixed :image-alpine
+    # tag; Debian targets are already named :image-debian.
+    local tag
+    case "$image" in
+      *-debian) tag="${REGISTRY}:${image}" ;;
+      *)        tag="${REGISTRY}:${image}-alpine" ;;
+    esac
     echo "=== Testing ${tag} ==="
 
     # shellcheck disable=SC2086
@@ -67,7 +70,8 @@ run_image_tests() {
 if [[ $# -gt 0 ]]; then
     run_image_tests "$1"
 else
-    for image in core rust deno node python polyglot lint pages prose; do
+    for image in core rust deno node lint pages \
+                 python-debian prose-debian polyglot-debian; do
         run_image_tests "$image"
     done
 fi
