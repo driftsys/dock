@@ -137,6 +137,15 @@ target "lint" {
   platforms  = ["linux/amd64"]
 }
 
+target "std" {
+  inherits   = ["_common", "_cache-alpine"]
+  context    = "."
+  dockerfile = "images/std/Dockerfile"
+  tags       = img_tags("std", "alpine", true)
+  contexts   = { dock-core = "target:core" }
+  platforms  = ["linux/amd64"]
+}
+
 target "pages" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
@@ -208,6 +217,15 @@ target "lint-debian" {
   platforms  = ["linux/amd64"]
 }
 
+target "std-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/std/Dockerfile.debian"
+  tags       = img_tags("std", "debian", false)
+  contexts   = { dock-core = "target:core-debian" }
+  platforms  = ["linux/amd64"]
+}
+
 target "pages-debian" {
   inherits   = ["_common", "_cache-debian"]
   context    = "."
@@ -266,10 +284,10 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "lint", "pages"]
+  targets = ["core", "rust", "deno", "node", "lint", "std", "pages"]
 }
 
-# Multi-arch targets (excludes lint and pages which are amd64-only)
+# Multi-arch targets (excludes lint, std, and pages which are amd64-only)
 group "multiarch" {
   targets = ["core", "rust", "deno", "node"]
 }
@@ -290,5 +308,5 @@ group "debian" {
 }
 
 group "default" {
-  targets = ["alpine", "debian", "pages-debian", "lint-debian"]
+  targets = ["alpine", "debian", "pages-debian", "lint-debian", "std-debian"]
 }

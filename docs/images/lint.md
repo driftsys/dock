@@ -18,7 +18,9 @@ Linting toolbox. Inherits all `:deno` tools (including npx/npm shims).
 | dprint               | binary (GitHub releases)       | Fast code formatter (md/json/toml/yaml) |
 | shellcheck           | apk                            | Shell script linter                     |
 | editorconfig-checker | apk (Alpine) / binary (Debian) | EditorConfig rule checker               |
-| git-std              | binary (GitHub releases)       | Conventional commits + git hooks        |
+
+> `git-std` (conventional commits, changelog, versioning, git hooks) now
+> ships in its own [`:std`](std.md) image, not `:lint`.
 
 Because `:lint` inherits from `:deno`, you also have access to
 `npx` and `npm` shims. This means any npm-based linter is available
@@ -31,8 +33,8 @@ npx prettier --check "**/*.yaml"
 
 ## Platform note
 
-`git-std` releases only provide a Linux x86_64 binary. This image is
-built for `linux/amd64` only.
+`dprint` (both variants) and `editorconfig-checker` (Debian) are installed
+as x86_64 binaries. This image is built for `linux/amd64` only.
 
 ## Usage in CI
 
@@ -47,19 +49,17 @@ jobs:
       - run: npx markdownlint-cli2 "**/*.md"
       - run: shellcheck scripts/*.sh
       - run: editorconfig-checker
-      - run: git-std check
 ```
 
 ## Build arguments
 
-| Argument          | Default   | Description                |
-| ----------------- | --------- | -------------------------- |
-| `DPRINT_VERSION`  | `0.54.0`  | dprint release to install  |
-| `GIT_STD_VERSION` | `0.11.12` | git-std release to install |
+| Argument         | Default  | Description               |
+| ---------------- | -------- | ------------------------- |
+| `DPRINT_VERSION` | `0.54.0` | dprint release to install |
 
 ## Approximate size
 
 | Variant | Size    |
 | ------- | ------- |
-| Alpine  | ~145 MB |
-| Debian  | ~200 MB |
+| Alpine  | ~92 MB  |
+| Debian  | ~135 MB |
