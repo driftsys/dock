@@ -16,11 +16,17 @@
 
 set -euo pipefail
 
+usage() {
+  echo "usage: dotenv [-f file] run [--] command [args...]" >&2
+  exit 2
+}
+
 env_file=".env"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -f | --file)
+      [[ $# -ge 2 ]] || usage
       env_file="$2"
       shift 2
       ;;
@@ -34,10 +40,17 @@ while [[ $# -gt 0 ]]; do
       break
       ;;
     *)
-      shift
+      # Anything before `run`/`--` that is not a known flag is malformed.
+      # Erroring here prevents `dotenv printenv PATH` (a missing `run`)
+      # from silently discarding the command and exiting 0.
+      usage
       ;;
   esac
 done
+
+# A command is mandatory; never exec an empty argv (which would exit 0
+# having run nothing — a silent false success).
+[[ $# -gt 0 ]] || usage
 
 if [[ -f "$env_file" ]]; then
   set -a
