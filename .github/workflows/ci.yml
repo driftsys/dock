@@ -60,12 +60,14 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install convco
+        shell: bash
         run: |
+          asset=convco-x86_64-unknown-linux-musl
           curl -sSfL \
-            https://github.com/convco/convco/releases/latest/download/convco-ubuntu.zip \
-            -o /tmp/convco.zip
-          unzip -o /tmp/convco.zip -d /usr/local/bin
+            "https://github.com/convco/convco/releases/latest/download/${asset}.tar.gz" \
+            | tar -xz --strip-components=1 -C /usr/local/bin "${asset}/convco"
           chmod +x /usr/local/bin/convco
+          convco --version
       - name: Check commit messages
         run: |
           convco check \

@@ -31,14 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # ---------------------------------------------------------------------------
 # editorconfig-checker — not in Debian repos, install from GitHub
-# Tarball layout: bin/ec-linux-amd64 (plus docs at root)
+# Tarball layout: editorconfig-checker binary at the tarball root
 # ---------------------------------------------------------------------------
 RUN curl -sSfL \
-      "https://github.com/editorconfig-checker/editorconfig-checker/releases/latest/download/ec-linux-amd64.tar.gz" \
-      | tar -xz --strip-components=1 -C /usr/local/bin bin/ec-linux-amd64 && \
-    mv /usr/local/bin/ec-linux-amd64 /usr/local/bin/ec && \
-    chmod +x /usr/local/bin/ec && \
-    ln -sf /usr/local/bin/ec /usr/local/bin/editorconfig-checker && \
+      "https://github.com/editorconfig-checker/editorconfig-checker/releases/latest/download/editorconfig-checker-linux-amd64.tar.gz" \
+      | tar -xz -C /usr/local/bin editorconfig-checker && \
+    chmod +x /usr/local/bin/editorconfig-checker && \
+    ln -sf /usr/local/bin/editorconfig-checker /usr/local/bin/ec && \
     editorconfig-checker --version
 
 # ---------------------------------------------------------------------------
