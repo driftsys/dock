@@ -55,7 +55,8 @@ Sizes are compressed (download) size, amd64.
 | `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny |
 | `:deno`        | `:core`       | **alpine** | ~78 MB  | ~121 MB | Deno, npx shim, npm shim                                     |
 | `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js LTS, npm                                             |
-| `:lint`        | `:deno`       | **alpine** | ~94 MB  | ~138 MB | dprint, shellcheck, editorconfig-checker, git-std (amd64)    |
+| `:lint`        | `:deno`       | **alpine** | ~92 MB  | ~135 MB | dprint, shellcheck, editorconfig-checker (amd64)             |
+| `:std`         | `:core`       | **alpine** | ~32 MB  | ~77 MB  | git-std — conventional commits, changelog, hooks (amd64)     |
 | `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)              |
 | `:python`      | `:core`       | **debian** | —       | ~104 MB | Python 3, pip, ruff                                          |
 | `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                    |
@@ -77,8 +78,9 @@ alpine:3.21
   └── :core          (~30 MB)
       ├── :rust      (~557 MB)
       ├── :deno      (~78 MB)
-      │   └── :lint  (~94 MB)
+      │   └── :lint  (~92 MB)
       ├── :node      (~54 MB)
+      ├── :std       (~32 MB)
       └── :pages     (~77 MB)
 ```
 
@@ -90,8 +92,9 @@ debian:bookworm-slim
       ├── :rust-debian          (~551 MB)
       │   └── :polyglot-debian  (~625 MB)
       ├── :deno-debian          (~121 MB)
-      │   └── :lint-debian      (~138 MB)
+      │   └── :lint-debian      (~135 MB)
       ├── :node-debian          (~135 MB)
+      ├── :std-debian           (~77 MB)
       ├── :python-debian        (~104 MB)
       ├── :pages-debian         (~134 MB)
       ├── :prose-debian         (~106 MB)
@@ -106,8 +109,8 @@ Default to **`:image`** — it points to the variant we recommend. Override only
 when you have a specific reason:
 
 - **Alpine (`-alpine`)** — smallest footprint; the default for `core`, `deno`,
-  `node`, `lint`, and `pages`. Pick `:rust-alpine` when you want static musl
-  binaries.
+  `node`, `lint`, `std`, and `pages`. Pick `:rust-alpine` when you want static
+  musl binaries.
 - **Debian (`-debian`)** — broadest compatibility; the default for `rust` (the
   gnu tier-1 target), and the only option for `python`, `prose`, `polyglot`,
   and the JVM/Android images.

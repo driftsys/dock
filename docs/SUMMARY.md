@@ -17,6 +17,7 @@
 - [python](images/python.md)
 - [polyglot](images/polyglot.md)
 - [lint](images/lint.md)
+- [std](images/std.md)
 - [pages](images/pages.md)
 - [prose](images/prose.md)
 - [jvm](images/jvm.md)

@@ -40,6 +40,7 @@ alpine:3.21                  # Alpine variants (-alpine)
       ├── :deno
       │   └── :lint
       ├── :node
+      ├── :std
       └── :pages
 
 debian:bookworm-slim         # Debian variants (-debian) — every image
@@ -49,6 +50,7 @@ debian:bookworm-slim         # Debian variants (-debian) — every image
       ├── :deno-debian
       │   └── :lint-debian
       ├── :node-debian
+      ├── :std-debian
       ├── :python-debian
       ├── :pages-debian
       ├── :prose-debian
@@ -66,6 +68,7 @@ dock/
 │   ├── rust/
 │   ├── deno/
 │   ├── lint/
+│   ├── std/
 │   ├── pages/
 │   ├── prose/
 │   ├── node/

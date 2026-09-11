@@ -3,10 +3,10 @@
 # dock:lint — code and documentation linting toolbox (Alpine).
 #
 # Inherits from dock:deno (Alpine + Deno runtime + npx/npm shims).
-# Adds: shellcheck, editorconfig-checker, git-std, dprint.
+# Adds: shellcheck, editorconfig-checker, dprint.
 # npx gives access to markdownlint-cli2, prettier, and any npm linter.
 #
-# Platform: linux/amd64 only (git-std lacks arm64 Linux builds).
+# Platform: linux/amd64 only (dprint is installed as an x86_64 binary).
 
 # hadolint ignore=DL3006
 FROM dock-deno
@@ -18,7 +18,6 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # ---------------------------------------------------------------------------
 # Tool versions (pinned for reproducibility)
 # ---------------------------------------------------------------------------
-ARG GIT_STD_VERSION=0.11.12
 ARG DPRINT_VERSION=0.54.0
 
 # ---------------------------------------------------------------------------
@@ -38,17 +37,6 @@ RUN curl -sSfL \
     rm /tmp/dprint.zip && \
     chmod +x /usr/local/bin/dprint && \
     dprint --version
-
-# ---------------------------------------------------------------------------
-# git-std — git commit conventions + hooks
-# ---------------------------------------------------------------------------
-RUN curl -sSfL \
-      "https://github.com/driftsys/git-std/releases/download/v${GIT_STD_VERSION}/git-std-x86_64-unknown-linux-musl.tar.gz" \
-      -o /tmp/git-std.tar.gz && \
-    tar -xzf /tmp/git-std.tar.gz -C /usr/local/bin && \
-    rm /tmp/git-std.tar.gz && \
-    chmod +x /usr/local/bin/git-std && \
-    git-std --version
 
 # ---------------------------------------------------------------------------
 # Generate manifest

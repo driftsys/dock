@@ -133,9 +133,10 @@ jobs:
             android-ndk-${{ steps.ndk.outputs.ndk }} android-ndk-${{ steps.ndk.outputs.ndk }}-debian
           )
 
-          # lint and pages (bare, -alpine, and -debian) are amd64-only; retag
-          # the amd64 build directly instead of merging a multi-arch manifest.
-          for img in lint lint-alpine lint-debian pages pages-alpine pages-debian; do
+          # lint, std, and pages (bare, -alpine, and -debian) are amd64-only;
+          # retag the amd64 build directly instead of merging a multi-arch
+          # manifest.
+          for img in lint lint-alpine lint-debian std std-alpine std-debian pages pages-alpine pages-debian; do
             for registry in "$REGISTRY" "$REGISTRY_DH"; do
               docker buildx imagetools create \
                 -t "${registry}:${img}-${VERSION}" \

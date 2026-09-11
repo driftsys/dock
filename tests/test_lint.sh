@@ -11,7 +11,6 @@ source "$(dirname "$0")/test_deno.sh"
 
 test_shellcheck_present()           { assert "command -v shellcheck"; }
 test_editorconfig_checker_present() { assert "command -v editorconfig-checker"; }
-test_git_std_present()              { assert "command -v git-std"; }
 test_dprint_present()               { assert "command -v dprint"; }
 
 # ---------------------------------------------------------------------------
@@ -24,10 +23,6 @@ test_shellcheck_version() {
 
 test_editorconfig_checker_version() {
   assert "editorconfig-checker --version"
-}
-
-test_git_std_version() {
-  assert "git-std --version"
 }
 
 test_dprint_version() {
