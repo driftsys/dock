@@ -54,4 +54,8 @@ RUN curl -sSfL \
 # Generate manifest
 # ---------------------------------------------------------------------------
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh lint "${VERSION}"
+RUN manifest.sh lint "${VERSION}" \
+    "shellcheck:shellcheck --version" \
+    "editorconfig-checker:editorconfig-checker --version" \
+    "dprint:dprint --version" \
+    "git-std:git-std --version"

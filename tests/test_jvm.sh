@@ -36,3 +36,9 @@ test_java_home_valid_dir() {
 test_jks_truststore_exists() {
   assert "[ -f \"${JAVA_HOME}/lib/security/cacerts\" ]"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_java() { assert_manifest_tool '.tools.java'; }

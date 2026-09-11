@@ -68,6 +68,21 @@ docker run --rm ghcr.io/driftsys/dock:rust \
   jq . /etc/dock/manifest.json
 ```
 
+Each image's manifest also carries forward every tool resolved by the
+images it inherits from — `:lint`'s manifest includes Deno's version, and
+`:android-ndk`'s includes the JDK, Android SDK, and NDK versions, for
+example — so one `manifest.json` shows every tool it records across the
+whole inheritance chain, not just what that image's own layer adds. Not
+every tool an image installs is recorded — only the ones each
+Dockerfile explicitly passes to `manifest.sh`.
+
+To see every image's tool versions for a given release without pulling
+each image yourself, check that release's
+[GitHub Release notes][releases] — the release workflow collects each
+image's manifest into one table.
+
+[releases]: https://github.com/driftsys/dock/releases
+
 To pin a specific runtime version, use the `--build-arg` override at build
 time (see [extending.md](extending.md)).
 

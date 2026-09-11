@@ -85,11 +85,20 @@ docker run --rm ghcr.io/driftsys/dock:rust \
 {
   "image": "rust",
   "version": "0.2.7",
+  "built_at": "2026-06-02T10:00:00Z",
   "tools": {
+    "git": "2.47.1",
+    "git-lfs": "3.6.1",
+    "bash": "5.2.37",
+    "curl": "8.11.1",
+    "jq": "1.7.1",
+    "yq": "4.44.3",
+    "gpg": "2.4.5",
+    "ssh": "9.9",
     "rustc": "1.83.0",
     "cargo": "1.83.0",
-    "clippy": "0.1.83",
-    "rustfmt": "1.8.0"
+    "cargo-audit": "0.21.1",
+    "cargo-deny": "0.16.3"
   }
 }
 ```

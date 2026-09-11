@@ -120,3 +120,19 @@ test_lychee_detects_broken_link() {
 
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_mdbook() { assert_manifest_tool '.tools.mdbook'; }
+
+test_manifest_has_typst() { assert_manifest_tool '.tools.typst'; }
+
+test_manifest_has_tera() { assert_manifest_tool '.tools.tera'; }
+
+test_manifest_has_mdbook_alerts() { assert_manifest_tool '.tools["mdbook-alerts"]'; }
+
+test_manifest_has_mdbook_katex() { assert_manifest_tool '.tools["mdbook-katex"]'; }
+
+test_manifest_has_lychee() { assert_manifest_tool '.tools.lychee'; }

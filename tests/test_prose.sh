@@ -115,3 +115,13 @@ test_harper_cli_runs_on_markdown() {
 
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_vale() { assert_manifest_tool '.tools.vale'; }
+
+test_manifest_has_typos() { assert_manifest_tool '.tools.typos'; }
+
+test_manifest_has_harper_cli() { assert_manifest_tool '.tools["harper-cli"]'; }

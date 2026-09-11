@@ -46,4 +46,11 @@ ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh android-ndk "${VERSION}"
+RUN manifest.sh android-ndk "${VERSION}" \
+    "ndk=${NDK_VERSION}" \
+    "cmake:cmake --version" \
+    "rustc:rustc --version" \
+    "cargo:cargo --version" \
+    "cargo-ndk:cargo ndk --version" \
+    "clippy:cargo clippy --version" \
+    "rustfmt:rustfmt --version"

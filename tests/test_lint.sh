@@ -58,3 +58,19 @@ test_npx_markdownlint_available() {
   npx markdownlint-cli2 "$dir/clean.md"
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_shellcheck() { assert_manifest_tool '.tools.shellcheck'; }
+
+test_manifest_has_editorconfig_checker() { assert_manifest_tool '.tools["editorconfig-checker"]'; }
+
+test_manifest_has_dprint() { assert_manifest_tool '.tools.dprint'; }
+
+test_manifest_has_git_std() { assert_manifest_tool '.tools["git-std"]'; }
+
+# :lint's manifest.sh call does not list deno — this proves the entry
+# inherited from the parent :deno layer survives the merge.
+test_manifest_inherits_deno() { assert_manifest_tool '.tools.deno'; }

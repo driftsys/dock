@@ -19,4 +19,4 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh jvm "${VERSION}"
+RUN manifest.sh jvm "${VERSION}" "java:java -version"

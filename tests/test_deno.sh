@@ -84,3 +84,9 @@ test_npm_init() {
     "npm init should scaffold a project"
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_deno() { assert_manifest_tool '.tools.deno'; }
