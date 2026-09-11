@@ -38,15 +38,33 @@ test_dprint_version() {
 # Functional tests
 # ---------------------------------------------------------------------------
 
-test_dprint_check_valid_json() {
+test_dprint_formats_markdown() {
   local dir
   dir="$(mktemp -d)"
 
-  printf '{"key": "value"}\n' > "$dir/test.json"
-  printf '{\n  "json": {}\n}\n' > "$dir/dprint.json"
+  # A real dprint config must declare a plugin, otherwise dprint errors with
+  # "No formatting plugins found" — the failure the previous `|| true` hid.
+  # Use the markdown plugin (as the repo's own dprint.json does); dprint
+  # downloads the wasm plugin on first use, like the npx/deno tests fetch
+  # their deps.
+  printf '{\n  "markdown": {},\n  "plugins": ["https://plugins.dprint.dev/markdown-0.17.8.wasm"]\n}\n' \
+    > "$dir/dprint.json"
 
-  # dprint check should pass on well-formatted JSON
-  dprint check --config "$dir/dprint.json" "$dir/test.json" || true
+  # Format via --stdin to avoid dprint's working-directory file resolution.
+  # First pass formats messy markdown; the second pass must be a no-op
+  # (dprint's canonical form is idempotent). This exercises the plugin +
+  # formatter end-to-end and fails loudly if dprint is broken, without
+  # hard-coding the version-dependent canonical layout.
+  printf '#  Heading\n\n\nText.\n' \
+    | dprint fmt --stdin doc.md --config "$dir/dprint.json" > "$dir/pass1.md"
+  dprint fmt --stdin doc.md --config "$dir/dprint.json" \
+    < "$dir/pass1.md" > "$dir/pass2.md"
+
+  assert "test -s '$dir/pass1.md'" \
+    "dprint fmt should emit formatted markdown"
+  assert "diff '$dir/pass1.md' '$dir/pass2.md'" \
+    "dprint fmt output should be idempotent (canonical form)"
+
   rm -rf "$dir"
 }
 
