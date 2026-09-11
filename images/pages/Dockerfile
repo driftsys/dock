@@ -95,4 +95,10 @@ RUN curl -sSfL \
 # Generate manifest
 # ---------------------------------------------------------------------------
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh pages "${VERSION}"
+RUN manifest.sh pages "${VERSION}" \
+    "mdbook:mdbook --version" \
+    "typst:typst --version" \
+    "tera:tera --version" \
+    "mdbook-alerts:mdbook-alerts --version" \
+    "mdbook-katex:mdbook-katex --version" \
+    "lychee:lychee --version"

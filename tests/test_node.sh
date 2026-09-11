@@ -36,3 +36,11 @@ test_node_eval() {
   result="$(node -e 'console.log(1+1)')"
   assert_equals "2" "$result"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_node() { assert_manifest_tool '.tools.node'; }
+
+test_manifest_has_npm() { assert_manifest_tool '.tools.npm'; }

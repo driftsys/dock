@@ -36,3 +36,13 @@ test_python3_import_json() {
 test_ruff_help() {
   assert "ruff check --help"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_python3() { assert_manifest_tool '.tools.python3'; }
+
+test_manifest_has_pip3() { assert_manifest_tool '.tools["pip3"]'; }
+
+test_manifest_has_ruff() { assert_manifest_tool '.tools.ruff'; }

@@ -12,4 +12,4 @@ ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh node "${VERSION}"
+RUN manifest.sh node "${VERSION}" "node:node --version" "npm:npm --version"

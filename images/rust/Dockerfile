@@ -30,4 +30,10 @@ ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh rust "${VERSION}"
+RUN manifest.sh rust "${VERSION}" \
+    "rustc:rustc --version" \
+    "cargo:cargo --version" \
+    "cargo-audit:cargo-audit --version" \
+    "cargo-deny:cargo-deny --version" \
+    "clippy:cargo clippy --version" \
+    "rustfmt:rustfmt --version"

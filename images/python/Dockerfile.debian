@@ -16,4 +16,4 @@ ENV PIP_CERT=/etc/ssl/certs/ca-certificates.crt
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh python "${VERSION}"
+RUN manifest.sh python "${VERSION}" "python3:python3 --version" "pip3:pip3 --version" "ruff:ruff --version"

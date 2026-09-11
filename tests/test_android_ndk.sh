@@ -80,3 +80,30 @@ test_cargo_ndk_build_arm64() {
   assert "find \"$dir\" -name '*.so' | grep -q '.so'"
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_ndk() { assert_manifest_tool '.tools.ndk'; }
+
+test_manifest_has_cmake() { assert_manifest_tool '.tools.cmake'; }
+
+test_manifest_has_rustc() { assert_manifest_tool '.tools.rustc'; }
+
+test_manifest_has_cargo() { assert_manifest_tool '.tools.cargo'; }
+
+test_manifest_has_cargo_ndk() { assert_manifest_tool '.tools["cargo-ndk"]'; }
+
+test_manifest_has_clippy() { assert_manifest_tool '.tools.clippy'; }
+
+test_manifest_has_rustfmt() { assert_manifest_tool '.tools.rustfmt'; }
+
+# :android-ndk's manifest.sh call does not list build-tools — this proves
+# the entry inherited from the parent :android layer survives the merge.
+test_manifest_inherits_build_tools() { assert_manifest_tool '.tools["build-tools"]'; }
+
+# java is added two layers up, by :jvm — :android-ndk's manifest.sh call
+# does not list it either, so this proves the merge carries tool versions
+# through more than one inheritance hop (:jvm -> :android -> :android-ndk).
+test_manifest_inherits_java_two_hops() { assert_manifest_tool '.tools.java'; }

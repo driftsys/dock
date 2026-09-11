@@ -31,4 +31,4 @@ COPY scripts/npm.sh /usr/local/bin/npm
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh deno "${VERSION}"
+RUN manifest.sh deno "${VERSION}" "deno:deno --version"

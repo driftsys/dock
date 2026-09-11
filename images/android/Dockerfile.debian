@@ -36,4 +36,8 @@ RUN yes 2>/dev/null | sdkmanager --licenses > /dev/null 2>&1 || true \
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh android "${VERSION}"
+RUN manifest.sh android "${VERSION}" \
+    "cmdline-tools=${ANDROID_CMDLINE_TOOLS_VERSION}" \
+    "build-tools=${ANDROID_BUILD_TOOLS_VERSION}" \
+    "platform=${ANDROID_PLATFORM_VERSION}" \
+    "adb:adb --version"

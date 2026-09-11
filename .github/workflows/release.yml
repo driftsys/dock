@@ -153,3 +153,80 @@ jobs:
                 "${registry}:${img}-${VERSION}-arm64"
             done
           done
+
+  # ------------------------------------------------------------------
+  # Phase 3 — publish a GitHub Release with each image's tool versions
+  # ------------------------------------------------------------------
+  release-notes:
+    name: Publish release notes
+    needs: merge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build tool-version table
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # One row per published image+variant. Each image's own manifest
+          # (/etc/dock/manifest.json, see scripts/manifest.sh) already
+          # merges in every ancestor layer's tool versions, so this reads
+          # one tag per row rather than walking the inheritance tree.
+          tags=(
+            core-alpine core-debian
+            rust-alpine rust-debian
+            deno-alpine deno-debian
+            node-alpine node-debian
+            python-debian
+            polyglot-debian
+            prose-debian
+            jvm-debian
+            android-debian
+            android-ndk-debian
+            lint-alpine lint-debian
+            pages-alpine pages-debian
+          )
+
+          changelog_url="https://github.com/driftsys/dock/blob/${GITHUB_REF_NAME}/CHANGELOG.md"
+          {
+            echo "Tool versions installed in each \`dock\` image published for"
+            echo "this release. See [CHANGELOG.md](${changelog_url}) for what changed."
+            echo
+            echo "| Image | Tools |"
+            echo "| --- | --- |"
+          } > release-notes.md
+
+          for tag in "${tags[@]}"; do
+            image_ref="${REGISTRY}:${tag}-${VERSION}"
+            # A transient registry hiccup (e.g. propagation lag right after
+            # `merge` pushed this tag) on any one image must not fail the
+            # whole job and block the release — record it as unavailable
+            # and keep going instead.
+            tools="$(docker run --rm "$image_ref" jq -r \
+              '.tools | to_entries | map("\(.key) \(.value)") | join(" · ")' \
+              /etc/dock/manifest.json)" || tools="(unavailable)"
+            echo "| \`${tag}\` | ${tools} |" >> release-notes.md
+          done
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            || gh release edit "${GITHUB_REF_NAME}" --notes-file release-notes.md

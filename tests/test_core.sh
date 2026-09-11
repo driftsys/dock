@@ -83,6 +83,37 @@ test_manifest_has_image() {
   assert_not_equals "" "$result"
 }
 
+assert_manifest_tool() {
+  local jq_path="$1"
+  local result
+  result="$(jq -r "$jq_path" /etc/dock/manifest.json)"
+  # Requires an actual dotted-or-bare version number, not just "present" —
+  # a resolver that recorded its own command string instead of a real
+  # version (e.g. "rustc --version") would fail this, where a bare
+  # non-null/non-n/a check would not.
+  assert "[[ \"$result\" =~ ^[0-9]+(\.[0-9]+)*\$ ]]"
+}
+
+# The fixed baseline manifest.sh seeds on :core/:core-debian, before any
+# per-image tools are merged in. Every descendant image inherits these —
+# if any were ever silently dropped from the baseline, this is the only
+# place it would be caught, since no descendant test checks them.
+test_manifest_has_git() { assert_manifest_tool '.tools.git'; }
+
+test_manifest_has_git_lfs() { assert_manifest_tool '.tools["git-lfs"]'; }
+
+test_manifest_has_bash() { assert_manifest_tool '.tools.bash'; }
+
+test_manifest_has_curl() { assert_manifest_tool '.tools.curl'; }
+
+test_manifest_has_jq() { assert_manifest_tool '.tools.jq'; }
+
+test_manifest_has_yq() { assert_manifest_tool '.tools.yq'; }
+
+test_manifest_has_gpg() { assert_manifest_tool '.tools.gpg'; }
+
+test_manifest_has_ssh() { assert_manifest_tool '.tools.ssh'; }
+
 # ---------------------------------------------------------------------------
 # Corporate CA support
 # ---------------------------------------------------------------------------

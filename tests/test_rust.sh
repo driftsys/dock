@@ -48,3 +48,19 @@ test_cargo_fixture_workflow() {
 
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_rustc() { assert_manifest_tool '.tools.rustc'; }
+
+test_manifest_has_cargo() { assert_manifest_tool '.tools.cargo'; }
+
+test_manifest_has_cargo_audit() { assert_manifest_tool '.tools["cargo-audit"]'; }
+
+test_manifest_has_cargo_deny() { assert_manifest_tool '.tools["cargo-deny"]'; }
+
+test_manifest_has_clippy() { assert_manifest_tool '.tools.clippy'; }
+
+test_manifest_has_rustfmt() { assert_manifest_tool '.tools.rustfmt'; }

@@ -52,3 +52,19 @@ test_deno_ffi_loads_rust_library() {
 
   rm -rf "$dir"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_python3() { assert_manifest_tool '.tools.python3'; }
+
+test_manifest_has_ruff() { assert_manifest_tool '.tools.ruff'; }
+
+test_manifest_has_pip3() { assert_manifest_tool '.tools["pip3"]'; }
+
+test_manifest_has_deno() { assert_manifest_tool '.tools.deno'; }
+
+# :polyglot's manifest.sh call does not list rustc — this proves the entry
+# inherited from the parent :rust layer survives the merge.
+test_manifest_inherits_rustc() { assert_manifest_tool '.tools.rustc'; }

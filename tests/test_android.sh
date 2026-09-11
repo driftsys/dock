@@ -41,3 +41,19 @@ test_android_home_valid_dir() {
 test_android_sdk_root_set() {
   assert "[ -n \"$ANDROID_SDK_ROOT\" ]"
 }
+
+# ---------------------------------------------------------------------------
+# Manifest
+# ---------------------------------------------------------------------------
+
+test_manifest_has_build_tools() { assert_manifest_tool '.tools["build-tools"]'; }
+
+test_manifest_has_platform() { assert_manifest_tool '.tools.platform'; }
+
+test_manifest_has_adb() { assert_manifest_tool '.tools.adb'; }
+
+test_manifest_has_cmdline_tools() { assert_manifest_tool '.tools["cmdline-tools"]'; }
+
+# :android's manifest.sh call does not list java — this proves the entry
+# inherited from the parent :jvm layer survives the merge.
+test_manifest_inherits_java() { assert_manifest_tool '.tools.java'; }
