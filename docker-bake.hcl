@@ -133,7 +133,7 @@ target "lint" {
   context    = "."
   dockerfile = "images/lint/Dockerfile"
   tags       = img_tags("lint", "alpine", true)
-  contexts   = { dock-deno = "target:deno" }
+  contexts   = { dock-core = "target:core" }
   platforms  = ["linux/amd64"]
 }
 
@@ -204,7 +204,7 @@ target "lint-debian" {
   context    = "."
   dockerfile = "images/lint/Dockerfile.debian"
   tags       = img_tags("lint", "debian", false)
-  contexts   = { dock-deno = "target:deno-debian" }
+  contexts   = { dock-core = "target:core-debian" }
   platforms  = ["linux/amd64"]
 }
 

@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 # Lint tests — presence + sanity for the :lint image.
-# Sources test_deno.sh so all deno (and core) tests also run.
+# Sources test_core.sh so all core tests also run.
 
-# shellcheck source=tests/test_deno.sh
-source "$(dirname "$0")/test_deno.sh"
+# shellcheck source=tests/test_core.sh
+source "$(dirname "$0")/test_core.sh"
 
 # ---------------------------------------------------------------------------
 # Presence tests
 # ---------------------------------------------------------------------------
 
 test_shellcheck_present()           { assert "command -v shellcheck"; }
+test_hadolint_present()             { assert "command -v hadolint"; }
+test_gitleaks_present()             { assert "command -v gitleaks"; }
+test_shfmt_present()                { assert "command -v shfmt"; }
 test_editorconfig_checker_present() { assert "command -v editorconfig-checker"; }
 test_git_std_present()              { assert "command -v git-std"; }
-test_dprint_present()               { assert "command -v dprint"; }
+test_prim_present()                 { assert "command -v prim"; }
+test_deno_absent()                  { assert_fails "command -v deno"; }
+test_node_absent()                  { assert_fails "command -v node"; }
+test_npm_absent()                   { assert_fails "command -v npm"; }
+test_npx_absent()                   { assert_fails "command -v npx"; }
+test_dprint_absent()                { assert_fails "command -v dprint"; }
 
 # ---------------------------------------------------------------------------
 # Version sanity tests
@@ -20,6 +28,17 @@ test_dprint_present()               { assert "command -v dprint"; }
 
 test_shellcheck_version() {
   assert "shellcheck --version"
+}
+
+test_hadolint_version() {
+  assert "hadolint --version"
+}
+
+test_gitleaks_version() {
+  assert "gitleaks version"
+}
+test_shfmt_version() {
+  assert "shfmt --version"
 }
 
 test_editorconfig_checker_version() {
@@ -30,51 +49,8 @@ test_git_std_version() {
   assert "git-std --version"
 }
 
-test_dprint_version() {
-  assert "dprint --version"
-}
-
-# ---------------------------------------------------------------------------
-# Functional tests
-# ---------------------------------------------------------------------------
-
-test_dprint_formats_markdown() {
-  local dir
-  dir="$(mktemp -d)"
-
-  # A real dprint config must declare a plugin, otherwise dprint errors with
-  # "No formatting plugins found" — the failure the previous `|| true` hid.
-  # Use the markdown plugin (as the repo's own dprint.json does); dprint
-  # downloads the wasm plugin on first use, like the npx/deno tests fetch
-  # their deps.
-  printf '{\n  "markdown": {},\n  "plugins": ["https://plugins.dprint.dev/markdown-0.17.8.wasm"]\n}\n' \
-    > "$dir/dprint.json"
-
-  # Format via --stdin to avoid dprint's working-directory file resolution.
-  # First pass formats messy markdown; the second pass must be a no-op
-  # (dprint's canonical form is idempotent). This exercises the plugin +
-  # formatter end-to-end and fails loudly if dprint is broken, without
-  # hard-coding the version-dependent canonical layout.
-  printf '#  Heading\n\n\nText.\n' \
-    | dprint fmt --stdin doc.md --config "$dir/dprint.json" > "$dir/pass1.md"
-  dprint fmt --stdin doc.md --config "$dir/dprint.json" \
-    < "$dir/pass1.md" > "$dir/pass2.md"
-
-  assert "test -s '$dir/pass1.md'" \
-    "dprint fmt should emit formatted markdown"
-  assert "diff '$dir/pass1.md' '$dir/pass2.md'" \
-    "dprint fmt output should be idempotent (canonical form)"
-
-  rm -rf "$dir"
-}
-
-test_npx_markdownlint_available() {
-  # Verify markdownlint-cli2 can be invoked via npx shim on a clean file.
-  local dir
-  dir="$(mktemp -d)"
-  printf '# Heading\n\nSome text.\n' > "$dir/clean.md"
-  npx markdownlint-cli2 "$dir/clean.md"
-  rm -rf "$dir"
+test_prim_version() {
+  assert "prim --version"
 }
 
 # ---------------------------------------------------------------------------
@@ -83,12 +59,10 @@ test_npx_markdownlint_available() {
 
 test_manifest_has_shellcheck() { assert_manifest_tool '.tools.shellcheck'; }
 
+test_manifest_has_hadolint() { assert_manifest_tool '.tools.hadolint'; }
+test_manifest_has_gitleaks() { assert_manifest_tool '.tools.gitleaks'; }
+
 test_manifest_has_editorconfig_checker() { assert_manifest_tool '.tools["editorconfig-checker"]'; }
 
-test_manifest_has_dprint() { assert_manifest_tool '.tools.dprint'; }
-
 test_manifest_has_git_std() { assert_manifest_tool '.tools["git-std"]'; }
-
-# :lint's manifest.sh call does not list deno — this proves the entry
-# inherited from the parent :deno layer survives the merge.
-test_manifest_inherits_deno() { assert_manifest_tool '.tools.deno'; }
+test_manifest_has_prim() { assert_manifest_tool '.tools.prim'; }

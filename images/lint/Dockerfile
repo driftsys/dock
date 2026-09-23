@@ -2,14 +2,13 @@
 #
 # dock:lint — code and documentation linting toolbox (Alpine).
 #
-# Inherits from dock:deno (Alpine + Deno runtime + npx/npm shims).
-# Adds: shellcheck, editorconfig-checker, git-std, dprint.
-# npx gives access to markdownlint-cli2, prettier, and any npm linter.
+# Inherits from dock:core (Alpine CI foundation).
+# Adds: hadolint, shellcheck, shfmt, editorconfig-checker, git-std, prim, gitleaks.
 #
-# Platform: linux/amd64 only (git-std lacks arm64 Linux builds).
+# Platform: linux/amd64 only (git-std and prim lack arm64 Linux builds).
 
 # hadolint ignore=DL3006
-FROM dock-deno
+FROM dock-core
 
 ARG VERSION=dev
 
@@ -18,26 +17,33 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # ---------------------------------------------------------------------------
 # Tool versions (pinned for reproducibility)
 # ---------------------------------------------------------------------------
-ARG GIT_STD_VERSION=0.11.12
-ARG DPRINT_VERSION=0.54.0
+ARG GIT_STD_VERSION=0.11.19
+ARG GITLEAKS_VERSION=8.30.1
+ARG HADOLINT_VERSION=2.15.1
+ARG PRIM_VERSION=0.9.1
 
 # ---------------------------------------------------------------------------
 # System packages: shellcheck + editorconfig-checker
 # ---------------------------------------------------------------------------
 # hadolint ignore=DL3018
-RUN apk add --no-cache shellcheck editorconfig-checker && \
+RUN apk add --no-cache shellcheck shfmt editorconfig-checker && \
     ln -s /usr/bin/ec /usr/bin/editorconfig-checker
 
-# ---------------------------------------------------------------------------
-# dprint — fast code formatter (Rust binary, covers md/json/toml/yaml)
-# ---------------------------------------------------------------------------
+# hadolint — Dockerfile linter (static binary, amd64-only lint image)
 RUN curl -sSfL \
-      "https://github.com/dprint/dprint/releases/download/${DPRINT_VERSION}/dprint-x86_64-unknown-linux-musl.zip" \
-      -o /tmp/dprint.zip && \
-    unzip -o /tmp/dprint.zip -d /usr/local/bin && \
-    rm /tmp/dprint.zip && \
-    chmod +x /usr/local/bin/dprint && \
-    dprint --version
+      "https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-linux-x86_64" \
+      -o /usr/local/bin/hadolint && \
+    chmod +x /usr/local/bin/hadolint && \
+    hadolint --version
+
+# gitleaks — secrets scanner (static binary, amd64-only lint image)
+RUN curl -sSfL \
+      "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+      -o /tmp/gitleaks.tar.gz && \
+    tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks && \
+    rm /tmp/gitleaks.tar.gz && \
+    chmod +x /usr/local/bin/gitleaks && \
+    gitleaks version
 
 # ---------------------------------------------------------------------------
 # git-std — git commit conventions + hooks
@@ -51,11 +57,25 @@ RUN curl -sSfL \
     git-std --version
 
 # ---------------------------------------------------------------------------
+# prim — repository connective-tissue formatter and linter
+# ---------------------------------------------------------------------------
+RUN curl -sSfL \
+      "https://github.com/driftsys/prim/releases/download/v${PRIM_VERSION}/prim-x86_64-unknown-linux-musl.tar.gz" \
+      -o /tmp/prim.tar.gz && \
+    tar -xzf /tmp/prim.tar.gz -C /usr/local/bin && \
+    rm /tmp/prim.tar.gz && \
+    chmod +x /usr/local/bin/prim && \
+    prim --version
+
+# ---------------------------------------------------------------------------
 # Generate manifest
 # ---------------------------------------------------------------------------
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
 RUN manifest.sh lint "${VERSION}" \
+    "gitleaks:gitleaks version" \
+    "hadolint:hadolint --version" \
     "shellcheck:shellcheck --version" \
+    "shfmt:shfmt --version" \
     "editorconfig-checker:editorconfig-checker --version" \
-    "dprint:dprint --version" \
-    "git-std:git-std --version"
+    "git-std:git-std --version" \
+    "prim:prim --version"
