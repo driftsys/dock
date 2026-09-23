@@ -69,8 +69,8 @@ docker run --rm ghcr.io/driftsys/dock:rust \
 ```
 
 Each image's manifest also carries forward every tool resolved by the
-images it inherits from — `:lint`'s manifest includes Deno's version, and
-`:android-ndk`'s includes the JDK, Android SDK, and NDK versions, for
+images it inherits from — for example, `:android-ndk`'s includes the JDK,
+Android SDK, and NDK versions, for
 example — so one `manifest.json` shows every tool it records across the
 whole inheritance chain, not just what that image's own layer adds. Not
 every tool an image installs is recorded — only the ones each
