@@ -19,7 +19,8 @@ You need:
 
 - **Docker** with BuildKit / `docker buildx` support
 - **[just]** — command runner
-- **[dprint]** — Markdown formatter
+- **[prim]** — repository formatter and linter
+- **[git-std]** — commit validation and git hooks
 
 ```bash
 git clone https://github.com/driftsys/dock.git
@@ -29,7 +30,8 @@ just build
 ```
 
 [just]: https://github.com/casey/just
-[dprint]: https://dprint.dev
+[prim]: https://github.com/driftsys/prim
+[git-std]: https://github.com/driftsys/git-std
 
 ## Architecture
 
@@ -41,23 +43,26 @@ directory layout.
 ```bash
 just test        # Run the image bash_unit test suite
 just test-health # Check the health workflow without Docker (requires yq v4)
-just lint        # hadolint + shellcheck + dprint check
+just lint        # hadolint + shellcheck + prim formatting and lint
 ```
 
-Tests live in `tests/`. Each image has a presence test (binaries exist and
-are on `$PATH`) and a sanity test (tools execute correctly).
+Tests live in `tests/`. Each image has a presence test (binaries exist and are
+on `$PATH`) and a sanity test (tools execute correctly).
 
-The weekly health workflow tests published images. Its matrix uses build
-target names: unsuffixed targets select `-alpine` tags, and `-debian`
-targets select Debian tags. Python and polyglot use only their `-debian`
-targets. The pull step and test runner must select the same tag.
+The weekly health workflow tests published images. Its matrix uses build target
+names: unsuffixed targets select `-alpine` tags, and `-debian` targets select
+Debian tags. Python and polyglot use only their `-debian` targets. The pull step
+and test runner must select the same tag.
 
-`just test-health` checks that every scheduled target is accepted by the
-runner and that the workflow pulls the tag the runner tests. It uses
-Docker recorders and requires [mikefarah/yq v4][yq]. CI runs this check
-without building images.
+`just test-health` checks that every scheduled target is accepted by the runner
+and that the workflow pulls the tag the runner tests. It uses Docker recorders
+and requires [mikefarah/yq v4][yq]. CI runs this check without building images.
 
 [yq]: https://github.com/mikefarah/yq
 
-bash_unit is vendored in `tests/bash_unit`. Do not upgrade it without
-updating the vendored copy.
+bash_unit is vendored in `tests/bash_unit`. Do not upgrade it without updating
+the vendored copy.
+
+Use `just fmt` to format repository files. Prim uses its non-strict defaults; do
+not add strict Markdown glob mappings or stricter rule overrides. CI validates
+pull request commits with `git std lint --range BASE..HEAD`.

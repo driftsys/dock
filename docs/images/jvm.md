@@ -20,14 +20,13 @@ this image shares the glibc base used by the Android images.
 | javac   | apt (temurin-17-jdk) | Java compiler             |
 | keytool | included in JDK      | Certificate management    |
 
-Debian trixie does not provide OpenJDK 17. The image uses Adoptium's
-signed apt repository to preserve Java 17 for JVM and Android builds.
-The Temurin package also installs its system certificate update hook.
+Debian trixie does not provide OpenJDK 17. The image uses Adoptium's signed apt
+repository to preserve Java 17 for JVM and Android builds. The Temurin package
+also installs its system certificate update hook.
 
-The Java platform library source archive (`JAVA_HOME/lib/src.zip`) is
-omitted to reduce the image size. CI compilation and execution use the
-installed compiler and runtime binaries. Android images inherit this
-reduction.
+The Java platform library source archive (`JAVA_HOME/lib/src.zip`) is omitted to
+reduce the image size. CI compilation and execution use the installed compiler
+and runtime binaries. Android images inherit this reduction.
 
 ## Environment variables
 
@@ -35,16 +34,15 @@ reduction.
 | ----------- | ------------------------------ |
 | `JAVA_HOME` | `/usr/lib/jvm/java-17-openjdk` |
 
-`JAVA_HOME` uses an arch-neutral symlink that works on both
-`amd64` and `arm64`.
+`JAVA_HOME` uses an arch-neutral symlink that works on both `amd64` and `arm64`.
 
 ## Corporate CA support
 
-`dock-bootstrap` automatically updates the JKS truststore when
-corporate certificates are detected. On read-only Kubernetes
-runners, it builds a private truststore at `/etc/dock/cacerts`
-and sets `JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/etc/dock/cacerts`
-via `/etc/dock/ca.env`.
+`dock-bootstrap` automatically updates the JKS truststore when corporate
+certificates are detected. On read-only Kubernetes runners, it builds a private
+truststore at `/etc/dock/cacerts` and sets
+`JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/etc/dock/cacerts` via
+`/etc/dock/ca.env`.
 
 ## Usage in CI
 

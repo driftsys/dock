@@ -2,19 +2,19 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
-> superpowers:executing-plans to implement this plan task-by-task.
-> Steps use checkbox (`- [ ]`) syntax for tracking.
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a new `:android-ndk-debian` image with NDK 27, Rust
-stable, cargo-ndk, and all 4 Android cross-compilation targets.
+**Goal:** Add a new `:android-ndk-debian` image with NDK 27, Rust stable,
+cargo-ndk, and all 4 Android cross-compilation targets.
 
-**Architecture:** New Dockerfile inheriting from `android-debian`,
-installs NDK+CMake via sdkmanager, Rust via rustup, adds Android
-targets and cargo-ndk. Same dual-tag pattern as android
-(`:android-ndk-debian` floating + `:android-ndk-27-debian` pinned).
+**Architecture:** New Dockerfile inheriting from `android-debian`, installs
+NDK+CMake via sdkmanager, Rust via rustup, adds Android targets and cargo-ndk.
+Same dual-tag pattern as android (`:android-ndk-debian` floating +
+`:android-ndk-27-debian` pinned).
 
-**Tech Stack:** Docker Buildx Bake (HCL), GitHub Actions YAML,
-bash_unit tests, Markdown docs
+**Tech Stack:** Docker Buildx Bake (HCL), GitHub Actions YAML, bash_unit tests,
+Markdown docs
 
 ---
 
@@ -304,9 +304,8 @@ debian=(core-debian rust-debian deno-debian node-debian python-debian polyglot-d
 
 - [ ] **Step 2: Add android-ndk dependency chain**
 
-After the `needs_jvm` block, the existing `needs_jvm` section
-already triggers `android-debian`. Update it to also trigger
-`android-ndk-debian`:
+After the `needs_jvm` block, the existing `needs_jvm` section already triggers
+`android-debian`. Update it to also trigger `android-ndk-debian`:
 
 ```bash
 if needs_jvm; then
@@ -527,8 +526,7 @@ Update the Debian tree to add the android-ndk line:
 
 - [ ] **Step 4: Update docs/versioning.md**
 
-Add to the "Android API-level tags" section or create a sibling
-section:
+Add to the "Android API-level tags" section or create a sibling section:
 
 ```markdown
 ## Android NDK tags

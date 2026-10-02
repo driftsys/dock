@@ -25,8 +25,8 @@ Linting toolbox based directly on the core CI foundation.
 
 ## Platform note
 
-The lint-specific binaries currently provide Linux x86_64 builds. This
-image is built for `linux/amd64` only.
+The lint-specific binaries currently provide Linux x86_64 builds. This image is
+built for `linux/amd64` only.
 
 ## Usage in CI
 
@@ -37,11 +37,14 @@ jobs:
     container: ghcr.io/driftsys/dock:lint
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: prim fmt --check
       - run: prim lint
       - run: gitleaks git --redact
       - run: shellcheck scripts/*.sh
       - run: editorconfig-checker
-      - run: git-std check
+      - run: git std lint --range origin/main..HEAD
 ```
 
 ## Build arguments
@@ -60,3 +63,6 @@ jobs:
 | ------- | ------- |
 | Alpine  | ~145 MB |
 | Debian  | ~200 MB |
+
+Prim uses its non-strict defaults. No strict Markdown glob mappings or stricter
+rule overrides are required.

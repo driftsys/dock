@@ -5,20 +5,19 @@ Lean, layered CI Docker images published at
 and [Docker Hub](https://hub.docker.com/r/driftsys/dock).
 
 Each image adds exactly one concern — scripting foundation, compilation
-toolchain, or language runtime — so teams pick the smallest image that
-covers their pipeline.
+toolchain, or language runtime — so teams pick the smallest image that covers
+their pipeline.
 
 ## Why dock?
 
-- **Small** — Alpine-based images start at ~32 MB (vs ~600 MB for
-  typical CI images).
-- **Layered** — every image inherits from `:core`, so all pipelines
-  share the same scripting tools (git, curl, jq, yq, gpg, …).
-- **Multi-arch** — every image ships for `linux/amd64` and
-  `linux/arm64`.
-- **Variant tags** — `:image-alpine` (musl) and `:image-debian` (glibc),
-  plus a bare `:image` pointing at the recommended one. Some images are
-  Debian-only where the upstream toolchain requires glibc.
+- **Small** — Alpine-based images start at ~32 MB (vs ~600 MB for typical CI
+  images).
+- **Layered** — every image inherits from `:core`, so all pipelines share the
+  same scripting tools (git, curl, jq, yq, gpg, …).
+- **Multi-arch** — every image ships for `linux/amd64` and `linux/arm64`.
+- **Variant tags** — `:image-alpine` (musl) and `:image-debian` (glibc), plus a
+  bare `:image` pointing at the recommended one. Some images are Debian-only
+  where the upstream toolchain requires glibc.
 - **Inspectable** — each image records installed tool versions in
   `/etc/dock/manifest.json`.
 

@@ -71,11 +71,15 @@ RUN curl -sSfL \
 # Generate manifest
 # ---------------------------------------------------------------------------
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh lint "${VERSION}" \
+# Alpine's shfmt binary can report a development banner instead of its version.
+# Record the installed package version without Alpine's packaging revision.
+RUN shfmt_version="$(apk info -v | sed -n 's/^shfmt-\([0-9][0-9.]*\)-r[0-9]*$/\1/p')" && \
+    test -n "${shfmt_version}" && \
+    manifest.sh lint "${VERSION}" \
     "gitleaks:gitleaks version" \
     "hadolint:hadolint --version" \
     "shellcheck:shellcheck --version" \
-    "shfmt:shfmt --version" \
+    "shfmt=${shfmt_version}" \
     "editorconfig-checker:editorconfig-checker --version" \
     "git-std:git-std --version" \
     "prim:prim --version"

@@ -2,45 +2,41 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
-> superpowers:executing-plans to implement this plan task-by-task.
-> Steps use checkbox (`- [ ]`) syntax for tracking.
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make `:core` (and all child images) corporate-environment
-friendly. `dock-bootstrap` in a CI `before_script` auto-detects CA
-certificates from environment variables and files, imports them into
-the system trust store, and every language tool picks them up
-automatically via pre-set ENV vars.
+**Goal:** Make `:core` (and all child images) corporate-environment friendly.
+`dock-bootstrap` in a CI `before_script` auto-detects CA certificates from
+environment variables and files, imports them into the system trust store, and
+every language tool picks them up automatically via pre-set ENV vars.
 
-**Architecture:** Two layers of change: (1) `dock-bootstrap` script
-installed in `:core` that auto-detects PEM certs from env vars,
-files in `/etc/dock/ca.d/`, and `CI_SERVER_TLS_CA_FILE`, then runs
-`update-ca-certificates`; (2) ENV declarations in each image's
-Dockerfile pointing language tools at the system CA bundle. No new
-image variants. No runtime entrypoint.
+**Architecture:** Two layers of change: (1) `dock-bootstrap` script installed in
+`:core` that auto-detects PEM certs from env vars, files in `/etc/dock/ca.d/`,
+and `CI_SERVER_TLS_CA_FILE`, then runs `update-ca-certificates`; (2) ENV
+declarations in each image's Dockerfile pointing language tools at the system CA
+bundle. No new image variants. No runtime entrypoint.
 
-**Tech Stack:** Dockerfile, POSIX shell, bash_unit, hadolint,
-shellcheck, Docker BuildKit (docker-bake.hcl).
+**Tech Stack:** Dockerfile, POSIX shell, bash_unit, hadolint, shellcheck, Docker
+BuildKit (docker-bake.hcl).
 
 **Design decisions:**
 
-- **`dock-bootstrap` replaces `dock-add-ca`** from the original spec.
-  Key improvement: auto-detects PEM-encoded certificates in
-  environment variables (e.g. `ALLIANCE_ROOT_CA_G2`, or any var
-  containing `-----BEGIN CERTIFICATE-----`), not just files.
-  Validated on Renault's corporate GitLab — 3 CA env vars detected
-  and imported in <1 second, fixing Artifactory TLS.
-- **Proxy ARGs dropped.** Docker/BuildKit has predefined build args
-  for `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`. They are available in
-  every `RUN` without any `ARG` declaration. Proxy is
-  documentation-only.
-- **Registry config out of scope.** Org-specific (Artifactory URLs,
-  auth tokens). Stays in org CI templates. Dock handles trust, org
-  handles config.
-- **Java keystore dropped.** No dock image ships a JDK. Dead code.
-  Add when a `:java` image exists.
-- **Shebang: `#!/bin/sh`.** POSIX-compatible, no bashisms. Works on
-  Alpine (`ash`) and Debian (`dash`). Documented exception to
-  AGENTS.md `#!/usr/bin/env bash` rule.
+- **`dock-bootstrap` replaces `dock-add-ca`** from the original spec. Key
+  improvement: auto-detects PEM-encoded certificates in environment variables
+  (e.g. `ALLIANCE_ROOT_CA_G2`, or any var containing
+  `-----BEGIN CERTIFICATE-----`), not just files. Validated on Renault's
+  corporate GitLab — 3 CA env vars detected and imported in <1 second, fixing
+  Artifactory TLS.
+- **Proxy ARGs dropped.** Docker/BuildKit has predefined build args for
+  `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`. They are available in every `RUN`
+  without any `ARG` declaration. Proxy is documentation-only.
+- **Registry config out of scope.** Org-specific (Artifactory URLs, auth
+  tokens). Stays in org CI templates. Dock handles trust, org handles config.
+- **Java keystore dropped.** No dock image ships a JDK. Dead code. Add when a
+  `:java` image exists.
+- **Shebang: `#!/bin/sh`.** POSIX-compatible, no bashisms. Works on Alpine
+  (`ash`) and Debian (`dash`). Documented exception to AGENTS.md
+  `#!/usr/bin/env bash` rule.
 - **`:lint` image** inherits from `:core`, needs no changes.
 
 ---
@@ -190,8 +186,8 @@ fi
 shellcheck scripts/dock-bootstrap.sh
 ```
 
-Expected: 0 warnings. Note: shellcheck may flag the `#!/bin/sh`
-shebang if it detects bash-isms — verify the script is pure POSIX.
+Expected: 0 warnings. Note: shellcheck may flag the `#!/bin/sh` shebang if it
+detects bash-isms — verify the script is pure POSIX.
 
 - [ ] **Step 3: Commit**
 
@@ -211,8 +207,8 @@ git commit -m "feat(core): add dock-bootstrap script for corporate CA detection"
 
 - [ ] **Step 1: Edit `images/core/Dockerfile` (Alpine)**
 
-After the `apk add` RUN block (line 28) and before the manifest
-COPY (line 31), add:
+After the `apk add` RUN block (line 28) and before the manifest COPY (line 31),
+add:
 
 ```dockerfile
 # Point common tools at the system CA bundle so custom CAs added via
@@ -279,8 +275,8 @@ RUN manifest.sh core "${VERSION}"
 
 - [ ] **Step 2: Edit `images/core/Dockerfile.debian`**
 
-After the dotenv COPY+RUN block (line 42) and before the manifest
-COPY (line 45), add the same ENV block and COPY+RUN:
+After the dotenv COPY+RUN block (line 42) and before the manifest COPY (line
+45), add the same ENV block and COPY+RUN:
 
 ```dockerfile
 # Point common tools at the system CA bundle so custom CAs added via
@@ -416,15 +412,13 @@ git commit -m "feat(core): pre-wire CA bundle ENVs and install dock-bootstrap"
 - Modify: `images/polyglot/Dockerfile`
 - Modify: `images/polyglot/Dockerfile.debian`
 
-Each language image gets one `ENV` line for its tool-specific CA
-variable. These go **after** the tool installation and **before** the
-manifest block. The core ENVs (`SSL_CERT_FILE`, etc.) are already
-inherited from `:core`.
+Each language image gets one `ENV` line for its tool-specific CA variable. These
+go **after** the tool installation and **before** the manifest block. The core
+ENVs (`SSL_CERT_FILE`, etc.) are already inherited from `:core`.
 
 - [ ] **Step 1: Edit `images/rust/Dockerfile`**
 
-After the `cargo install` line (line 26), before the manifest
-comment, add:
+After the `cargo install` line (line 26), before the manifest comment, add:
 
 ```dockerfile
 # Point Cargo at the system CA bundle for corporate CA support.
@@ -642,8 +636,8 @@ RUN manifest.sh python "${VERSION}"
 
 - [ ] **Step 7: Edit `images/deno/Dockerfile`**
 
-After the `ENV LD_LIBRARY_PATH` and `deno --version` RUN (line 25),
-before manifest:
+After the `ENV LD_LIBRARY_PATH` and `deno --version` RUN (line 25), before
+manifest:
 
 ```dockerfile
 # Point Deno at the system CA bundle for corporate CA support.
@@ -732,8 +726,8 @@ RUN manifest.sh deno "${VERSION}"
 - [ ] **Step 9: Edit `images/polyglot/Dockerfile`**
 
 Polyglot inherits from `:rust` (which inherits `:core`), so it gets
-`SSL_CERT_FILE` etc. from core and `CARGO_HTTP_CAINFO` from rust.
-It bundles Deno and Python, so add `DENO_CERT` and `PIP_CERT`.
+`SSL_CERT_FILE` etc. from core and `CARGO_HTTP_CAINFO` from rust. It bundles
+Deno and Python, so add `DENO_CERT` and `PIP_CERT`.
 
 After the `deno --version` RUN (line 32), before manifest:
 
@@ -876,9 +870,9 @@ git commit -m "feat: pre-wire CA bundle ENVs for all language images"
 - Modify: `tests/test_core.sh`
 - Create: `tests/fixtures/ca/test-ca.crt`
 
-Tests are added to `test_core.sh` because `dock-bootstrap` is
-installed in `:core`. All child image test suites source
-`test_core.sh`, so these tests run for every image automatically.
+Tests are added to `test_core.sh` because `dock-bootstrap` is installed in
+`:core`. All child image test suites source `test_core.sh`, so these tests run
+for every image automatically.
 
 - [ ] **Step 1: Generate the test fixture certificate**
 
@@ -892,9 +886,8 @@ openssl req -x509 -newkey rsa:2048 -nodes \
   -days 3650 -subj "/CN=dock-test-ca" 2>/dev/null
 ```
 
-This creates a long-lived (10 year) self-signed cert for testing.
-The private key is intentionally discarded — we only need the cert
-for trust-store testing.
+This creates a long-lived (10 year) self-signed cert for testing. The private
+key is intentionally discarded — we only need the cert for trust-store testing.
 
 - [ ] **Step 2: Verify the fixture was created**
 
@@ -906,8 +899,7 @@ Expected: `subject=CN = dock-test-ca`
 
 - [ ] **Step 3: Add tests to `tests/test_core.sh`**
 
-Append after the existing `test_manifest_has_image` function
-(line 73):
+Append after the existing `test_manifest_has_image` function (line 73):
 
 ```bash
 # ---------------------------------------------------------------------------
@@ -982,10 +974,9 @@ test_dock_bootstrap_skip() {
 
 - [ ] **Step 4: Verify fixtures are mounted**
 
-The existing `run.sh` mounts `${FIXTURES_DIR}:/fixtures:ro`. The
-file `tests/fixtures/ca/test-ca.crt` will appear at
-`/fixtures/ca/test-ca.crt` inside the container. No change needed
-to `run.sh`.
+The existing `run.sh` mounts `${FIXTURES_DIR}:/fixtures:ro`. The file
+`tests/fixtures/ca/test-ca.crt` will appear at `/fixtures/ca/test-ca.crt` inside
+the container. No change needed to `run.sh`.
 
 - [ ] **Step 5: Run shellcheck on test_core.sh**
 
@@ -1001,8 +992,7 @@ Expected: 0 warnings.
 just test-image core
 ```
 
-Expected: all tests pass, including the new `test_dock_bootstrap_*`
-tests.
+Expected: all tests pass, including the new `test_dock_bootstrap_*` tests.
 
 - [ ] **Step 7: Commit**
 
@@ -1023,14 +1013,13 @@ git commit -m "test(core): add dock-bootstrap presence and import tests"
 - Modify: `tests/test_deno.sh`
 - Modify: `tests/test_polyglot.sh`
 
-Each child image test gets one assertion verifying its
-tool-specific CA ENV is set. The core ENVs are already tested
-via inheritance from `test_core.sh`.
+Each child image test gets one assertion verifying its tool-specific CA ENV is
+set. The core ENVs are already tested via inheritance from `test_core.sh`.
 
 - [ ] **Step 1: Edit `tests/test_rust.sh`**
 
-Insert between the Presence tests section and the Sanity tests
-section (between lines 18 and 19 of the current file):
+Insert between the Presence tests section and the Sanity tests section (between
+lines 18 and 19 of the current file):
 
 ```bash
 # ---------------------------------------------------------------------------
@@ -1086,8 +1075,8 @@ test_deno_cert_env() {
 
 - [ ] **Step 5: Edit `tests/test_polyglot.sh`**
 
-Polyglot inherits the Cargo test from `test_rust.sh`. Add Deno and
-pip tests. Insert after the Python presence section (after line 20):
+Polyglot inherits the Cargo test from `test_rust.sh`. Add Deno and pip tests.
+Insert after the Python presence section (after line 20):
 
 ```bash
 # ---------------------------------------------------------------------------
@@ -1136,8 +1125,7 @@ git commit -m "test: add CA bundle ENV assertions for all language images"
 - Modify: `README.md`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add corporate environments section to
-      `docs/extending.md`**
+- [ ] **Step 1: Add corporate environments section to `docs/extending.md`**
 
 Append after the existing "Multi-stage builds" section (end of file):
 
@@ -1310,8 +1298,8 @@ misconfigurations before they break real builds.
 
 - [ ] **Step 2: Add corporate extension blurb to `README.md`**
 
-Insert before the `## Tags` section (before line 88), after the
-Core Package List table:
+Insert before the `## Tags` section (before line 88), after the Core Package
+List table:
 
 ````markdown
 ## Corporate Environments
@@ -1326,14 +1314,13 @@ default:
 ```
 ````
 
-`dock-bootstrap` auto-detects PEM certificates from environment
-variables, files in `/etc/dock/ca.d/`, and GitLab's
-`CI_SERVER_TLS_CA_FILE`, then imports them into the system trust
-store. All language tools are pre-configured to use the system CA
-bundle.
+`dock-bootstrap` auto-detects PEM certificates from environment variables, files
+in `/etc/dock/ca.d/`, and GitLab's `CI_SERVER_TLS_CA_FILE`, then imports them
+into the system trust store. All language tools are pre-configured to use the
+system CA bundle.
 
-See [docs/extending.md](docs/extending.md#corporate-environments)
-for full documentation.
+See [docs/extending.md](docs/extending.md#corporate-environments) for full
+documentation.
 
 ````
 - [ ] **Step 3: Update `CHANGELOG.md`**
@@ -1428,6 +1415,6 @@ Expected: `ok` — default trust store is unchanged.
 | 5 | `test: add CA bundle ENV assertions for all language images`       | `tests/test_{rust,node,python,deno,polyglot}.sh`               |
 | 6 | `docs: add corporate environment guide with dock-bootstrap`        | `docs/extending.md`, `README.md`, `CHANGELOG.md`               |
 
-Note: AGENTS.md says "One commit per PR." If this lands as a single
-PR, squash these into one commit with message:
+Note: AGENTS.md says "One commit per PR." If this lands as a single PR, squash
+these into one commit with message:
 `feat(core): add dock-bootstrap for corporate CA auto-detection and trust store setup`

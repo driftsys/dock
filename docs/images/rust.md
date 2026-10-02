@@ -3,8 +3,8 @@
 Rust compilation toolchain. Inherits all `:core` tools.
 
 The bare **`:rust` tag is the Debian (gnu) variant** — the Rust tier-1 target
-with the widest crate compatibility. Use **`:rust-alpine`** when you want
-static musl binaries.
+with the widest crate compatibility. Use **`:rust-alpine`** when you want static
+musl binaries.
 
 ## Base
 

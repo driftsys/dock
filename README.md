@@ -109,8 +109,8 @@ when you have a specific reason:
   `node`, `lint`, and `pages`. Pick `:rust-alpine` when you want static musl
   binaries.
 - **Debian (`-debian`)** — broadest compatibility; the default for `rust` (the
-  gnu tier-1 target), and the only option for `python`, `prose`, `polyglot`,
-  and the JVM/Android images.
+  gnu tier-1 target), and the only option for `python`, `prose`, `polyglot`, and
+  the JVM/Android images.
 
 Rule of thumb: **Alpine for size, Debian when you need glibc** — Python wheels
 (numpy/pandas), glibc-only tools (vale), or native addons without musl builds.
@@ -141,8 +141,8 @@ All images include these tools from `:core`:
 
 ## Corporate Environments
 
-All dock images include `dock-bootstrap` for corporate CA certificate
-detection. Add it to your CI `before_script`:
+All dock images include `dock-bootstrap` for corporate CA certificate detection.
+Add it to your CI `before_script`:
 
 ```yaml
 default:
@@ -151,19 +151,18 @@ default:
     - . /etc/dock/ca.env 2>/dev/null || true
 ```
 
-`dock-bootstrap` auto-detects PEM certificates from environment
-variables, files in `/etc/dock/ca.d/`, and GitLab's
-`CI_SERVER_TLS_CA_FILE`, then imports them into the system trust
-store. On Kubernetes runners where `/etc/ssl/certs/` is read-only,
-it builds a private bundle and writes `/etc/dock/ca.env` — source
-it to redirect all TLS tools to the new bundle.
+`dock-bootstrap` auto-detects PEM certificates from environment variables, files
+in `/etc/dock/ca.d/`, and GitLab's `CI_SERVER_TLS_CA_FILE`, then imports them
+into the system trust store. On Kubernetes runners where `/etc/ssl/certs/` is
+read-only, it builds a private bundle and writes `/etc/dock/ca.env` — source it
+to redirect all TLS tools to the new bundle.
 
-Images are published to both GHCR (`ghcr.io/driftsys/dock`) and
-Docker Hub (`docker.io/driftsys/dock`). Use whichever your network
-allows, or mirror to your internal registry.
+Images are published to both GHCR (`ghcr.io/driftsys/dock`) and Docker Hub
+(`docker.io/driftsys/dock`). Use whichever your network allows, or mirror to
+your internal registry.
 
-See [docs/extending.md](docs/extending.md#corporate-environments)
-for full documentation.
+See [docs/extending.md](docs/extending.md#corporate-environments) for full
+documentation.
 
 ## Tags
 

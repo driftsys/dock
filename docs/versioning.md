@@ -32,14 +32,13 @@ to the latest release. Use them in prototyping; pin to a version in production.
 
 ## Android API-level tags
 
-The `:android` image publishes an additional pinned tag per API
-level:
+The `:android` image publishes an additional pinned tag per API level:
 
 - `:android-debian` — floating, always current stable API
 - `:android-36-debian` — pinned to API 36
 
-When the API level is bumped (e.g., to 37), the old pinned tag
-remains in the registry but stops receiving updates (deprecated).
+When the API level is bumped (e.g., to 37), the old pinned tag remains in the
+registry but stops receiving updates (deprecated).
 
 ## Android NDK tags
 
@@ -60,36 +59,34 @@ Releases follow [Semantic Versioning](https://semver.org):
 
 ## Runtime pinning
 
-Runtime versions are recorded in `/etc/dock/manifest.json` inside each
-image — not in the image tag. Inspect them with:
+Runtime versions are recorded in `/etc/dock/manifest.json` inside each image —
+not in the image tag. Inspect them with:
 
 ```bash
 docker run --rm ghcr.io/driftsys/dock:rust \
   jq . /etc/dock/manifest.json
 ```
 
-Each image's manifest also carries forward every tool resolved by the
-images it inherits from — for example, `:android-ndk`'s includes the JDK,
-Android SDK, and NDK versions, for
-example — so one `manifest.json` shows every tool it records across the
-whole inheritance chain, not just what that image's own layer adds. Not
-every tool an image installs is recorded — only the ones each
-Dockerfile explicitly passes to `manifest.sh`.
+Each image's manifest also carries forward every tool resolved by the images it
+inherits from — for example, `:android-ndk`'s includes the JDK, Android SDK, and
+NDK versions, for example — so one `manifest.json` shows every tool it records
+across the whole inheritance chain, not just what that image's own layer adds.
+Not every tool an image installs is recorded — only the ones each Dockerfile
+explicitly passes to `manifest.sh`.
 
-To see every image's tool versions for a given release without pulling
-each image yourself, check that release's
-[GitHub Release notes][releases] — the release workflow collects each
-image's manifest into one table.
+To see every image's tool versions for a given release without pulling each
+image yourself, check that release's [GitHub Release notes][releases] — the
+release workflow collects each image's manifest into one table.
 
 [releases]: https://github.com/driftsys/dock/releases
 
-To pin a specific runtime version, use the `--build-arg` override at build
-time (see [extending.md](extending.md)).
+To pin a specific runtime version, use the `--build-arg` override at build time
+(see [extending.md](extending.md)).
 
 ## SDK and runtime update cadence
 
-Different runtimes follow different upstream release schedules. The
-table below summarizes the update policy for each:
+Different runtimes follow different upstream release schedules. The table below
+summarizes the update policy for each:
 
 | Runtime         | Update trigger                   | Frequency  |
 | --------------- | -------------------------------- | ---------- |
@@ -101,10 +98,10 @@ table below summarizes the update policy for each:
 | JDK             | New LTS release (17 → 21 → …)    | ~2 years   |
 | Android SDK     | New stable API level from Google | ~12 months |
 
-**Android SDK specifics:** The `:android-debian` image ships the latest
-stable API level only (no beta/preview). Google Play Store requires
-apps to target the latest stable SDK within ~1 year of release, so the
-image tracks that requirement. Bumps are manual — watch the
+**Android SDK specifics:** The `:android-debian` image ships the latest stable
+API level only (no beta/preview). Google Play Store requires apps to target the
+latest stable SDK within ~1 year of release, so the image tracks that
+requirement. Bumps are manual — watch the
 [platform releases page](https://developer.android.com/tools/releases/platforms).
 
 **JDK specifics:** The `:jvm-debian` image keeps JDK 17 for JVM and Android
@@ -113,10 +110,9 @@ be a minor version bump with advance notice in the changelog.
 
 ## Rebuild strategy
 
-Images are rebuilt on every release tag (`v*`). The OS base
-(`alpine:3.24`, `debian:trixie-slim`) is resolved at build time. All
-installed packages reflect the state of the package index at release time.
+Images are rebuilt on every release tag (`v*`). The OS base (`alpine:3.24`,
+`debian:trixie-slim`) is resolved at build time. All installed packages reflect
+the state of the package index at release time.
 
 Security patches to the base OS are incorporated by cutting a new release.
-Dependabot is configured to notify when referenced base images have known
-CVEs.
+Dependabot is configured to notify when referenced base images have known CVEs.

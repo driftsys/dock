@@ -2,16 +2,16 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
-> superpowers:executing-plans to implement this plan task-by-task.
-> Steps use checkbox (`- [ ]`) syntax for tracking.
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Publish Android images with both a floating `:android-debian`
-tag and a pinned `:android-36-debian` tag from a single build.
+**Goal:** Publish Android images with both a floating `:android-debian` tag and
+a pinned `:android-36-debian` tag from a single build.
 
-**Architecture:** Promote `ANDROID_PLATFORM_VERSION` to a bake-file
-variable, add API-level-pinned tags to the existing `android-debian`
-target, and update the release workflow manifest merge to include the
-pinned tag. Docs updated to explain pinning and deprecation policy.
+**Architecture:** Promote `ANDROID_PLATFORM_VERSION` to a bake-file variable,
+add API-level-pinned tags to the existing `android-debian` target, and update
+the release workflow manifest merge to include the pinned tag. Docs updated to
+explain pinning and deprecation policy.
 
 **Tech Stack:** Docker Buildx Bake (HCL), GitHub Actions YAML, Markdown
 
@@ -75,9 +75,8 @@ target "android-debian" {
 
 Run: `docker buildx bake --print android-debian 2>&1 | head -20`
 
-Expected: JSON output showing tags including `android-36-debian`.
-(If Docker is unavailable locally, visual inspection is sufficient —
-CI will validate.)
+Expected: JSON output showing tags including `android-36-debian`. (If Docker is
+unavailable locally, visual inspection is sufficient — CI will validate.)
 
 ---
 
@@ -89,8 +88,8 @@ CI will validate.)
 
 - [ ] **Step 1: Add checkout step to merge job**
 
-The merge job needs repo access to read the bake variable. Add a
-checkout step after the Docker Hub login:
+The merge job needs repo access to read the bake variable. Add a checkout step
+after the Docker Hub login:
 
 ```yaml
 - uses: actions/checkout@v4
@@ -111,8 +110,8 @@ Add after the version resolution step:
 
 - [ ] **Step 3: Add pinned tag to manifest merge images list**
 
-In the `images=()` array inside the "Create multi-arch manifests"
-step, add the pinned tag after `android-debian`:
+In the `images=()` array inside the "Create multi-arch manifests" step, add the
+pinned tag after `android-debian`:
 
 ```bash
 images=(
@@ -225,8 +224,8 @@ remains in the registry but stops receiving updates (deprecated).
 
 - [ ] **Step 1: Add pinning note to android row**
 
-Update the `:android` row in the "Available images" table to mention
-pinning. Change the Contents column from:
+Update the `:android` row in the "Available images" table to mention pinning.
+Change the Contents column from:
 
 ```
 Android SDK cmdline-tools, build-tools, platform SDK (Debian only)
