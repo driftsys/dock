@@ -39,12 +39,25 @@ directory layout.
 ## Testing
 
 ```bash
-just test    # Run the full bash_unit test suite
-just lint    # hadolint + shellcheck + dprint check
+just test        # Run the image bash_unit test suite
+just test-health # Check the health workflow without Docker (requires yq v4)
+just lint        # hadolint + shellcheck + dprint check
 ```
 
 Tests live in `tests/`. Each image has a presence test (binaries exist and
 are on `$PATH`) and a sanity test (tools execute correctly).
+
+The weekly health workflow tests published images. Its matrix uses build
+target names: unsuffixed targets select `-alpine` tags, and `-debian`
+targets select Debian tags. Python and polyglot use only their `-debian`
+targets. The pull step and test runner must select the same tag.
+
+`just test-health` checks that every scheduled target is accepted by the
+runner and that the workflow pulls the tag the runner tests. It uses
+Docker recorders and requires [mikefarah/yq v4][yq]. CI runs this check
+without building images.
+
+[yq]: https://github.com/mikefarah/yq
 
 bash_unit is vendored in `tests/bash_unit`. Do not upgrade it without
 updating the vendored copy.

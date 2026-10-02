@@ -24,8 +24,6 @@ jobs:
           - rust
           - deno
           - node
-          - python
-          - polyglot
           - lint
           - core-debian
           - rust-debian
@@ -44,7 +42,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull image
-        run: docker pull "${{ env.REGISTRY }}:${{ matrix.image }}"
+        run: |
+          case "${{ matrix.image }}" in
+            *-debian) tag="${{ matrix.image }}" ;;
+            *) tag="${{ matrix.image }}-alpine" ;;
+          esac
+          docker pull "${{ env.REGISTRY }}:${tag}"
 
       - name: Run tests
         run: |

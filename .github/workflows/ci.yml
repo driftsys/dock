@@ -51,6 +51,16 @@ jobs:
           fi
           shellcheck bootstrap
 
+      - name: Install yq
+        run: |
+          curl -sSfL \
+            https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_linux_amd64 \
+            -o /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Test health workflow
+        run: bash tests/bash_unit tests/test_health_workflow.sh
+
   convco:
     name: Conventional commits
     if: github.event_name == 'pull_request'
@@ -110,7 +120,7 @@ jobs:
 
           add_unique() {
             local img="$1"
-            if [[ ! " ${images[*]} " =~ " ${img} " ]]; then
+            if [[ " ${images[*]} " != *" ${img} "* ]]; then
               images+=("$img")
             fi
           }
