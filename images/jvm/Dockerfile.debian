@@ -6,6 +6,7 @@ ARG VERSION=dev
 
 # Debian trixie does not package OpenJDK 17. Install Eclipse Temurin 17 from
 # Adoptium's signed apt repository to preserve the JVM and Android runtime.
+# Omit bundled library sources in this layer to reduce the image size.
 # hadolint ignore=DL3008
 RUN curl -sSfL https://packages.adoptium.net/artifactory/api/gpg/key/public \
       -o /tmp/adoptium.asc \
@@ -17,6 +18,7 @@ RUN curl -sSfL https://packages.adoptium.net/artifactory/api/gpg/key/public \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     temurin-17-jdk \
+ && rm /usr/lib/jvm/temurin-17-jdk-*/lib/src.zip \
  && rm -rf /var/lib/apt/lists/*
 
 # Create arch-neutral symlink so JAVA_HOME works on amd64 and arm64

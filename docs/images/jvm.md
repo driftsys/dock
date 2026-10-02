@@ -24,6 +24,11 @@ Debian trixie does not provide OpenJDK 17. The image uses Adoptium's
 signed apt repository to preserve Java 17 for JVM and Android builds.
 The Temurin package also installs its system certificate update hook.
 
+The Java platform library source archive (`JAVA_HOME/lib/src.zip`) is
+omitted to reduce the image size. CI compilation and execution use the
+installed compiler and runtime binaries. Android images inherit this
+reduction.
+
 ## Environment variables
 
 | Variable    | Value                          |
@@ -76,4 +81,4 @@ Compressed download size for `linux/amd64`.
 | Variant | Size    |
 | ------- | ------- |
 | Alpine  | —       |
-| Debian  | ~289 MB |
+| Debian  | ~241 MB |

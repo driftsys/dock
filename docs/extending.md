@@ -32,7 +32,7 @@ RUN cargo install cargo-nextest --locked
 
 ## Using the JVM image
 
-The `:jvm-debian` image includes JDK 17 headless. Projects using
+The `:jvm-debian` image includes Eclipse Temurin JDK 17. Projects using
 Gradle should rely on the Gradle Wrapper (`./gradlew`), which
 downloads the correct Gradle version automatically:
 
