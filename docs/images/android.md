@@ -13,6 +13,11 @@ from `:jvm`.
 
 > **No Alpine variant.** Use `:android-debian` exclusively.
 
+Google's installed Linux SDK packages contain x86-64 native executables.
+Use an `amd64` runner for `adb`, `aapt2`, and the other native SDK tools.
+The `arm64` image can run Java tools such as `sdkmanager`, but native SDK
+execution remains unsupported until compatible binaries are provided.
+
 ## Installed tools
 
 Includes everything from `:jvm` plus:
@@ -143,10 +148,12 @@ image: ghcr.io/driftsys/dock:android-36-debian-0.1.9
 
 ## Approximate size
 
+Compressed download size for `linux/amd64`.
+
 | Variant | Size    |
 | ------- | ------- |
 | Alpine  | —       |
-| Debian  | ~485 MB |
+| Debian  | ~574 MB |
 
 ## Related images
 

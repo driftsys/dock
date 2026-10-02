@@ -35,6 +35,8 @@ BASELINE=(
   "yq:yq --version"
   "gpg:gpg --version"
   "ssh:ssh -V"
+  "rsync:rsync --version"
+  "ripgrep:rg --version"
 )
 
 resolve_version() {
@@ -51,7 +53,7 @@ resolve_version() {
   # is a plain assignment, so its failure trips `set -e`).
   local output version
   output="$("$cmd" "$@" 2>&1)" || true
-  version="$(printf '%s' "$output" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1 || true)"
+  version="$(printf '%s' "$output" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)*' | head -1 || true)"
   if [ -z "$version" ]; then
     echo "n/a"
   else

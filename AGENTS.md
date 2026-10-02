@@ -13,7 +13,7 @@ pick the smallest image that covers their pipeline.
 Each image publishes up to three tags:
 
 - **`:image-alpine`** — musl libc, smallest footprint
-- **`:image-debian`** — glibc, bookworm-slim base, broadest compatibility
+- **`:image-debian`** — glibc, trixie-slim base, broadest compatibility
 - **`:image`** — the recommended variant (see README → "Choosing a variant")
 
 `python`, `prose`, `polyglot`, `jvm`, `android`, and `android-ndk` are
@@ -34,7 +34,7 @@ just clean     # Remove local build artefacts
 **Image inheritance tree:**
 
 ```text
-alpine:3.21                  # Alpine variants (-alpine)
+alpine:3.24                  # Alpine variants (-alpine)
   └── :core
       ├── :rust
       ├── :deno
@@ -42,7 +42,7 @@ alpine:3.21                  # Alpine variants (-alpine)
       ├── :node
       └── :pages
 
-debian:bookworm-slim         # Debian variants (-debian) — every image
+debian:trixie-slim           # Debian variants (-debian) — every image
   └── :core-debian
       ├── :rust-debian
       │   └── :polyglot-debian

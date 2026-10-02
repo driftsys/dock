@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:1
-FROM alpine:3.21
+FROM alpine:3.24
 
 ARG VERSION=dev
 # Install all core tools in a single layer.
+# Alpine 3.24 packages rsync 3.5.0, which cannot read Bash process-substitution
+# filters. Use the tagged edge package for rsync; other tools use Alpine 3.24.
 # DL3018: CI toolbox images are rebuilt on each release; reproducibility is
-# pinned at the OS level (alpine:3.21), not per-package.
+# pinned at the OS level (alpine:3.24), not per-package (rsync uses edge).
 # hadolint ignore=DL3018
-RUN apk add --no-cache \
+RUN printf '%s\n' '@rsync https://dl-cdn.alpinelinux.org/alpine/edge/main' \
+      >> /etc/apk/repositories \
+ && apk add --no-cache \
     bash \
     ca-certificates \
     coreutils \
@@ -20,6 +24,8 @@ RUN apk add --no-cache \
     jq \
     openssh-client \
     patch \
+    ripgrep \
+    rsync@rsync \
     tree \
     tzdata \
     unzip \

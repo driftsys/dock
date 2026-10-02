@@ -102,7 +102,7 @@ WORKDIR /src
 COPY . .
 RUN cargo build --release
 
-FROM alpine:3.21
+FROM alpine:3.24
 COPY --from=builder /src/target/release/myapp /usr/local/bin/
 ```
 

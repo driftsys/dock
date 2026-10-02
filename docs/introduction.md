@@ -29,17 +29,17 @@ variant the bare `:image` tag resolves to.
 
 | Image          | From       | `:image` → | Alpine  | Debian  | Contents                                                           |
 | -------------- | ---------- | ---------- | ------- | ------- | ------------------------------------------------------------------ |
-| `:core`        | alpine     | alpine     | ~30 MB  | ~76 MB  | Shell, Git, curl, jq, yq, gpg                                      |
+| `:core`        | alpine     | alpine     | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg                                      |
 | `:rust`        | `:core`    | debian     | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt                                |
-| `:deno`        | `:core`    | alpine     | ~78 MB  | ~121 MB | Deno runtime, npx/npm shims                                        |
+| `:deno`        | `:core`    | alpine     | ~88 MB  | ~137 MB | Deno runtime, npx/npm shims                                        |
 | `:node`        | `:core`    | alpine     | ~54 MB  | ~135 MB | Node.js LTS, npm                                                   |
 | `:lint`        | `:core`    | alpine     | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shfmt, editorconfig, git-std, prim |
 | `:pages`       | `:core`    | alpine     | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee                                    |
-| `:python`      | `:core`    | debian     | —       | ~104 MB | Python 3, pip, ruff                                                |
+| `:python`      | `:core`    | debian     | —       | ~115 MB | Python 3, pip, ruff                                                |
 | `:prose`       | `:core`    | debian     | —       | ~106 MB | vale, typos, harper-cli                                            |
 | `:polyglot`    | `:rust`    | debian     | —       | ~625 MB | Rust + Deno + Python 3                                             |
-| `:jvm`         | `:core`    | debian     | —       | ~218 MB | JDK 17 headless                                                    |
-| `:android`     | `:jvm`     | debian     | —       | ~489 MB | Android SDK, build-tools                                           |
+| `:jvm`         | `:core`    | debian     | —       | ~289 MB | Temurin JDK 17                                                     |
+| `:android`     | `:jvm`     | debian     | —       | ~574 MB | Android SDK, build-tools                                           |
 | `:android-ndk` | `:android` | debian     | —       | ~1.7 GB | NDK + Rust + cargo-ndk                                             |
 
 ## Inheritance tree
@@ -47,10 +47,10 @@ variant the bare `:image` tag resolves to.
 ### Alpine
 
 ```
-alpine:3.21
-  └── :core          (~30 MB)
+alpine:3.24
+  └── :core          (~38 MB)
       ├── :rust      (~557 MB)
-      ├── :deno      (~78 MB)
+      ├── :deno      (~88 MB)
       ├── :lint      (~94 MB, amd64 only)
       ├── :node      (~54 MB)
       └── :pages     (~77 MB, amd64 only)
@@ -59,17 +59,17 @@ alpine:3.21
 ### Debian
 
 ```
-debian:bookworm-slim
-  └── :core-debian              (~76 MB)
+debian:trixie-slim
+  └── :core-debian              (~89 MB)
       ├── :rust-debian          (~551 MB)
       │   └── :polyglot-debian  (~625 MB)
-      ├── :deno-debian          (~121 MB)
+      ├── :deno-debian          (~137 MB)
       ├── :lint-debian          (~138 MB, amd64 only)
       ├── :node-debian          (~135 MB)
-      ├── :python-debian        (~104 MB)
+      ├── :python-debian        (~115 MB)
       ├── :pages-debian         (~134 MB, amd64 only)
       ├── :prose-debian         (~106 MB)
-      └── :jvm-debian           (~218 MB)
-          └── :android-debian   (~489 MB)
+      └── :jvm-debian           (~289 MB)
+          └── :android-debian   (~574 MB)
               └── :android-ndk-debian (~1.7 GB)
 ```
