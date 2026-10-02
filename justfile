@@ -14,6 +14,10 @@ test-image image:
 test-core:
     @bash tests/run.sh core
 
+# Check scheduled image selection and tags without Docker (requires yq v4)
+test-health:
+    @bash tests/bash_unit tests/test_health_workflow.sh
+
 # Lint: hadolint + shellcheck + dprint check
 lint:
     @find images -name 'Dockerfile*' | xargs -r hadolint
