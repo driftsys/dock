@@ -13,6 +13,10 @@ test_java_present()    { assert "command -v java"; }
 test_javac_present()   { assert "command -v javac"; }
 test_keytool_present() { assert "command -v keytool"; }
 
+test_jdk_source_archive_absent() {
+  assert "! compgen -G '/usr/lib/jvm/*/lib/src.zip'"
+}
+
 # ---------------------------------------------------------------------------
 # Sanity tests
 # ---------------------------------------------------------------------------

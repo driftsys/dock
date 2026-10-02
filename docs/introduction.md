@@ -38,8 +38,8 @@ variant the bare `:image` tag resolves to.
 | `:python`      | `:core`    | debian     | —       | ~115 MB | Python 3, pip, ruff                                                |
 | `:prose`       | `:core`    | debian     | —       | ~106 MB | vale, typos, harper-cli                                            |
 | `:polyglot`    | `:rust`    | debian     | —       | ~625 MB | Rust + Deno + Python 3                                             |
-| `:jvm`         | `:core`    | debian     | —       | ~289 MB | Temurin JDK 17                                                     |
-| `:android`     | `:jvm`     | debian     | —       | ~574 MB | Android SDK, build-tools                                           |
+| `:jvm`         | `:core`    | debian     | —       | ~241 MB | Temurin JDK 17                                                     |
+| `:android`     | `:jvm`     | debian     | —       | ~525 MB | Android SDK, build-tools                                           |
 | `:android-ndk` | `:android` | debian     | —       | ~1.7 GB | NDK + Rust + cargo-ndk                                             |
 
 ## Inheritance tree
@@ -69,7 +69,7 @@ debian:trixie-slim
       ├── :python-debian        (~115 MB)
       ├── :pages-debian         (~134 MB, amd64 only)
       ├── :prose-debian         (~106 MB)
-      └── :jvm-debian           (~289 MB)
-          └── :android-debian   (~574 MB)
+      └── :jvm-debian           (~241 MB)
+          └── :android-debian   (~525 MB)
               └── :android-ndk-debian (~1.7 GB)
 ```

@@ -153,7 +153,7 @@ Compressed download size for `linux/amd64`.
 | Variant | Size    |
 | ------- | ------- |
 | Alpine  | —       |
-| Debian  | ~574 MB |
+| Debian  | ~525 MB |
 
 ## Related images
 
