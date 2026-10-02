@@ -6,12 +6,15 @@ ARG VERSION=dev
 # Deno release to install — keep in sync with images/deno/Dockerfile.debian
 ARG DENO_VERSION=2.8.1
 # Add Python 3, pip, and ruff
+# Ruff is intentionally installed globally as root during the image build;
+# --root-user-action acknowledges pip's advisory for that required operation.
 # hadolint ignore=DL3008,DL3013
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
  && rm -rf /var/lib/apt/lists/* \
- && pip install --no-cache-dir --quiet --break-system-packages ruff
+ && pip install --no-cache-dir --quiet --break-system-packages \
+    --root-user-action=ignore ruff
 
 # Install Deno via official static binary (GitHub releases)
 RUN DPKG_ARCH="$(dpkg --print-architecture)" && \

@@ -4,7 +4,7 @@ FROM dock-core
 
 ARG VERSION=dev
 # Install C/C++ toolchain and development libraries
-# DL3018: version pinning is at the OS level (inherited alpine:3.21 base)
+# DL3018: version pinning is at the OS level (inherited alpine:3.24 base)
 # hadolint ignore=DL3018
 RUN apk add --no-cache \
     gcc \

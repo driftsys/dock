@@ -23,6 +23,10 @@ Deno is copied from the official `denoland/deno` Docker image via a
 multi-stage build (along with its bundled runtime libraries). The
 version is controlled by the `DENO_VERSION` build argument.
 
+The Alpine binary resolves its bundled glibc libraries through its patched
+RPATH. The image does not set a global `LD_LIBRARY_PATH`, so core tools such
+as ripgrep continue to use Alpine's musl libraries.
+
 The `npx` and `npm` shims allow using npm ecosystem tools without
 installing Node.js. They delegate to Deno under the hood:
 
@@ -58,7 +62,9 @@ jobs:
 
 ## Approximate size
 
+Compressed download size for `linux/amd64`.
+
 | Variant | Size    |
 | ------- | ------- |
-| Alpine  | ~120 MB |
-| Debian  | ~175 MB |
+| Alpine  | ~88 MB  |
+| Debian  | ~137 MB |

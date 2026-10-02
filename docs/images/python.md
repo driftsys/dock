@@ -34,6 +34,8 @@ jobs:
 
 ## Approximate size
 
+Compressed download size for `linux/amd64`.
+
 | Variant | Size    |
 | ------- | ------- |
-| Debian  | ~104 MB |
+| Debian  | ~115 MB |

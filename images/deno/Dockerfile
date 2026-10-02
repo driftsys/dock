@@ -21,7 +21,8 @@ RUN mkdir -p /lib64 && \
     ln -sf /usr/local/lib/glibc/ld-linux-* /lib64/ 2>/dev/null || \
     ln -sf /lib/ld-linux-* /lib64/ 2>/dev/null || true
 COPY --from=deno-bin /bin/deno /usr/local/bin/deno
-ENV LD_LIBRARY_PATH=/usr/local/lib/glibc
+# Deno's patched RPATH resolves its bundled glibc libraries. A global
+# LD_LIBRARY_PATH would make musl tools load incompatible glibc libraries.
 RUN deno --version
 
 # Point Deno at the system CA bundle for corporate CA support.

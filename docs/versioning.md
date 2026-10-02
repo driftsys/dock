@@ -107,14 +107,14 @@ apps to target the latest stable SDK within ~1 year of release, so the
 image tracks that requirement. Bumps are manual — watch the
 [platform releases page](https://developer.android.com/tools/releases/platforms).
 
-**JDK specifics:** The `:jvm-debian` image tracks the current LTS
-release (currently JDK 17). Migration to the next LTS (JDK 21) will
+**JDK specifics:** The `:jvm-debian` image keeps JDK 17 for JVM and Android
+compatibility, using Eclipse Temurin on Debian trixie. Migration to JDK 21 will
 be a minor version bump with advance notice in the changelog.
 
 ## Rebuild strategy
 
 Images are rebuilt on every release tag (`v*`). The OS base
-(`alpine:3.21`, `debian:bookworm-slim`) is resolved at build time. All
+(`alpine:3.24`, `debian:trixie-slim`) is resolved at build time. All
 installed packages reflect the state of the package index at release time.
 
 Security patches to the base OS are incorporated by cutting a new release.

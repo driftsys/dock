@@ -107,7 +107,7 @@ fi
 
 # Happy path — update-ca-certificates rebuilds /etc/ssl/certs/.
 if update-ca-certificates 2>/dev/null; then
-  # On JVM images the ca-certificates-java hook automatically rebuilds
+  # On JVM images the installed JDK certificate hook automatically rebuilds
   # the JKS truststore, so no extra keytool work is needed here.
   echo "dock-bootstrap: imported $COUNT certificate source(s) into trust store"
   exit 0

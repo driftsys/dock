@@ -47,10 +47,10 @@ build:
 
 Every image ships in two variants:
 
-| Tag             | Base                   | libc  | Best for                    |
-| --------------- | ---------------------- | ----- | --------------------------- |
-| `:image`        | `alpine:3.21`          | musl  | Smallest footprint, default |
-| `:image-debian` | `debian:bookworm-slim` | glibc | Broader compatibility       |
+| Tag             | Base                 | libc  | Best for                    |
+| --------------- | -------------------- | ----- | --------------------------- |
+| `:image`        | `alpine:3.24`        | musl  | Smallest footprint, default |
+| `:image-debian` | `debian:trixie-slim` | glibc | Broader compatibility       |
 
 Use the Debian variant when your tools require glibc (e.g. pre-built
 binaries that don't support musl).

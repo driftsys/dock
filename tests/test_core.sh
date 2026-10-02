@@ -17,6 +17,8 @@ test_yq_present()        { assert "command -v yq"; }
 test_envsubst_present()  { assert "command -v envsubst"; }
 test_dotenv_present()    { assert "command -v dotenv"; }
 test_patch_present()     { assert "command -v patch"; }
+test_rsync_present()     { assert "command -v rsync"; }
+test_ripgrep_present()   { assert "command -v rg"; }
 test_find_present()      { assert "command -v find"; }
 test_tree_present()      { assert "command -v tree"; }
 test_zip_present()       { assert "command -v zip"; }
@@ -33,6 +35,34 @@ test_git_version() {
 
 test_git_lfs_version() {
   assert "git-lfs version"
+}
+
+# Keep process substitution: rsync 3.5.0 could not open /dev/fd/... filters.
+# Both successful copying and effective exclusion are required.
+test_rsync_excludes_from_process_substitution() {
+  local status=0
+  bash -euo pipefail <<'BASH' || status=$?
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
+
+mkdir -p "$work/source" "$work/target"
+printf '%s\n' retained > "$work/source/keep.txt"
+printf '%s\n' excluded > "$work/source/drop.txt"
+
+rsync -a --exclude-from=<(printf '%s\n' drop.txt) \
+  "$work/source/" "$work/target/"
+
+test "$(cat "$work/target/keep.txt")" = retained
+test ! -e "$work/target/drop.txt"
+BASH
+  assert_equals 0 "$status" "rsync must copy files and apply the exclusion list"
+}
+
+test_ripgrep_finds_expected_line() {
+  local result
+  result="$(printf '%s\n' 'other line' 'expected line' | rg '^expected line$')" \
+    || fail "ripgrep must find the expected line"
+  assert_equals "expected line" "$result"
 }
 
 test_jq_parses_json() {
@@ -113,6 +143,10 @@ test_manifest_has_yq() { assert_manifest_tool '.tools.yq'; }
 test_manifest_has_gpg() { assert_manifest_tool '.tools.gpg'; }
 
 test_manifest_has_ssh() { assert_manifest_tool '.tools.ssh'; }
+
+test_manifest_has_rsync() { assert_manifest_tool '.tools.rsync'; }
+
+test_manifest_has_ripgrep() { assert_manifest_tool '.tools.ripgrep'; }
 
 # ---------------------------------------------------------------------------
 # Corporate CA support

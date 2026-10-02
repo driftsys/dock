@@ -1,8 +1,7 @@
 # :jvm
 
-JDK 17 headless runtime. Inherits all `:core` tools. **Debian only** —
-this image has no Alpine variant because OpenJDK packaging on Alpine
-lacks long-term vendor support.
+Eclipse Temurin JDK 17 for CI. Inherits all `:core` tools. **Debian only** —
+this image shares the glibc base used by the Android images.
 
 ## Base
 
@@ -15,11 +14,15 @@ lacks long-term vendor support.
 
 ## Installed tools
 
-| Tool    | Install method                | Purpose                   |
-| ------- | ----------------------------- | ------------------------- |
-| java    | apt (openjdk-17-jdk-headless) | JDK 17 runtime + compiler |
-| javac   | apt (openjdk-17-jdk-headless) | Java compiler             |
-| keytool | included in JDK               | Certificate management    |
+| Tool    | Install method       | Purpose                   |
+| ------- | -------------------- | ------------------------- |
+| java    | apt (temurin-17-jdk) | JDK 17 runtime + compiler |
+| javac   | apt (temurin-17-jdk) | Java compiler             |
+| keytool | included in JDK      | Certificate management    |
+
+Debian trixie does not provide OpenJDK 17. The image uses Adoptium's
+signed apt repository to preserve Java 17 for JVM and Android builds.
+The Temurin package also installs its system certificate update hook.
 
 ## Environment variables
 
@@ -68,7 +71,9 @@ build:
 
 ## Approximate size
 
+Compressed download size for `linux/amd64`.
+
 | Variant | Size    |
 | ------- | ------- |
 | Alpine  | —       |
-| Debian  | ~290 MB |
+| Debian  | ~289 MB |
