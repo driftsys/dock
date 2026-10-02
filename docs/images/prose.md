@@ -1,7 +1,7 @@
 # :prose
 
-English prose quality toolbox for technical documentation pipelines.
-Inherits the `:core-debian` scripting foundation (git, jq, yq, curl, CA trust).
+English prose quality toolbox for technical documentation pipelines. Inherits
+the `:core-debian` scripting foundation (git, jq, yq, curl, CA trust).
 
 **Debian-only.** `vale` needs glibc + `libstdc++`, so `:prose` has no Alpine
 variant — the bare `:prose` tag and `:prose-debian` are the same image.
@@ -33,8 +33,8 @@ Baked into `/usr/local/share/vale/styles/` so CI runs fully offline:
 
 ## Default configuration
 
-A starter Vale config ships at `/etc/vale/.vale.ini` and is exposed
-via the `VALE_CONFIG_PATH` environment variable:
+A starter Vale config ships at `/etc/vale/.vale.ini` and is exposed via the
+`VALE_CONFIG_PATH` environment variable:
 
 ```ini
 StylesPath = /usr/local/share/vale/styles
@@ -44,24 +44,23 @@ MinAlertLevel = warning
 BasedOnStyles = Vale, Microsoft, write-good, proselint
 ```
 
-Projects override by dropping their own `.vale.ini` at the repository
-root — Vale natively prefers project-local configuration.
+Projects override by dropping their own `.vale.ini` at the repository root —
+Vale natively prefers project-local configuration.
 
 ## Tool philosophy
 
-- **vale** — style and usage. Flags passive voice, weak words,
-  terminology drift, and rule packs like Microsoft and Google style
-  guides. Not a grammar checker.
-- **typos** — known typo detection only. Catches obvious misspellings
-  with very low false-positive rate. No dictionary maintenance: extend
-  via a project-local `typos.toml`.
-- **harper-cli** — real English grammar parser. Catches subject-verb
-  agreement, article errors, prepositions, and tense issues that vale
-  misses. Useful for documentation written by non-native English
-  speakers.
+- **vale** — style and usage. Flags passive voice, weak words, terminology
+  drift, and rule packs like Microsoft and Google style guides. Not a grammar
+  checker.
+- **typos** — known typo detection only. Catches obvious misspellings with very
+  low false-positive rate. No dictionary maintenance: extend via a project-local
+  `typos.toml`.
+- **harper-cli** — real English grammar parser. Catches subject-verb agreement,
+  article errors, prepositions, and tense issues that vale misses. Useful for
+  documentation written by non-native English speakers.
 
-The three tools cover orthogonal concerns. Run all three in CI for
-full coverage.
+The three tools cover orthogonal concerns. Run all three in CI for full
+coverage.
 
 ## Usage in CI
 
@@ -91,8 +90,8 @@ jobs:
 
 ## Platform note
 
-`:prose` is multi-arch: `linux/amd64` + `linux/arm64`. Unlike `:lint`
-and `:pages`, all upstream tools publish arm64 binaries.
+`:prose` is multi-arch: `linux/amd64` + `linux/arm64`. Unlike `:lint` and
+`:pages`, all upstream tools publish arm64 binaries.
 
 ## Approximate size
 

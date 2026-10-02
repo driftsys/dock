@@ -1,7 +1,7 @@
 # :polyglot
 
-All-in-one image for mixed-language pipelines. Inherits all `:rust-debian`
-tools (which include all `:core-debian` tools), and adds Deno and Python 3.
+All-in-one image for mixed-language pipelines. Inherits all `:rust-debian` tools
+(which include all `:core-debian` tools), and adds Deno and Python 3.
 
 **Debian-only.** It bundles Python (glibc `manylinux` wheels) and Deno, so
 `:polyglot` has no Alpine variant — the bare `:polyglot` tag and
@@ -26,8 +26,8 @@ Includes everything from `:rust` plus:
 
 ## Use case: Deno FFI with Rust
 
-The polyglot image supports Deno's Foreign Function Interface (FFI) to
-call Rust-compiled shared libraries:
+The polyglot image supports Deno's Foreign Function Interface (FFI) to call
+Rust-compiled shared libraries:
 
 ```typescript
 // Compile: cargo build --release --lib

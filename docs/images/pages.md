@@ -1,8 +1,7 @@
 # :pages
 
-Static-site and documentation toolbox for building books, PDFs, and
-templated output. Inherits the `:core` scripting foundation (git, jq,
-yq, curl, CA trust).
+Static-site and documentation toolbox for building books, PDFs, and templated
+output. Inherits the `:core` scripting foundation (git, jq, yq, curl, CA trust).
 
 ## Base
 
@@ -28,10 +27,9 @@ yq, curl, CA trust).
 
 ## Link checking
 
-`lychee` replaces the older `mdbook-linkcheck` preprocessor. It is a
-standalone CLI (native musl, no glibc runtime needed), so run it as a
-separate step against the built book rather than as an `mdbook build`
-hook:
+`lychee` replaces the older `mdbook-linkcheck` preprocessor. It is a standalone
+CLI (native musl, no glibc runtime needed), so run it as a separate step against
+the built book rather than as an `mdbook build` hook:
 
 ```bash
 mdbook build
@@ -40,8 +38,8 @@ lychee ./book
 
 ## Platform note
 
-All tool binaries are pinned to x86_64, so this image is built for
-`linux/amd64` only.
+All tool binaries are pinned to x86_64, so this image is built for `linux/amd64`
+only.
 
 ## Usage in CI
 

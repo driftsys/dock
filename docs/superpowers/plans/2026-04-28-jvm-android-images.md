@@ -2,21 +2,21 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
-> superpowers:executing-plans to implement this plan task-by-task.
-> Steps use checkbox (`- [ ]`) syntax for tracking.
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add `:jvm-debian` and `:android-debian` images to the dock
-image library, including Dockerfiles, build system integration, tests,
-dock-bootstrap JKS support, and documentation updates.
+**Goal:** Add `:jvm-debian` and `:android-debian` images to the dock image
+library, including Dockerfiles, build system integration, tests, dock-bootstrap
+JKS support, and documentation updates.
 
-**Architecture:** Two new Debian-only images. `:jvm-debian` inherits
-from `:core-debian` and adds JDK 17 headless. `:android-debian`
-inherits from `:jvm-debian` and adds Android SDK command-line tools,
-build-tools, and one platform SDK. `dock-bootstrap` is extended to
-handle JKS truststore updates on read-only filesystems.
+**Architecture:** Two new Debian-only images. `:jvm-debian` inherits from
+`:core-debian` and adds JDK 17 headless. `:android-debian` inherits from
+`:jvm-debian` and adds Android SDK command-line tools, build-tools, and one
+platform SDK. `dock-bootstrap` is extended to handle JKS truststore updates on
+read-only filesystems.
 
-**Tech Stack:** Docker (BuildKit + bake), POSIX shell, bash_unit,
-OpenJDK 17, Android SDK cmdline-tools
+**Tech Stack:** Docker (BuildKit + bake), POSIX shell, bash_unit, OpenJDK 17,
+Android SDK cmdline-tools
 
 ---
 
@@ -207,8 +207,7 @@ git commit -m "feat: add android-debian Dockerfile with SDK cmdline-tools"
 
 - [ ] **Step 1: Add `jvm-debian` target**
 
-Add after the `polyglot-debian` target block (before the Groups
-section):
+Add after the `polyglot-debian` target block (before the Groups section):
 
 ```hcl
 target "jvm-debian" {
@@ -284,8 +283,8 @@ git commit -m "feat: add jvm-debian and android-debian bake targets"
 
 - [ ] **Step 1: Add JVM and Android to the TEST_SCRIPTS map**
 
-In `tests/run.sh`, add to the `declare -A TEST_SCRIPTS` block
-(after the `[polyglot-debian]` entry):
+In `tests/run.sh`, add to the `declare -A TEST_SCRIPTS` block (after the
+`[polyglot-debian]` entry):
 
 ```bash
 [jvm-debian]="test_jvm.sh"
@@ -448,17 +447,15 @@ git commit -m "test: add android-debian presence and sanity tests"
 
 - Modify: `scripts/dock-bootstrap.sh`
 
-- [ ] **Step 1: Add JKS import function after the read-only
-      fallback section**
+- [ ] **Step 1: Add JKS import function after the read-only fallback section**
 
-At the end of `scripts/dock-bootstrap.sh`, just before the final
-`echo` on the read-only fallback path, add JKS handling. The full
-change is to insert a new section **after** the `ca.env` file is
-written (inside the read-only fallback branch), and also **after**
-the happy-path `update-ca-certificates` success.
+At the end of `scripts/dock-bootstrap.sh`, just before the final `echo` on the
+read-only fallback path, add JKS handling. The full change is to insert a new
+section **after** the `ca.env` file is written (inside the read-only fallback
+branch), and also **after** the happy-path `update-ca-certificates` success.
 
-Replace the current exit-0 after successful `update-ca-certificates`
-and the final echo of the read-only path with JKS-aware versions.
+Replace the current exit-0 after successful `update-ca-certificates` and the
+final echo of the read-only path with JKS-aware versions.
 
 Find the line:
 
@@ -480,8 +477,7 @@ if update-ca-certificates 2>/dev/null; then
 fi
 ```
 
-Then, at the very end of the file (after the `ca.env` cat block),
-add:
+Then, at the very end of the file (after the `ca.env` cat block), add:
 
 ```sh
 # -------------------------------------------------------------------------
@@ -515,8 +511,8 @@ echo "dock-bootstrap: imported $COUNT certificate source(s) (read-only trust sto
 echo "dock-bootstrap: source $DOCK_ENV to apply" >&2
 ```
 
-And **remove** the existing final two echo lines (they are now
-included at the end of the JKS block above).
+And **remove** the existing final two echo lines (they are now included at the
+end of the JKS block above).
 
 - [ ] **Step 2: Verify shellcheck passes**
 
@@ -591,8 +587,8 @@ Expected: zero warnings.
 
 - [ ] **Step 1: Update `README.md` — image catalog table**
 
-In the "Available images" table, add two rows before the `:lint`
-row (or at the end — `:lint` is not currently in the table):
+In the "Available images" table, add two rows before the `:lint` row (or at the
+end — `:lint` is not currently in the table):
 
 ```markdown
 | `:jvm` | `:core` | — | JDK 17 headless (Debian only) |
@@ -601,9 +597,9 @@ row (or at the end — `:lint` is not currently in the table):
 
 - [ ] **Step 2: Update `README.md` — inheritance tree**
 
-Add the JVM/Android branch to the tree. The tree currently shows
-Alpine only; add a Debian section or a note. Since jvm/android are
-Debian-only, add after the existing tree:
+Add the JVM/Android branch to the tree. The tree currently shows Alpine only;
+add a Debian section or a note. Since jvm/android are Debian-only, add after the
+existing tree:
 
 ```markdown
 debian:bookworm-slim (Debian variants — `-debian` suffix)
@@ -619,8 +615,8 @@ debian:bookworm-slim (Debian variants — `-debian` suffix)
 
 - [ ] **Step 3: Update `docs/extending.md` — JVM/Android examples**
 
-Add a new section "## Using the JVM image" after the "Adding a
-Cargo tool" section:
+Add a new section "## Using the JVM image" after the "Adding a Cargo tool"
+section:
 
 ````markdown
 ## Using the JVM image
@@ -643,10 +639,9 @@ build:
 
 ## Using the Android image
 
-The `:android-debian` image includes JDK 17, Android SDK
-command-line tools, build-tools 36.1.0, and platform SDK
-android-36. Install additional platform SDKs at CI time if
-your project targets older API levels:
+The `:android-debian` image includes JDK 17, Android SDK command-line tools,
+build-tools 36.1.0, and platform SDK android-36. Install additional platform
+SDKs at CI time if your project targets older API levels:
 
 ```yaml
 # GitLab CI
@@ -728,8 +723,8 @@ git commit -m "docs: add jvm and android images to documentation"
 
 ## Task 10: Squash into a single commit
 
-Per AGENTS.md convention ("One commit per PR"), squash all
-work into a single commit before opening the PR.
+Per AGENTS.md convention ("One commit per PR"), squash all work into a single
+commit before opening the PR.
 
 - [ ] **Step 1: Interactive rebase to squash**
 
@@ -745,8 +740,7 @@ Then squash:
 git rebase -i main
 ```
 
-Mark all commits except the first as `squash`. Use this final
-message:
+Mark all commits except the first as `squash`. Use this final message:
 
 ```
 feat: add jvm-debian and android-debian images

@@ -2,11 +2,10 @@
 
 ## Problem
 
-Users need to pin to a specific Android API level while still being
-able to use a floating "latest" tag. When we bump from API 36 to 37,
-users who haven't migrated yet should still be able to reference API
-36 by tag — but we don't want the maintenance burden of rebuilding
-old API levels indefinitely.
+Users need to pin to a specific Android API level while still being able to use
+a floating "latest" tag. When we bump from API 36 to 37, users who haven't
+migrated yet should still be able to reference API 36 by tag — but we don't want
+the maintenance burden of rebuilding old API levels indefinitely.
 
 ## Solution
 
@@ -15,9 +14,9 @@ Publish **two tags** from a single build:
 - `:android-debian` — floating, always the current stable API level
 - `:android-{API}-debian` — pinned to the API level at build time
 
-When we bump to a new API level, the old pinned tag stays in the
-registry as-is (deprecated, no longer rebuilt). Users get a migration
-window but accept that the old tag won't receive security patches.
+When we bump to a new API level, the old pinned tag stays in the registry as-is
+(deprecated, no longer rebuilt). Users get a migration window but accept that
+the old tag won't receive security patches.
 
 ## Tag scheme
 
@@ -42,8 +41,8 @@ window but accept that the old tag won't receive security patches.
 
 ### 1. Bake file (`docker-bake.hcl`)
 
-Add a top-level variable for the Android platform version (already
-exists as a Dockerfile ARG, promote to bake variable):
+Add a top-level variable for the Android platform version (already exists as a
+Dockerfile ARG, promote to bake variable):
 
 ```hcl
 variable "ANDROID_PLATFORM_VERSION" {
@@ -51,8 +50,8 @@ variable "ANDROID_PLATFORM_VERSION" {
 }
 ```
 
-Update the `android-debian` target to include pinned tags and pass
-the version as a build arg:
+Update the `android-debian` target to include pinned tags and pass the version
+as a build arg:
 
 ```hcl
 target "android-debian" {
@@ -76,17 +75,16 @@ target "android-debian" {
 }
 ```
 
-No new targets. No groups change. The single build produces both
-tag families.
+No new targets. No groups change. The single build produces both tag families.
 
 ### 2. Release workflow (`.github/workflows/release.yml`)
 
-The merge manifest step must create multi-arch manifests for the
-pinned tag in addition to the floating tag. Add
-`android-${ANDROID_PLATFORM_VERSION}-debian` to the images list.
+The merge manifest step must create multi-arch manifests for the pinned tag in
+addition to the floating tag. Add `android-${ANDROID_PLATFORM_VERSION}-debian`
+to the images list.
 
-Since the platform version is a bake variable (not directly available
-in the workflow), extract it at the top of the merge job:
+Since the platform version is a bake variable (not directly available in the
+workflow), extract it at the top of the merge job:
 
 ```yaml
 - name: Resolve Android API level
@@ -108,20 +106,18 @@ images=(
 )
 ```
 
-Both tags reference the same per-arch digests — zero extra build
-time.
+Both tags reference the same per-arch digests — zero extra build time.
 
 ### 3. CI workflow (`.github/workflows/ci.yml`)
 
-No changes needed. The `detect` job already maps
-`images/android/` → `android-debian`. The bake target name hasn't
-changed. Tests run against `android-debian` which is the same image
-that gets the pinned tag.
+No changes needed. The `detect` job already maps `images/android/` →
+`android-debian`. The bake target name hasn't changed. Tests run against
+`android-debian` which is the same image that gets the pinned tag.
 
 ### 4. Tests
 
-No changes. `tests/test_android.sh` tests the image regardless of
-what tag it was pushed with.
+No changes. `tests/test_android.sh` tests the image regardless of what tag it
+was pushed with.
 
 ### 5. Docs updates
 
@@ -144,8 +140,8 @@ what tag it was pushed with.
 
 Single PR:
 
-1. Update `ANDROID_PLATFORM_VERSION` default in `docker-bake.hcl`
-   from `"36"` to `"37"`
+1. Update `ANDROID_PLATFORM_VERSION` default in `docker-bake.hcl` from `"36"` to
+   `"37"`
 2. Update `ANDROID_BUILD_TOOLS_VERSION` if needed
 3. Update `ANDROID_CMDLINE_TOOLS_VERSION` if needed
 4. Update test assertions in `tests/test_android.sh`
@@ -154,15 +150,14 @@ Single PR:
 
 ## Removing a deprecated tag (optional, future)
 
-Old tags live in the registry indefinitely (storage is cheap). If
-cleanup is desired, use `gh api` to delete the package version from
-GHCR. This is a manual operation, not automated.
+Old tags live in the registry indefinitely (storage is cheap). If cleanup is
+desired, use `gh api` to delete the package version from GHCR. This is a manual
+operation, not automated.
 
 ## Scope exclusions
 
-- **No multi-version concurrent builds** — only one API level is
-  built per release
+- **No multi-version concurrent builds** — only one API level is built per
+  release
 - **No security patches to old tags** — deprecated means frozen
 - **No JVM dual tags** — JVM stays as `:jvm-debian` only
-- **No selective release** — all images rebuild on every release (as
-  today)
+- **No selective release** — all images rebuild on every release (as today)

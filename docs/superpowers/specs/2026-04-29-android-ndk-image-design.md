@@ -2,15 +2,15 @@
 
 ## Problem
 
-Teams building Rust libraries targeting Android (JNI, `.so` files for
-mobile apps) need the Android NDK cross-compilation toolchains plus
-Rust with Android targets configured. Currently they must install
-these manually at CI time, which is slow and fragile.
+Teams building Rust libraries targeting Android (JNI, `.so` files for mobile
+apps) need the Android NDK cross-compilation toolchains plus Rust with Android
+targets configured. Currently they must install these manually at CI time, which
+is slow and fragile.
 
 ## Solution
 
-New Debian-only image `:android-ndk-debian` inheriting from
-`:android-debian` that bundles:
+New Debian-only image `:android-ndk-debian` inheriting from `:android-debian`
+that bundles:
 
 - Android NDK 27 (r27c) — full, all 4 ABIs
 - CMake (via sdkmanager)
@@ -37,8 +37,8 @@ Same dual-tag pattern as `:android-debian`:
 | `:android-ndk-debian`    | Floating — latest NDK version |
 | `:android-ndk-27-debian` | Pinned to NDK 27              |
 
-When NDK 28 ships: bump, add `:android-ndk-28-debian`, move floating
-tag. Old `:android-ndk-27-debian` stays frozen (deprecated).
+When NDK 28 ships: bump, add `:android-ndk-28-debian`, move floating tag. Old
+`:android-ndk-27-debian` stays frozen (deprecated).
 
 ## Installed components
 
@@ -131,15 +131,13 @@ Add to `debian` group. Dependency chain: `jvm → android → android-ndk`.
 
 ### CI workflow
 
-- `detect` job: `images/android-ndk/` → `android-ndk-debian`;
-  `images/android/` changes also trigger `android-ndk-debian`
-  (inheritance dependency)
+- `detect` job: `images/android-ndk/` → `android-ndk-debian`; `images/android/`
+  changes also trigger `android-ndk-debian` (inheritance dependency)
 - Test script mapping: `android-ndk-debian` → `tests/test_android_ndk.sh`
 
 ### Release workflow
 
-Add `android-ndk-debian` and `android-ndk-${NDK}-debian` to manifest
-merge list.
+Add `android-ndk-debian` and `android-ndk-${NDK}-debian` to manifest merge list.
 
 ## Tests
 
@@ -199,5 +197,5 @@ build-native:
 - No C++ STL selection (uses NDK default: libc++)
 - No Gradle pre-installed (comes from project wrapper)
 - No Android emulator/AVD (too large, CI runners provide this)
-- No pre-built `.cargo/config.toml` for all targets (cargo-ndk
-  handles this automatically)
+- No pre-built `.cargo/config.toml` for all targets (cargo-ndk handles this
+  automatically)

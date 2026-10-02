@@ -18,15 +18,16 @@ test-core:
 test-health:
     @bash tests/bash_unit tests/test_health_workflow.sh
 
-# Lint: hadolint + shellcheck + dprint check
+# Lint: hadolint + shellcheck + prim fmt --check + prim lint
 lint:
     @find images -name 'Dockerfile*' | xargs -r hadolint
     @find scripts tests -name '*.sh' | xargs -r shellcheck
-    dprint check
+    prim fmt --check
+    prim lint
 
-# Format Markdown
+# Format repository files
 fmt:
-    dprint fmt
+    prim fmt
 
 # Remove local build artefacts
 clean:

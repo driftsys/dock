@@ -1,8 +1,7 @@
 # :android-ndk
 
-Android NDK cross-compilation toolchain with Rust. Inherits all
-`:android` tools (which include `:jvm` and `:core`).
-**Debian only.**
+Android NDK cross-compilation toolchain with Rust. Inherits all `:android` tools
+(which include `:jvm` and `:core`). **Debian only.**
 
 ## Base
 
@@ -56,13 +55,13 @@ Same scheme as `:android-debian`:
 | `:android-ndk-debian`    | Floating — latest NDK |
 | `:android-ndk-27-debian` | Pinned to NDK 27      |
 
-Old pinned tags stay in the registry but stop receiving updates
-when a new NDK ships.
+Old pinned tags stay in the registry but stop receiving updates when a new NDK
+ships.
 
 ## Corporate CA support
 
-Inherits JKS truststore support from `:jvm`. Both `sdkmanager` and
-`cargo` use the system CA bundle after running `dock-bootstrap`.
+Inherits JKS truststore support from `:jvm`. Both `sdkmanager` and `cargo` use
+the system CA bundle after running `dock-bootstrap`.
 
 ## Usage in CI
 

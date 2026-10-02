@@ -1,7 +1,7 @@
 # Extending dock images
 
-All `dock` images are toolboxes with no `CMD` or `ENTRYPOINT`. Adding
-packages on top is straightforward.
+All `dock` images are toolboxes with no `CMD` or `ENTRYPOINT`. Adding packages
+on top is straightforward.
 
 ## Adding an apk package (Alpine)
 
@@ -32,9 +32,9 @@ RUN cargo install cargo-nextest --locked
 
 ## Using the JVM image
 
-The `:jvm-debian` image includes Eclipse Temurin JDK 17. Projects using
-Gradle should rely on the Gradle Wrapper (`./gradlew`), which
-downloads the correct Gradle version automatically:
+The `:jvm-debian` image includes Eclipse Temurin JDK 17. Projects using Gradle
+should rely on the Gradle Wrapper (`./gradlew`), which downloads the correct
+Gradle version automatically:
 
 ```yaml
 # GitLab CI
@@ -49,10 +49,9 @@ build:
 
 ## Using the Android image
 
-The `:android-debian` image includes JDK 17, Android SDK
-command-line tools, build-tools 36.1.0, and platform SDK
-android-36. Install additional platform SDKs at CI time if
-your project targets older API levels:
+The `:android-debian` image includes JDK 17, Android SDK command-line tools,
+build-tools 36.1.0, and platform SDK android-36. Install additional platform
+SDKs at CI time if your project targets older API levels:
 
 ```yaml
 # GitLab CI
@@ -93,8 +92,7 @@ docker buildx build \
 
 ## Multi-stage builds
 
-Use `dock` images in the build stage; copy artifacts to a minimal final
-image:
+Use `dock` images in the build stage; copy artifacts to a minimal final image:
 
 ```dockerfile
 FROM ghcr.io/driftsys/dock:rust AS builder
@@ -110,10 +108,10 @@ COPY --from=builder /src/target/release/myapp /usr/local/bin/
 
 ### CA certificates with `dock-bootstrap`
 
-Corporate networks often use TLS-intercepting proxies or internal CAs
-that standard images don't trust. `dock-bootstrap` solves this with
-a layered approach that works on both standard Docker hosts and
-restricted Kubernetes runners.
+Corporate networks often use TLS-intercepting proxies or internal CAs that
+standard images don't trust. `dock-bootstrap` solves this with a layered
+approach that works on both standard Docker hosts and restricted Kubernetes
+runners.
 
 #### Quick start
 
@@ -143,9 +141,8 @@ jobs:
 
 `dock-bootstrap` operates in four layers:
 
-**Layer 1 — Dockerfile ENV defaults.** Every dock image sets TLS
-environment variables at build time so all tools look at the system
-CA bundle by default:
+**Layer 1 — Dockerfile ENV defaults.** Every dock image sets TLS environment
+variables at build time so all tools look at the system CA bundle by default:
 
 | Variable              | Tool(s)            |
 | --------------------- | ------------------ |
@@ -157,30 +154,28 @@ CA bundle by default:
 | `DENO_CERT`           | Deno               |
 | `PIP_CERT`            | pip                |
 
-All point at `/etc/ssl/certs/ca-certificates.crt` — the system
-bundle managed by `update-ca-certificates`. No runtime action is
-needed when this file is writable.
+All point at `/etc/ssl/certs/ca-certificates.crt` — the system bundle managed by
+`update-ca-certificates`. No runtime action is needed when this file is
+writable.
 
-**Layer 2 — Certificate source detection.** `dock-bootstrap` scans
-three sources and copies discovered certs into
-`/usr/local/share/ca-certificates/`:
+**Layer 2 — Certificate source detection.** `dock-bootstrap` scans three sources
+and copies discovered certs into `/usr/local/share/ca-certificates/`:
 
 1. **Environment variables** — any env var whose value contains
-   `-----BEGIN CERTIFICATE-----` is extracted. Variables may hold
-   multiple PEM blocks; each is split into a separate file. Works
-   with CI/CD variables set at the group or instance level in
-   GitLab, GitHub Actions secrets, or any platform that injects
-   env vars into containers.
-2. **Drop directory** (`/etc/dock/ca.d/` or a custom path passed
-   as `$1`) — `.crt` and `.pem` files are copied directly. This
-   is the most portable approach: mount a volume, use an init
-   container, or `COPY` certs into the image at build time.
-3. **`CI_SERVER_TLS_CA_FILE`** — the GitLab runner-provided CA
-   file, if present. Ignored on non-GitLab runners.
+   `-----BEGIN CERTIFICATE-----` is extracted. Variables may hold multiple PEM
+   blocks; each is split into a separate file. Works with CI/CD variables set at
+   the group or instance level in GitLab, GitHub Actions secrets, or any
+   platform that injects env vars into containers.
+2. **Drop directory** (`/etc/dock/ca.d/` or a custom path passed as `$1`) —
+   `.crt` and `.pem` files are copied directly. This is the most portable
+   approach: mount a volume, use an init container, or `COPY` certs into the
+   image at build time.
+3. **`CI_SERVER_TLS_CA_FILE`** — the GitLab runner-provided CA file, if present.
+   Ignored on non-GitLab runners.
 
-If your infrastructure doesn't inject certs via environment
-variables, use the drop directory. For example, mount a volume
-from a Kubernetes secret or ConfigMap:
+If your infrastructure doesn't inject certs via environment variables, use the
+drop directory. For example, mount a volume from a Kubernetes secret or
+ConfigMap:
 
 ```yaml
 # Kubernetes pod spec / GitLab runner config
@@ -201,26 +196,25 @@ FROM ghcr.io/driftsys/dock:core
 COPY my-corp-ca.crt /etc/dock/ca.d/
 ```
 
-**Layer 3 — Trust store update.** With certs in place,
-`dock-bootstrap` tries `update-ca-certificates` to rebuild the
-system bundle. If that succeeds (the normal case on Docker hosts
-and VMs), all tools see the new CAs immediately — done.
+**Layer 3 — Trust store update.** With certs in place, `dock-bootstrap` tries
+`update-ca-certificates` to rebuild the system bundle. If that succeeds (the
+normal case on Docker hosts and VMs), all tools see the new CAs immediately —
+done.
 
-**Layer 4 — Read-only fallback.** On Kubernetes runners,
-`/etc/ssl/certs/` is often mounted as a read-only ConfigMap.
-When `update-ca-certificates` fails, `dock-bootstrap`:
+**Layer 4 — Read-only fallback.** On Kubernetes runners, `/etc/ssl/certs/` is
+often mounted as a read-only ConfigMap. When `update-ca-certificates` fails,
+`dock-bootstrap`:
 
-1. Builds a private bundle at `/etc/dock/ca-bundle.crt` by
-   copying the existing system bundle (preserving any cluster-
-   injected CAs from the ConfigMap) and appending the imported
-   certs.
-2. Writes `/etc/dock/ca.env` with export statements that
-   redirect every variable from Layer 1 to the new bundle.
+1. Builds a private bundle at `/etc/dock/ca-bundle.crt` by copying the existing
+   system bundle (preserving any cluster- injected CAs from the ConfigMap) and
+   appending the imported certs.
+2. Writes `/etc/dock/ca.env` with export statements that redirect every variable
+   from Layer 1 to the new bundle.
 
-**You must source `/etc/dock/ca.env`** to activate the fallback
-bundle. The file only exists when the fallback triggers, so the
-`. /etc/dock/ca.env 2>/dev/null || true` line is harmless on
-standard Docker hosts — always include it.
+**You must source `/etc/dock/ca.env`** to activate the fallback bundle. The file
+only exists when the fallback triggers, so the
+`. /etc/dock/ca.env 2>/dev/null || true` line is harmless on standard Docker
+hosts — always include it.
 
 #### Skipping CA detection
 
@@ -233,9 +227,8 @@ variables:
 
 ### Fetching CA certificates at CI build time
 
-If you need CAs at Docker **build** time (not just runtime), fetch
-them from a central store in your CI pipeline rather than committing
-them to git:
+If you need CAs at Docker **build** time (not just runtime), fetch them from a
+central store in your CI pipeline rather than committing them to git:
 
 ```yaml
 build:
@@ -255,8 +248,8 @@ RUN dock-bootstrap
 
 ### Build-time HTTP proxy
 
-Docker's built-in predefined build args handle proxy pass-through —
-no Dockerfile changes needed:
+Docker's built-in predefined build args handle proxy pass-through — no
+Dockerfile changes needed:
 
 ```bash
 docker build \
@@ -294,25 +287,23 @@ In **GitHub Actions**:
       -t my-ci-image .
 ```
 
-Note: these affect **build time** only. For runtime proxy, set the
-variables via `docker run -e` or your orchestrator's environment
-configuration.
+Note: these affect **build time** only. For runtime proxy, set the variables via
+`docker run -e` or your orchestrator's environment configuration.
 
 ### Why no `-corp` variant?
 
-Corporate CAs are per-organisation — baking one into a public image
-would be wrong. Instead, dock images are designed to make extension
-trivial: run `dock-bootstrap` and your trust store is ready.
+Corporate CAs are per-organisation — baking one into a public image would be
+wrong. Instead, dock images are designed to make extension trivial: run
+`dock-bootstrap` and your trust store is ready.
 
 ### Pulling dock images from private registries
 
-dock images are published to both GHCR (`ghcr.io/driftsys/dock`) and
-Docker Hub (`docker.io/driftsys/dock`). Use whichever your network
-allows.
+dock images are published to both GHCR (`ghcr.io/driftsys/dock`) and Docker Hub
+(`docker.io/driftsys/dock`). Use whichever your network allows.
 
-If your Kubernetes cluster restricts image pulls to approved
-registries (e.g. via admission policies like Kyverno or
-Gatekeeper), mirror the images through your internal registry:
+If your Kubernetes cluster restricts image pulls to approved registries (e.g.
+via admission policies like Kyverno or Gatekeeper), mirror the images through
+your internal registry:
 
 ```bash
 # One-time mirror setup (e.g. via Artifactory, Nexus, or Harbor)
@@ -350,8 +341,8 @@ jobs:
 
 ### Registry mirrors
 
-Registry configuration is org-specific. Use the standard environment
-variables that each tool already respects:
+Registry configuration is org-specific. Use the standard environment variables
+that each tool already respects:
 
 | Tool  | Env var               | Example                                 |
 | ----- | --------------------- | --------------------------------------- |
@@ -369,13 +360,13 @@ replace-with = "corp-mirror"
 registry = "https://artifactory.corp/cargo/"
 ```
 
-Set these as CI/CD variables at the group or instance level in your
-CI platform — no changes to dock images needed.
+Set these as CI/CD variables at the group or instance level in your CI platform
+— no changes to dock images needed.
 
 ### Verifying connectivity in CI
 
-Add a connectivity check job to confirm your extended image can
-reach public and private registries:
+Add a connectivity check job to confirm your extended image can reach public and
+private registries:
 
 **GitLab CI** (`.gitlab-ci.yml`):
 
