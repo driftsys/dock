@@ -27,6 +27,10 @@ test_deno_version() {
   assert "deno --version"
 }
 
+test_deno_uses_lts_release_line() {
+  assert_equals "2.9" "$(deno eval 'console.log(Deno.version.deno.split(".").slice(0, 2).join("."))')"
+}
+
 test_deno_eval() {
   result="$(deno eval 'console.log(1+1)')"
   assert_equals "2" "$result"

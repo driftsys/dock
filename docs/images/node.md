@@ -13,10 +13,10 @@ Node.js LTS runtime. Inherits all `:core` tools.
 
 ## Installed tools
 
-| Tool | Install method | Purpose             |
-| ---- | -------------- | ------------------- |
-| node | apk (nodejs)   | Node.js LTS runtime |
-| npm  | apk (npm)      | Package manager     |
+| Tool | Install method             | Purpose             |
+| ---- | -------------------------- | ------------------- |
+| node | copy (official Node image) | Node.js LTS runtime |
+| npm  | copy (official Node image) | Package manager     |
 
 ## Usage in CI
 

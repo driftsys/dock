@@ -24,12 +24,12 @@ variant — the bare `:prose` tag and `:prose-debian` are the same image.
 
 Baked into `/usr/local/share/vale/styles/` so CI runs fully offline:
 
-| Pack       | Source                        |
-| ---------- | ----------------------------- |
-| Microsoft  | `errata-ai/Microsoft` v0.14.2 |
-| Google     | `errata-ai/Google` v0.6.3     |
-| write-good | `errata-ai/write-good` v0.4.1 |
-| proselint  | `errata-ai/proselint` v0.3.4  |
+| Pack       | Source                       |
+| ---------- | ---------------------------- |
+| Microsoft  | `vale-cli/Microsoft` v0.15.1 |
+| Google     | `vale-cli/Google` v0.7.1     |
+| write-good | `vale-cli/write-good` v0.4.1 |
+| proselint  | `vale-cli/proselint` v0.3.4  |
 
 ## Default configuration
 
@@ -80,11 +80,11 @@ jobs:
 
 | Argument                  | Default  | Description                   |
 | ------------------------- | -------- | ----------------------------- |
-| `VALE_VERSION`            | `3.14.2` | vale release to install       |
-| `TYPOS_VERSION`           | `1.46.3` | typos release to install      |
-| `HARPER_VERSION`          | `2.2.1`  | harper-cli release to install |
-| `VALE_MICROSOFT_VERSION`  | `0.14.2` | Microsoft style pack release  |
-| `VALE_GOOGLE_VERSION`     | `0.6.3`  | Google style pack release     |
+| `VALE_VERSION`            | `3.24.0` | vale release to install       |
+| `TYPOS_VERSION`           | `1.50.3` | typos release to install      |
+| `HARPER_VERSION`          | `2.12.0` | harper-cli release to install |
+| `VALE_MICROSOFT_VERSION`  | `0.15.1` | Microsoft style pack release  |
+| `VALE_GOOGLE_VERSION`     | `0.7.1`  | Google style pack release     |
 | `VALE_WRITE_GOOD_VERSION` | `0.4.1`  | write-good style pack release |
 | `VALE_PROSELINT_VERSION`  | `0.3.4`  | proselint style pack release  |
 

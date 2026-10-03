@@ -1,11 +1,20 @@
 # syntax=docker/dockerfile:1
+ARG NODE_VERSION=24.21.0
+FROM node:${NODE_VERSION}-alpine AS node-bin
+
 # hadolint ignore=DL3006
 FROM dock-core
 
 ARG VERSION=dev
-# Install Node.js LTS and npm
+# Install the shared library required by the official Node.js binary.
 # hadolint ignore=DL3018
-RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache libstdc++
+
+# Distribution packages lag the supported Node.js LTS patch release.
+COPY --from=node-bin /usr/local/bin/node /usr/local/bin/node
+COPY --from=node-bin /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+ && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 # Point Node.js at the system CA bundle for corporate CA support.
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt

@@ -17,12 +17,12 @@ All-in-one image for mixed-language pipelines. Inherits all `:rust-debian` tools
 
 Includes everything from `:rust` plus:
 
-| Tool    | Install method        | Purpose                       |
-| ------- | --------------------- | ----------------------------- |
-| deno    | official Docker image | TypeScript/JavaScript runtime |
-| python3 | apt                   | Python 3 interpreter          |
-| pip     | apt (python3-pip)     | Package installer             |
-| ruff    | pip                   | Linter and formatter          |
+| Tool    | Install method      | Purpose                       |
+| ------- | ------------------- | ----------------------------- |
+| deno    | official LTS binary | TypeScript/JavaScript runtime |
+| python3 | apt                 | Python 3 interpreter          |
+| pip     | apt (python3-pip)   | Package installer             |
+| ruff    | pip                 | Linter and formatter          |
 
 ## Use case: Deno FFI with Rust
 

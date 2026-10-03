@@ -3,13 +3,13 @@
 FROM dock-android
 
 ARG VERSION=dev
-ARG NDK_VERSION=27.2.12479018
-ARG CMAKE_VERSION=3.22.1
+ARG NDK_VERSION=30.0.16248370
+ARG CMAKE_VERSION=4.1.2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Install NDK and CMake via sdkmanager
-RUN sdkmanager --install \
+# Install NDK and CMake using the current Android CLI.
+RUN android --no-metrics sdk --platform=linux_x86_64 install \
     "ndk;${NDK_VERSION}" \
     "cmake;${CMAKE_VERSION}"
 

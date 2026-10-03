@@ -26,15 +26,15 @@ variable "PLATFORMS" {
 }
 
 variable "DENO_VERSION" {
-  default = "2.8.1"
+  default = "2.9.3"
 }
 
 variable "ANDROID_PLATFORM_VERSION" {
-  default = "36"
+  default = "37.2"
 }
 
 variable "ANDROID_NDK_VERSION" {
-  default = "27"
+  default = "30"
 }
 
 # Appended to every tag during per-arch CI builds (e.g. "-amd64", "-arm64").
@@ -252,7 +252,7 @@ target "android-ndk-debian" {
   context    = "."
   dockerfile = "images/android-ndk/Dockerfile.debian"
   args = {
-    NDK_VERSION = "27.2.12479018"
+    NDK_VERSION = "30.0.16248370"
   }
   tags = concat(
     img_tags("android-ndk", "debian", true),

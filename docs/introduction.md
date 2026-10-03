@@ -31,7 +31,7 @@ variant the bare `:image` tag resolves to.
 | `:core`        | alpine     | alpine     | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg                                      |
 | `:rust`        | `:core`    | debian     | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt                                |
 | `:deno`        | `:core`    | alpine     | ~88 MB  | ~137 MB | Deno runtime, npx/npm shims                                        |
-| `:node`        | `:core`    | alpine     | ~54 MB  | ~135 MB | Node.js LTS, npm                                                   |
+| `:node`        | `:core`    | alpine     | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                |
 | `:lint`        | `:core`    | alpine     | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shfmt, editorconfig, git-std, prim |
 | `:pages`       | `:core`    | alpine     | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee                                    |
 | `:python`      | `:core`    | debian     | —       | ~115 MB | Python 3, pip, ruff                                                |

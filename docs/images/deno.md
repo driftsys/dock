@@ -13,15 +13,20 @@ Deno runtime. Inherits all `:core` tools.
 
 ## Installed tools
 
-| Tool | Install method        | Purpose                                      |
-| ---- | --------------------- | -------------------------------------------- |
-| deno | official Docker image | TypeScript/JavaScript runtime                |
-| npx  | shell shim            | Run npm packages via `deno run -A npm:<pkg>` |
-| npm  | shell shim            | Delegates supported npm commands to Deno     |
+| Tool | Install method      | Purpose                                      |
+| ---- | ------------------- | -------------------------------------------- |
+| deno | official LTS binary | TypeScript/JavaScript runtime                |
+| npx  | shell shim          | Run npm packages via `deno run -A npm:<pkg>` |
+| npm  | shell shim          | Delegates supported npm commands to Deno     |
 
-Deno is copied from the official `denoland/deno` Docker image via a multi-stage
-build (along with its bundled runtime libraries). The version is controlled by
-the `DENO_VERSION` build argument.
+Deno 2.9.3 is downloaded from the official LTS distribution at `dl.deno.land`.
+The Alpine build takes bundled glibc libraries from the official `denoland/deno`
+image and patches the LTS binary to use those libraries. The version is
+controlled by the `DENO_VERSION` build argument.
+
+The current upstream LTS download still reports `stable` in its version banner,
+including after `deno upgrade lts`. The selected version follows the upstream
+LTS endpoint; the tests verify the supported 2.9 release line.
 
 The Alpine binary resolves its bundled glibc libraries through its patched
 RPATH. The image does not set a global `LD_LIBRARY_PATH`, so core tools such as
@@ -55,9 +60,9 @@ jobs:
 
 ## Build arguments
 
-| Argument       | Default | Description             |
-| -------------- | ------- | ----------------------- |
-| `DENO_VERSION` | `2.8.1` | Deno release to install |
+| Argument       | Default | Description                 |
+| -------------- | ------- | --------------------------- |
+| `DENO_VERSION` | `2.9.3` | Deno LTS release to install |
 
 ## Approximate size
 

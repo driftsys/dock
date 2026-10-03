@@ -19,13 +19,13 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 # ---------------------------------------------------------------------------
 # Tool versions (pinned for reproducibility)
 # ---------------------------------------------------------------------------
-ARG VALE_VERSION=3.14.2
-ARG TYPOS_VERSION=1.46.3
-ARG HARPER_VERSION=2.2.1
+ARG VALE_VERSION=3.24.0
+ARG TYPOS_VERSION=1.50.3
+ARG HARPER_VERSION=2.12.0
 
 # Vale style pack versions
-ARG VALE_MICROSOFT_VERSION=0.14.2
-ARG VALE_GOOGLE_VERSION=0.6.3
+ARG VALE_MICROSOFT_VERSION=0.15.1
+ARG VALE_GOOGLE_VERSION=0.7.1
 ARG VALE_WRITE_GOOD_VERSION=0.4.1
 ARG VALE_PROSELINT_VERSION=0.3.4
 
@@ -40,7 +40,7 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" && \
       *)     echo "unsupported arch: $DPKG_ARCH" && exit 1 ;; \
     esac && \
     curl -sSfL \
-      "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_${VALE_ARCH}.tar.gz" \
+      "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_${VALE_ARCH}.tar.gz" \
       | tar -xz -C /usr/local/bin vale && \
     chmod +x /usr/local/bin/vale && \
     vale --version
@@ -92,7 +92,7 @@ RUN mkdir -p /usr/local/share/vale/styles && \
       ver="${rest%%:*}" ; \
       asset="${rest#*:}" ; \
       curl -sSfL \
-        "https://github.com/errata-ai/${name}/releases/download/v${ver}/${asset}" \
+        "https://github.com/vale-cli/${name}/releases/download/v${ver}/${asset}" \
         -o "/tmp/${asset}" && \
       unzip -q -o "/tmp/${asset}" -d /usr/local/share/vale/styles && \
       rm "/tmp/${asset}" ; \

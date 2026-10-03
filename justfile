@@ -14,9 +14,10 @@ test-image image:
 test-core:
     @bash tests/run.sh core
 
-# Check scheduled image selection and tags without Docker (requires yq v4)
+# Check scheduled images and release tag inputs without Docker (requires yq v4)
 test-health:
     @bash tests/bash_unit tests/test_health_workflow.sh
+    @bash tests/bash_unit tests/test_release_workflow.sh
 
 # Lint: hadolint + shellcheck + prim fmt --check + prim lint
 lint:

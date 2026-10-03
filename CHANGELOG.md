@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Update both Node.js variants to 24.21.0 LTS and bundled npm.
+- Update Deno to the supported 2.9.3 LTS release in Deno and polyglot images.
+- Update Android SDK to API 37.2, NDK to r30 LTS, and SDK CMake to 4.1.2.
+- Preserve decimal Android API levels when publishing release tags.
+- Use the current Android CLI for SDK management on amd64 and arm64.
+- Update yq, mdBook, Typst, tera-cli, Vale, Typos, Harper, and Vale style packs.
+- Build stable mdbook-katex 0.10.0 in a separate stage; keep Java 17 support.
+
 ## [0.2.7] (2026-06-02)
 
 ### Refactoring

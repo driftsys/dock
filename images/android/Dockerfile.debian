@@ -3,9 +3,9 @@
 FROM dock-jvm
 
 ARG VERSION=dev
-ARG ANDROID_CMDLINE_TOOLS_VERSION=14742923
-ARG ANDROID_BUILD_TOOLS_VERSION=36.1.0
-ARG ANDROID_PLATFORM_VERSION=36
+ARG ANDROID_CMDLINE_TOOLS_VERSION=16111833
+ARG ANDROID_BUILD_TOOLS_VERSION=37.0.0
+ARG ANDROID_PLATFORM_VERSION=37.2
 
 ENV ANDROID_HOME=/opt/android-sdk
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
@@ -13,7 +13,9 @@ ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tool
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Download and install Android command-line tools
+# Download and install Android command-line tools.
+# The Linux archive bundles an x86-64 launcher. Google distributes the native
+# arm64 launcher separately; both launchers download their current CLI payload.
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
@@ -23,13 +25,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     -o /tmp/cmdline-tools.zip \
  && unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools \
  && mv /tmp/cmdline-tools/cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest" \
- && rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
+ && rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools \
+ && if [ "$(dpkg --print-architecture)" = arm64 ]; then \
+      curl -fsSL "https://dl.google.com/android/cli/latest/linux_arm64/android" \
+        -o "${ANDROID_HOME}/cmdline-tools/latest/bin/android" \
+      && chmod 0755 "${ANDROID_HOME}/cmdline-tools/latest/bin/android"; \
+    fi
 
 # Accept licenses and install SDK components
 # Note: "yes" exits with SIGPIPE (141) when sdkmanager closes stdin;
 # piping through "true" absorbs the non-zero exit under pipefail.
 RUN yes 2>/dev/null | sdkmanager --licenses > /dev/null 2>&1 || true \
- && sdkmanager --install \
+ && android --no-metrics sdk --platform=linux_x86_64 install \
     "platform-tools" \
     "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
     "platforms;android-${ANDROID_PLATFORM_VERSION}"
