@@ -67,6 +67,22 @@ run_image_tests() {
         -v "${TESTS_DIR}/../scripts:/scripts:ro" \
         "${tag}" \
         bash /tests/bash_unit ${BASH_UNIT_FLAGS} "/tests/${script}"
+
+    case "$image" in
+      python-debian|polyglot-debian)
+        local ca_dir status=0
+        ca_dir="$(mktemp -d "$TESTS_DIR/.ca-store.XXXXXX")"
+        docker run --rm "$tag" tar -C /etc/ssl/certs -cf - . | tar -C "$ca_dir" -xf -
+        timeout "$TEST_TIMEOUT" docker run --rm \
+          -v "$TESTS_DIR:/tests:ro" \
+          -v "$FIXTURES_DIR:/fixtures:ro" \
+          -v "$ca_dir:/etc/ssl/certs:ro" \
+          -e DOCK_TEST_READONLY_CA=1 "$tag" \
+          bash /tests/bash_unit -p test_uv_corporate_ca "/tests/$script" || status=$?
+        rm -rf "$ca_dir"
+        return "$status"
+        ;;
+    esac
 }
 
 # If an image name is passed, run only that image; otherwise run all.

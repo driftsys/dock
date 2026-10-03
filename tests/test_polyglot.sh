@@ -5,6 +5,8 @@
 
 # shellcheck source=tests/test_rust.sh
 source "$(dirname "$0")/test_rust.sh"
+# shellcheck source=tests/test_python.sh
+source "$(dirname "$0")/test_python.sh"
 
 # ---------------------------------------------------------------------------
 # Deno presence (re-declared here for polyglot)

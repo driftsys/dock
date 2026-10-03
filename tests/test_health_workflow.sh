@@ -21,6 +21,10 @@ for arg in "$@"; do
     case "$arg" in
         ghcr.io/driftsys/dock:*)
             printf '%s %s\n' "$command" "$arg" >> "$DOCKER_CALLS"
+            printf '%s\n' "$*" >> "${DOCKER_CALLS}.args"
+            if [[ "$command" == run && "$*" == *' tar -C /etc/ssl/certs -cf - .' ]]; then
+                tar -cf - -T /dev/null
+            fi
             exit 0
             ;;
     esac
@@ -85,9 +89,22 @@ test_health_pulls_the_image_used_by_runner() {
         assert_status_code 0 "run_workflow_step \"Run tests\" \"$image\""
 
         pulled="$(sed -n 's/^pull //p' "$DOCKER_CALLS")"
-        tested="$(sed -n 's/^run //p' "$DOCKER_CALLS")"
+        tested="$(sed -n 's/^run //p' "$DOCKER_CALLS" | sort -u)"
         assert_not_equals "" "$pulled" "Workflow must pull $image"
         assert_equals "$pulled" "$tested" \
             "Workflow and runner must use the same tag for $image"
     done <<< "$MATRIX"
+}
+
+
+test_health_runs_readonly_certificate_check() {
+    local image
+    for image in python-debian polyglot-debian; do
+        : > "${DOCKER_CALLS}.args"
+        assert_status_code 0 "run_workflow_step \"Run tests\" \"$image\""
+        assert "grep -F -- 'tar -C /etc/ssl/certs -cf - .' '${DOCKER_CALLS}.args'"
+        assert "grep -F -- ':/etc/ssl/certs:ro' '${DOCKER_CALLS}.args'"
+        assert "grep -F -- ' -e DOCK_TEST_READONLY_CA=1 ' '${DOCKER_CALLS}.args'"
+        assert "grep -F -- ' -p test_uv_corporate_ca ' '${DOCKER_CALLS}.args'"
+    done
 }

@@ -144,15 +144,21 @@ jobs:
 **Layer 1 — Dockerfile ENV defaults.** Every dock image sets TLS environment
 variables at build time so all tools look at the system CA bundle by default:
 
-| Variable              | Tool(s)            |
-| --------------------- | ------------------ |
-| `SSL_CERT_FILE`       | OpenSSL, curl, git |
-| `CURL_CA_BUNDLE`      | curl               |
-| `GIT_SSL_CAINFO`      | git                |
-| `CARGO_HTTP_CAINFO`   | cargo              |
-| `NODE_EXTRA_CA_CERTS` | Node.js            |
-| `DENO_CERT`           | Deno               |
-| `PIP_CERT`            | pip                |
+| Variable              | Tool(s)                |
+| --------------------- | ---------------------- |
+| `SSL_CERT_FILE`       | OpenSSL, curl, git, uv |
+| `CURL_CA_BUNDLE`      | curl                   |
+| `GIT_SSL_CAINFO`      | git                    |
+| `CARGO_HTTP_CAINFO`   | cargo                  |
+| `NODE_EXTRA_CA_CERTS` | Node.js                |
+| `DENO_CERT`           | Deno                   |
+| `PIP_CERT`            | pip                    |
+
+Python and polyglot images set `UV_SYSTEM_CERTS=true` for uv. The pinned version
+deprecates the former `UV_NATIVE_TLS` name. uv respects `SSL_CERT_FILE`, so
+sourcing `/etc/dock/ca.env` also activates the private fallback bundle for uv
+and uvx. See
+[Astral's certificate documentation](https://docs.astral.sh/uv/concepts/authentication/certificates/).
 
 All point at `/etc/ssl/certs/ca-certificates.crt` — the system bundle managed by
 `update-ca-certificates`. No runtime action is needed when this file is

@@ -58,9 +58,9 @@ Sizes are compressed (download) size, amd64.
 | `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                                  |
 | `:lint`        | `:core`       | **alpine** | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shellcheck-sarif, shfmt, editorconfig-checker, git-std, prim (amd64) |
 | `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)                                                      |
-| `:python`      | `:core`       | **debian** | —       | ~115 MB | Python 3, pip, ruff                                                                                  |
+| `:python`      | `:core`       | **debian** | —       | ~138 MB | Python 3, pip, uv, uvx, Ruff                                                                         |
 | `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                                                            |
-| `:polyglot`    | `:rust`       | **debian** | —       | ~625 MB | Rust + Deno + Python 3                                                                               |
+| `:polyglot`    | `:rust`       | **debian** | —       | ~710 MB | Rust + Deno + Python 3 + uv + uvx + Ruff                                                             |
 | `:jvm`         | `:core`       | **debian** | —       | ~241 MB | Temurin JDK 17                                                                                       |
 | `:android`     | `:jvm`        | **debian** | —       | ~525 MB | Android SDK (pin: `:android-37.2-debian`)                                                            |
 | `:android-ndk` | `:android`    | **debian** | —       | ~1.7 GB | NDK + Rust + cargo-ndk (pin: `:android-ndk-30-debian`)                                               |
@@ -90,12 +90,12 @@ alpine:3.24
 debian:trixie-slim
   └── :core-debian              (~89 MB)
       ├── :rust-debian          (~551 MB)
-      │   └── :polyglot-debian  (~625 MB)
+      │   └── :polyglot-debian  (~710 MB)
       ├── :deno-debian          (~137 MB)
       │   └── :glab-debian      (GitLab reporting)
       ├── :lint-debian          (~138 MB, amd64 only)
       ├── :node-debian          (~135 MB)
-      ├── :python-debian        (~115 MB)
+      ├── :python-debian        (~138 MB)
       ├── :pages-debian         (~134 MB)
       ├── :prose-debian         (~106 MB)
       └── :jvm-debian           (~241 MB)

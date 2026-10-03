@@ -1,20 +1,30 @@
 # syntax=docker/dockerfile:1
+ARG UV_VERSION=0.12.22
+ARG RUFF_VERSION=0.16.10
+
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-bin
+FROM ghcr.io/astral-sh/ruff:${RUFF_VERSION} AS ruff-bin
+
 # hadolint ignore=DL3006
-FROM dock-rust
+FROM dock-rust AS runtime
 
 ARG VERSION=dev
 # Deno release to install — keep in sync with images/deno/Dockerfile.debian
 ARG DENO_VERSION=2.9.3
-# Add Python 3, pip, and ruff
-# Ruff is intentionally installed globally as root during the image build;
-# --root-user-action acknowledges pip's advisory for that required operation.
-# hadolint ignore=DL3008,DL3013
+# Keep the distribution interpreter and pip for tools that still require pip.
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
- && rm -rf /var/lib/apt/lists/* \
- && pip install --no-cache-dir --quiet --break-system-packages \
-    --root-user-action=ignore ruff
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy pinned multiarch binaries without modifying distribution Python packages.
+COPY --from=uv-bin /uv /uvx /usr/local/bin/
+COPY --from=ruff-bin /ruff /usr/local/bin/
+
+ENV UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_SYSTEM_CERTS=true
 
 # Install the official LTS binary; GitHub versioned releases use stable.
 RUN DPKG_ARCH="$(dpkg --print-architecture)" && \
@@ -38,4 +48,4 @@ ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt \
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh polyglot "${VERSION}" "python3:python3 --version" "pip3:pip3 --version" "ruff:ruff --version" "deno:deno --version"
+RUN manifest.sh polyglot "${VERSION}" "python3:python3 --version" "pip3:pip3 --version" "ruff:ruff --version" "uv:uv --version" "deno:deno --version"
