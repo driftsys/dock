@@ -21,6 +21,7 @@ ARG GIT_STD_VERSION=0.11.19
 ARG GITLEAKS_VERSION=8.30.1
 ARG HADOLINT_VERSION=2.15.1
 ARG PRIM_VERSION=0.9.1
+ARG SHELLCHECK_SARIF_VERSION=0.8.0
 ARG SHFMT_VERSION=3.14.1
 
 # ---------------------------------------------------------------------------
@@ -30,6 +31,13 @@ ARG SHFMT_VERSION=3.14.1
 RUN apt-get update && apt-get install -y --no-install-recommends \
       shellcheck \
     && rm -rf /var/lib/apt/lists/*
+
+# ShellCheck JSON to SARIF, using the official glibc release binary.
+RUN curl -sSfL \
+      "https://github.com/psastras/sarif-rs/releases/download/shellcheck-sarif-v${SHELLCHECK_SARIF_VERSION}/shellcheck-sarif-x86_64-unknown-linux-gnu" \
+      -o /usr/local/bin/shellcheck-sarif && \
+    chmod +x /usr/local/bin/shellcheck-sarif && \
+    shellcheck-sarif --version
 
 # hadolint — Dockerfile linter (static binary, amd64-only lint image)
 RUN curl -sSfL \
@@ -95,6 +103,7 @@ RUN manifest.sh lint "${VERSION}" \
     "gitleaks:gitleaks version" \
     "hadolint:hadolint --version" \
     "shellcheck:shellcheck --version" \
+    "shellcheck-sarif:shellcheck-sarif --version" \
     "shfmt:shfmt --version" \
     "editorconfig-checker:editorconfig-checker --version" \
     "git-std:git-std --version" \

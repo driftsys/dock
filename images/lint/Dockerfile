@@ -7,6 +7,13 @@
 #
 # Platform: linux/amd64 only (git-std and prim lack arm64 Linux builds).
 
+# No upstream musl binary is published; compile outside the final image.
+FROM rust:1.99.0-alpine3.24 AS shellcheck-sarif-builder
+ARG SHELLCHECK_SARIF_VERSION=0.8.0
+# hadolint ignore=DL3018
+RUN apk add --no-cache musl-dev && \
+    cargo install shellcheck-sarif --version "${SHELLCHECK_SARIF_VERSION}" --locked
+
 # hadolint ignore=DL3006
 FROM dock-core
 
@@ -21,6 +28,7 @@ ARG GIT_STD_VERSION=0.11.19
 ARG GITLEAKS_VERSION=8.30.1
 ARG HADOLINT_VERSION=2.15.1
 ARG PRIM_VERSION=0.9.1
+ARG SHELLCHECK_SARIF_VERSION=0.8.0
 
 # ---------------------------------------------------------------------------
 # System packages: shellcheck + editorconfig-checker
@@ -28,6 +36,8 @@ ARG PRIM_VERSION=0.9.1
 # hadolint ignore=DL3018
 RUN apk add --no-cache shellcheck shfmt editorconfig-checker && \
     ln -s /usr/bin/ec /usr/bin/editorconfig-checker
+
+COPY --from=shellcheck-sarif-builder /usr/local/cargo/bin/shellcheck-sarif /usr/local/bin/
 
 # hadolint — Dockerfile linter (static binary, amd64-only lint image)
 RUN curl -sSfL \
@@ -79,6 +89,7 @@ RUN shfmt_version="$(apk info -v | sed -n 's/^shfmt-\([0-9][0-9.]*\)-r[0-9]*$/\1
     "gitleaks:gitleaks version" \
     "hadolint:hadolint --version" \
     "shellcheck:shellcheck --version" \
+    "shellcheck-sarif:shellcheck-sarif --version" \
     "shfmt=${shfmt_version}" \
     "editorconfig-checker:editorconfig-checker --version" \
     "git-std:git-std --version" \

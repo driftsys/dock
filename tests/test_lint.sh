@@ -16,6 +16,8 @@ test_shfmt_present()                { assert "command -v shfmt"; }
 test_editorconfig_checker_present() { assert "command -v editorconfig-checker"; }
 test_git_std_present()              { assert "command -v git-std"; }
 test_prim_present()                 { assert "command -v prim"; }
+test_cargo_absent() { assert_fails "command -v cargo"; }
+test_rustc_absent() { assert_fails "command -v rustc"; }
 test_deno_absent()                  { assert_fails "command -v deno"; }
 test_node_absent()                  { assert_fails "command -v node"; }
 test_npm_absent()                   { assert_fails "command -v npm"; }
@@ -121,5 +123,19 @@ test_git_std_validates_commit_range() {
   git -C "$dir" -c core.hooksPath=/dev/null commit -q --allow-empty -m 'fix: retain valid tip'
   assert_fails "cd '$dir' && git std lint --range '$base..HEAD'"
   assert "cd '$dir' && git std lint --range 'HEAD^..HEAD'"
+  rm -rf "$dir"
+}
+
+# Convert a real ShellCheck warning, retaining its rule and source location.
+test_shellcheck_sarif_present() { assert "command -v shellcheck-sarif"; }
+test_manifest_has_shellcheck_sarif() {
+  assert_equals "0.8.0" "$(jq -r '.tools["shellcheck-sarif"]' /etc/dock/manifest.json)"
+}
+test_shellcheck_sarif_conversion() {
+  local dir
+  dir="$(mktemp -d)"
+  assert_status_code 1 "shellcheck -f json /fixtures/reporting/shellcheck.bash > '$dir/input.json'"
+  assert "shellcheck-sarif < '$dir/input.json' > '$dir/report.sarif'"
+  assert "jq -e '.version == \"2.1.0\" and any(.runs[].results[]; .ruleId == \"2086\" and .locations[0].physicalLocation.region.startLine == 3 and (.locations[0].physicalLocation.artifactLocation.uri | endswith(\"shellcheck.bash\")))' '$dir/report.sarif'"
   rm -rf "$dir"
 }

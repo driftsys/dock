@@ -49,21 +49,21 @@ Some images are **Debian-only** (`python`, `prose`, `polyglot`, `jvm`,
 
 Sizes are compressed (download) size, amd64.
 
-| Image          | From          | `:image` → | Alpine  | Debian  | Contents                                                                           |
-| -------------- | ------------- | ---------- | ------- | ------- | ---------------------------------------------------------------------------------- |
-| `:core`        | `alpine:3.24` | **alpine** | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg, …                                                   |
-| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny                       |
-| `:deno`        | `:core`       | **alpine** | ~88 MB  | ~137 MB | Deno, npx shim, npm shim                                                           |
-| `:glab`        | `:deno`       | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                                        |
-| `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                |
-| `:lint`        | `:core`       | **alpine** | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shfmt, editorconfig-checker, git-std, prim (amd64) |
-| `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)                                    |
-| `:python`      | `:core`       | **debian** | —       | ~115 MB | Python 3, pip, ruff                                                                |
-| `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                                          |
-| `:polyglot`    | `:rust`       | **debian** | —       | ~625 MB | Rust + Deno + Python 3                                                             |
-| `:jvm`         | `:core`       | **debian** | —       | ~241 MB | Temurin JDK 17                                                                     |
-| `:android`     | `:jvm`        | **debian** | —       | ~525 MB | Android SDK (pin: `:android-37.2-debian`)                                          |
-| `:android-ndk` | `:android`    | **debian** | —       | ~1.7 GB | NDK + Rust + cargo-ndk (pin: `:android-ndk-30-debian`)                             |
+| Image          | From          | `:image` → | Alpine  | Debian  | Contents                                                                                             |
+| -------------- | ------------- | ---------- | ------- | ------- | ---------------------------------------------------------------------------------------------------- |
+| `:core`        | `alpine:3.24` | **alpine** | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg, …                                                                     |
+| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny                                         |
+| `:deno`        | `:core`       | **alpine** | ~88 MB  | ~137 MB | Deno, npx shim, npm shim                                                                             |
+| `:glab`        | `:deno`       | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                                                          |
+| `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                                  |
+| `:lint`        | `:core`       | **alpine** | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shellcheck-sarif, shfmt, editorconfig-checker, git-std, prim (amd64) |
+| `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)                                                      |
+| `:python`      | `:core`       | **debian** | —       | ~115 MB | Python 3, pip, ruff                                                                                  |
+| `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                                                            |
+| `:polyglot`    | `:rust`       | **debian** | —       | ~625 MB | Rust + Deno + Python 3                                                                               |
+| `:jvm`         | `:core`       | **debian** | —       | ~241 MB | Temurin JDK 17                                                                                       |
+| `:android`     | `:jvm`        | **debian** | —       | ~525 MB | Android SDK (pin: `:android-37.2-debian`)                                                            |
+| `:android-ndk` | `:android`    | **debian** | —       | ~1.7 GB | NDK + Rust + cargo-ndk (pin: `:android-ndk-30-debian`)                                               |
 
 The **`:image` →** column is which variant the bare `:image` tag resolves to.
 `python`, `prose`, `polyglot`, and the JVM/Android images are Debian-only (no
