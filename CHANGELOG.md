@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add pinned uv and uvx, copy pinned Ruff binaries, and test Python CA trust.
+
 - Add pinned Clippy SARIF conversion and log formatting to Rust images.
 
 - Add pinned ShellCheck SARIF conversion to both lint variants.
