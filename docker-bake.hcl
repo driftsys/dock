@@ -120,6 +120,14 @@ target "deno" {
   contexts   = { dock-core = "target:core" }
 }
 
+target "glab" {
+  inherits   = ["_common", "_cache-alpine"]
+  context    = "."
+  dockerfile = "images/glab/Dockerfile"
+  tags       = img_tags("glab", "alpine", true)
+  contexts   = { dock-deno = "target:deno" }
+}
+
 target "node" {
   inherits   = ["_common", "_cache-alpine"]
   context    = "."
@@ -172,6 +180,14 @@ target "deno-debian" {
   args       = { DENO_VERSION = DENO_VERSION }
   tags       = img_tags("deno", "debian", false)
   contexts   = { dock-core = "target:core-debian" }
+}
+
+target "glab-debian" {
+  inherits   = ["_common", "_cache-debian"]
+  context    = "."
+  dockerfile = "images/glab/Dockerfile.debian"
+  tags       = img_tags("glab", "debian", false)
+  contexts   = { dock-deno = "target:deno-debian" }
 }
 
 target "node-debian" {
@@ -266,12 +282,12 @@ target "android-ndk-debian" {
 # ---------------------------------------------------------------------------
 
 group "alpine" {
-  targets = ["core", "rust", "deno", "node", "lint", "pages"]
+  targets = ["core", "rust", "deno", "glab", "node", "lint", "pages"]
 }
 
 # Multi-arch targets (excludes lint and pages which are amd64-only)
 group "multiarch" {
-  targets = ["core", "rust", "deno", "node"]
+  targets = ["core", "rust", "deno", "glab", "node"]
 }
 
 group "debian" {
@@ -279,6 +295,7 @@ group "debian" {
     "core-debian",
     "rust-debian",
     "deno-debian",
+    "glab-debian",
     "node-debian",
     "python-debian",
     "polyglot-debian",

@@ -13,6 +13,7 @@
 - [core](images/core.md)
 - [rust](images/rust.md)
 - [deno](images/deno.md)
+- [glab](images/glab.md)
 - [node](images/node.md)
 - [python](images/python.md)
 - [polyglot](images/polyglot.md)

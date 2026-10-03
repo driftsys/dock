@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add Alpine and Debian GitLab reporting images with glab, SARIF conversion,
+  reviewdog, and dependency-free TAP to JUnit conversion.
+
 - Update both Node.js variants to 24.21.0 LTS and bundled npm.
 - Update Deno to the supported 2.9.3 LTS release in Deno and polyglot images.
 - Update Android SDK to API 37.2, NDK to r30 LTS, and SDK CMake to 4.1.2.

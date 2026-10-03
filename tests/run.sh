@@ -22,6 +22,8 @@ declare -A TEST_SCRIPTS=(
     [core]="test_core.sh"
     [rust]="test_rust.sh"
     [deno]="test_deno.sh"
+    [glab]="test_glab.sh"
+    [glab-debian]="test_glab.sh"
     [node]="test_node.sh"
     [lint]="test_lint.sh"
     [lint-debian]="test_lint.sh"
@@ -62,6 +64,7 @@ run_image_tests() {
       docker run --rm \
         -v "${TESTS_DIR}:/tests:ro" \
         -v "${FIXTURES_DIR}:/fixtures:ro" \
+        -v "${TESTS_DIR}/../scripts:/scripts:ro" \
         "${tag}" \
         bash /tests/bash_unit ${BASH_UNIT_FLAGS} "/tests/${script}"
 }
@@ -70,7 +73,7 @@ run_image_tests() {
 if [[ $# -gt 0 ]]; then
     run_image_tests "$1"
 else
-    for image in core rust deno node lint pages \
+    for image in core rust deno glab node lint pages \
                  python-debian prose-debian polyglot-debian; do
         run_image_tests "$image"
     done

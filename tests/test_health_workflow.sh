@@ -60,6 +60,13 @@ test_health_retains_debian_only_targets() {
     done
 }
 
+test_health_schedules_glab_variants() {
+    local image
+    for image in glab glab-debian; do
+        assert "printf '%s\\n' \"\$MATRIX\" | grep -Fx -- '$image'"
+    done
+}
+
 test_health_matrix_entries_are_accepted_by_runner() {
     local image
     assert_not_equals "" "$MATRIX" "Health matrix must contain images"

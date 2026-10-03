@@ -1,0 +1,9 @@
+TAP version 13
+1..4
+ok 1 - passes
+not ok 2 - fails
+  ---
+  message: expected <one> & got two
+  ...
+ok 3 - skipped # SKIP unavailable
+not ok 4 - pending # TODO implement

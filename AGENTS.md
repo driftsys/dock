@@ -38,6 +38,7 @@ alpine:3.24                  # Alpine variants (-alpine)
   └── :core
       ├── :rust
       ├── :deno
+      │   └── :glab
       ├── :lint
       ├── :node
       └── :pages
@@ -47,6 +48,7 @@ debian:trixie-slim           # Debian variants (-debian) — every image
       ├── :rust-debian
       │   └── :polyglot-debian
       ├── :deno-debian
+      │   └── :glab-debian
       ├── :lint-debian
       ├── :node-debian
       ├── :python-debian
@@ -65,6 +67,7 @@ dock/
 │   ├── core/
 │   ├── rust/
 │   ├── deno/
+│   ├── glab/
 │   ├── lint/
 │   ├── pages/
 │   ├── prose/
