@@ -52,7 +52,7 @@ Sizes are compressed (download) size, amd64.
 | Image          | From          | `:image` → | Alpine  | Debian  | Contents                                                                                             |
 | -------------- | ------------- | ---------- | ------- | ------- | ---------------------------------------------------------------------------------------------------- |
 | `:core`        | `alpine:3.24` | **alpine** | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg, …                                                                     |
-| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny                                         |
+| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny, clippy-sarif, sarif-fmt                |
 | `:deno`        | `:core`       | **alpine** | ~88 MB  | ~137 MB | Deno, npx shim, npm shim                                                                             |
 | `:glab`        | `:deno`       | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                                                          |
 | `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                                  |

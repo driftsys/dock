@@ -64,3 +64,23 @@ test_manifest_has_cargo_deny() { assert_manifest_tool '.tools["cargo-deny"]'; }
 test_manifest_has_clippy() { assert_manifest_tool '.tools.clippy'; }
 
 test_manifest_has_rustfmt() { assert_manifest_tool '.tools.rustfmt'; }
+
+# Real diagnostics must survive conversion with their rule and location.
+test_clippy_sarif_present() { assert 'command -v clippy-sarif'; }
+test_sarif_fmt_present() { assert 'command -v sarif-fmt'; }
+test_rust_sarif_manifest() {
+  assert_equals '0.8.0' "$(jq -r '.tools["clippy-sarif"]' /etc/dock/manifest.json)"
+  assert_equals '0.8.0' "$(jq -r '.tools["sarif-fmt"]' /etc/dock/manifest.json)"
+}
+test_clippy_sarif_conversion() {
+  local dir
+  dir="$(mktemp -d)"
+  cp -r /fixtures/reporting/rust/. "$dir/"
+  assert "cargo clippy --offline --manifest-path '$dir/Cargo.toml' --message-format=json > '$dir/input.json'"
+  assert "clippy-sarif < '$dir/input.json' > '$dir/report.sarif'"
+  assert "jq -e '.version == \"2.1.0\" and any(.runs[].results[]; .ruleId == \"clippy::redundant_closure\" and .locations[0].physicalLocation.region.startLine == 6 and (.locations[0].physicalLocation.artifactLocation.uri | endswith(\"src/main.rs\")))' '$dir/report.sarif'"
+  assert "sarif-fmt < '$dir/report.sarif' > '$dir/formatted.txt'"
+  assert "grep -q 'redundant_closure' '$dir/formatted.txt'"
+  assert_fails "jq -e . '$dir/formatted.txt'"
+  rm -rf "$dir"
+}
