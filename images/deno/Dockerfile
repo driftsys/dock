@@ -1,15 +1,35 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: grab the Deno binary from the official Alpine image (musl-compatible)
-ARG DENO_VERSION=2.8.1
+ARG DENO_VERSION=2.9.3
 FROM denoland/deno:alpine-${DENO_VERSION} AS deno-bin
+
+USER 0
+ARG DENO_VERSION
+# The versioned Docker image supplies glibc, but its binary uses stable.
+# Replace it with the LTS build and preserve the isolated library RPATH.
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl unzip patchelf
+RUN case "$(uname -m)" in \
+      x86_64) DENO_ARCH=x86_64-unknown-linux-gnu ;; \
+      aarch64) DENO_ARCH=aarch64-unknown-linux-gnu ;; \
+      *) echo "unsupported architecture" && exit 1 ;; \
+    esac \
+ && curl -sSfL "https://dl.deno.land/release/v${DENO_VERSION}/deno-${DENO_ARCH}.zip" \
+      -o /tmp/deno.zip \
+ && unzip -qo /tmp/deno.zip -d /bin \
+ && rm /tmp/deno.zip \
+ && patchelf --set-rpath /usr/local/lib/glibc /bin/deno \
+ && deno --version
+
+USER 1000
 
 # Stage 2: build the dock-deno image
 # hadolint ignore=DL3006
 FROM dock-core
 
 ARG VERSION=dev
-ARG DENO_VERSION=2.8.1
+ARG DENO_VERSION=2.9.3
 # Copy Deno binary and its bundled glibc runtime from the official Alpine image.
 # Since Deno 2.8.x the official Alpine image places glibc in /usr/local/lib/glibc/
 # and patches the binary's RPATH with patchelf. The dynamic linker lives at

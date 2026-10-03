@@ -14,16 +14,16 @@ output. Inherits the `:core` scripting foundation (git, jq, yq, curl, CA trust).
 
 ## Installed tools
 
-| Tool          | Install method           | Purpose                              |
-| ------------- | ------------------------ | ------------------------------------ |
-| mdbook        | binary (GitHub releases) | Book / static-site generator         |
-| typst         | binary (GitHub releases) | PDF / document compiler              |
-| tera          | binary (GitHub releases) | Jinja2-like template engine          |
-| mdbook-alerts | binary (GitHub releases) | GitHub-style `> [!NOTE]` blockquotes |
-| mdbook-katex  | binary (GitHub releases) | Server-side LaTeX math rendering     |
-| lychee        | binary (GitHub releases) | Fast async broken-link checker       |
-| brotli        | apk / apt                | Brotli compression                   |
-| Noto fonts    | apk / apt                | Fonts for typst PDF output           |
+| Tool          | Install method            | Purpose                              |
+| ------------- | ------------------------- | ------------------------------------ |
+| mdbook        | binary (GitHub releases)  | Book / static-site generator         |
+| typst         | binary (GitHub releases)  | PDF / document compiler              |
+| tera          | binary (GitHub releases)  | Jinja2-like template engine          |
+| mdbook-alerts | binary (GitHub releases)  | GitHub-style `> [!NOTE]` blockquotes |
+| mdbook-katex  | source (Rust build stage) | Server-side LaTeX math rendering     |
+| lychee        | binary (GitHub releases)  | Fast async broken-link checker       |
+| brotli        | apk / apt                 | Brotli compression                   |
+| Noto fonts    | apk / apt                 | Fonts for typst PDF output           |
 
 ## Link checking
 
@@ -56,14 +56,14 @@ jobs:
 
 ## Build arguments
 
-| Argument                | Default        | Description                 |
-| ----------------------- | -------------- | --------------------------- |
-| `MDBOOK_VERSION`        | `0.5.3`        | mdbook release to install   |
-| `TYPST_VERSION`         | `0.14.2`       | typst release to install    |
-| `TERA_CLI_VERSION`      | `0.5.0`        | tera-cli release to install |
-| `MDBOOK_ALERTS_VERSION` | `0.8.0`        | mdbook-alerts release       |
-| `MDBOOK_KATEX_VERSION`  | `0.10.0-alpha` | mdbook-katex release        |
-| `LYCHEE_VERSION`        | `0.24.2`       | lychee release to install   |
+| Argument                | Default  | Description                 |
+| ----------------------- | -------- | --------------------------- |
+| `MDBOOK_VERSION`        | `0.5.4`  | mdbook release to install   |
+| `TYPST_VERSION`         | `0.15.1` | typst release to install    |
+| `TERA_CLI_VERSION`      | `0.5.1`  | tera-cli release to install |
+| `MDBOOK_ALERTS_VERSION` | `0.8.0`  | mdbook-alerts release       |
+| `MDBOOK_KATEX_VERSION`  | `0.10.0` | mdbook-katex release        |
+| `LYCHEE_VERSION`        | `0.24.2` | lychee release to install   |
 
 ## Approximate size
 
@@ -71,3 +71,7 @@ jobs:
 | ------- | ------- |
 | Alpine  | ~85 MB  |
 | Debian  | ~140 MB |
+
+The stable mdbook-katex release has no prebuilt binaries. A separate Rust build
+stage compiles version 0.10.0 as a static musl binary for both variants. The
+final images contain the binary without the build toolchain.

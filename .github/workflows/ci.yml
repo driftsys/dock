@@ -65,12 +65,14 @@ jobs:
       - name: Install yq
         run: |
           curl -sSfL \
-            https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_linux_amd64 \
+            https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64 \
             -o /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
-      - name: Test health workflow
-        run: bash tests/bash_unit tests/test_health_workflow.sh
+      - name: Test workflows
+        run: |
+          bash tests/bash_unit tests/test_health_workflow.sh
+          bash tests/bash_unit tests/test_release_workflow.sh
 
   git-std:
     name: Conventional commits

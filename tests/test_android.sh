@@ -10,6 +10,7 @@ source "$(dirname "$0")/test_jvm.sh"
 # ---------------------------------------------------------------------------
 
 test_sdkmanager_present() { assert "command -v sdkmanager"; }
+test_android_cli_present() { assert "command -v android"; }
 
 test_aapt2_present() {
   # aapt2 lives inside build-tools, not on PATH by default.
@@ -20,8 +21,12 @@ test_aapt2_present() {
 # Sanity tests
 # ---------------------------------------------------------------------------
 
-test_sdkmanager_list() {
-  assert "sdkmanager --list 2>&1 | grep -q 'build-tools'"
+test_android_cli_version() {
+  assert "android --no-metrics --version"
+}
+
+test_android_sdk_list() {
+  assert "android --no-metrics sdk list | grep -q 'build-tools'"
 }
 
 test_aapt2_version() {

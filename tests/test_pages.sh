@@ -62,6 +62,17 @@ test_mdbook_init_and_build() {
   rm -rf "$dir"
 }
 
+test_mdbook_katex_renders_math() {
+  local dir
+  dir="$(mktemp -d)"
+  mdbook init --title "Math book" "$dir" --ignore none
+  printf '\n[preprocessor.katex]\n' >> "$dir/book.toml"
+  printf '# Math\n\n%s1+1=2%s\n' '$' '$' > "$dir/src/chapter_1.md"
+  assert "mdbook build '$dir'"
+  assert "grep -q 'class=\"katex\"' '$dir/book/chapter_1.html'"
+  rm -rf "$dir"
+}
+
 test_typst_compile() {
   local dir
   dir="$(mktemp -d)"

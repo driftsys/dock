@@ -28,6 +28,10 @@ test_node_version() {
   assert "node --version"
 }
 
+test_node_uses_lts_major() {
+  assert_equals "24" "$(node -p 'process.versions.node.split(".")[0]')"
+}
+
 test_npm_version() {
   assert "npm --version"
 }

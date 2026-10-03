@@ -101,7 +101,7 @@ jobs:
         id: android
         run: |
           api=$(grep -A1 'variable "ANDROID_PLATFORM_VERSION"' docker-bake.hcl \
-            | grep default | sed 's/.*"\([0-9]*\)".*/\1/')
+            | grep default | sed 's/.*"\([0-9][0-9.]*\)".*/\1/')
           echo "api=${api}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve Android NDK version

@@ -22,7 +22,7 @@ ghcr.io/driftsys/dock:core-debian     # explicit Debian core
 ghcr.io/driftsys/dock:rust            # recommended rust (Debian)
 ghcr.io/driftsys/dock:rust-alpine     # explicit Alpine rust (static musl)
 ghcr.io/driftsys/dock:core-0.2.7      # pinned recommended core
-ghcr.io/driftsys/dock:android-36-debian   # pinned to API 36
+ghcr.io/driftsys/dock:android-37.2-debian   # pinned to API 37.2
 ```
 
 ## Floating tags
@@ -35,9 +35,9 @@ to the latest release. Use them in prototyping; pin to a version in production.
 The `:android` image publishes an additional pinned tag per API level:
 
 - `:android-debian` — floating, always current stable API
-- `:android-36-debian` — pinned to API 36
+- `:android-37.2-debian` — pinned to API 37.2
 
-When the API level is bumped (e.g., to 37), the old pinned tag remains in the
+When the API level is bumped (e.g., to 38), the old pinned tag remains in the
 registry but stops receiving updates (deprecated).
 
 ## Android NDK tags
@@ -45,7 +45,7 @@ registry but stops receiving updates (deprecated).
 The `:android-ndk` image also uses pinned tags:
 
 - `:android-ndk-debian` — floating, latest NDK
-- `:android-ndk-27-debian` — pinned to NDK 27
+- `:android-ndk-30-debian` — pinned to NDK 30
 
 ## Semantic versioning
 
@@ -83,20 +83,28 @@ release workflow collects each image's manifest into one table.
 To pin a specific runtime version, use the `--build-arg` override at build time
 (see [extending.md](extending.md)).
 
+Node.js is pinned to 24.21.0 in both variants and copied from the official
+Node.js images, including bundled npm. Distribution packages lag this LTS patch
+release. Override `NODE_VERSION` to select another compatible LTS patch.
+
+Deno follows the supported 2.9 LTS line using the official LTS download server.
+Android NDK follows r30 LTS. Java remains on Temurin 17 for Android and JVM
+compatibility; it still receives upstream maintenance updates.
+
 ## SDK and runtime update cadence
 
 Different runtimes follow different upstream release schedules. The table below
 summarizes the update policy for each:
 
-| Runtime         | Update trigger                   | Frequency  |
-| --------------- | -------------------------------- | ---------- |
-| Alpine / Debian | New base image tag               | As needed  |
-| Rust            | New stable release               | ~6 weeks   |
-| Deno            | New stable release               | ~4 weeks   |
-| Node.js         | New LTS release                  | ~12 months |
-| Python          | New stable release               | ~12 months |
-| JDK             | New LTS release (17 → 21 → …)    | ~2 years   |
-| Android SDK     | New stable API level from Google | ~12 months |
+| Runtime         | Update trigger                   | Frequency   |
+| --------------- | -------------------------------- | ----------- |
+| Alpine / Debian | New base image tag               | As needed   |
+| Rust            | New stable release               | ~6 weeks    |
+| Deno            | New supported LTS patch          | As released |
+| Node.js         | New supported LTS patch          | As released |
+| Python          | New stable release               | ~12 months  |
+| JDK             | New LTS release (17 → 21 → …)    | ~2 years    |
+| Android SDK     | New stable API level from Google | ~12 months  |
 
 **Android SDK specifics:** The `:android-debian` image ships the latest stable
 API level only (no beta/preview). Google Play Store requires apps to target the

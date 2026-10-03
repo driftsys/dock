@@ -50,7 +50,7 @@ build:
 ## Using the Android image
 
 The `:android-debian` image includes JDK 17, Android SDK command-line tools,
-build-tools 36.1.0, and platform SDK android-36. Install additional platform
+build-tools 37.0.0, and platform SDK android-37.2. Install additional platform
 SDKs at CI time if your project targets older API levels:
 
 ```yaml
@@ -60,7 +60,7 @@ android-build:
   before_script:
     - dock-bootstrap
     - . /etc/dock/ca.env 2>/dev/null || true
-    - sdkmanager "platforms;android-34" "platforms;android-35"
+    - android --no-metrics sdk install platforms/android-34 platforms/android-35
   script:
     - ./gradlew assembleDebug
 ```

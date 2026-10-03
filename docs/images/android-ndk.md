@@ -15,14 +15,14 @@ Android NDK cross-compilation toolchain with Rust. Inherits all `:android` tools
 
 Includes everything from `:android` plus:
 
-| Tool      | Version   | Purpose                 |
-| --------- | --------- | ----------------------- |
-| NDK       | 27 (r27c) | C/C++ cross-compilation |
-| CMake     | 3.22.1+   | Native build system     |
-| Rust      | stable    | Systems language        |
-| cargo-ndk | latest    | Rust→Android helper     |
-| clippy    | stable    | Rust linter             |
-| rustfmt   | stable    | Rust formatter          |
+| Tool      | Version  | Purpose                 |
+| --------- | -------- | ----------------------- |
+| NDK       | 30 (LTS) | C/C++ cross-compilation |
+| CMake     | 4.1.2    | Native build system     |
+| Rust      | stable   | Systems language        |
+| cargo-ndk | latest   | Rust→Android helper     |
+| clippy    | stable   | Rust linter             |
+| rustfmt   | stable   | Rust formatter          |
 
 ## Rust Android targets
 
@@ -39,7 +39,7 @@ All 4 Android ABIs are pre-installed:
 
 | Variable            | Value                                |
 | ------------------- | ------------------------------------ |
-| `ANDROID_NDK_HOME`  | `/opt/android-sdk/ndk/27.2.12479018` |
+| `ANDROID_NDK_HOME`  | `/opt/android-sdk/ndk/30.0.16248370` |
 | `ANDROID_HOME`      | `/opt/android-sdk`                   |
 | `JAVA_HOME`         | `/usr/lib/jvm/java-17-openjdk`       |
 | `CARGO_HOME`        | `/usr/local/cargo`                   |
@@ -53,7 +53,7 @@ Same scheme as `:android-debian`:
 | Tag                      | Meaning               |
 | ------------------------ | --------------------- |
 | `:android-ndk-debian`    | Floating — latest NDK |
-| `:android-ndk-27-debian` | Pinned to NDK 27      |
+| `:android-ndk-30-debian` | Pinned to NDK 30      |
 
 Old pinned tags stay in the registry but stop receiving updates when a new NDK
 ships.

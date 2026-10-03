@@ -12,6 +12,10 @@ source "$(dirname "$0")/test_rust.sh"
 
 test_polyglot_deno_present() { assert "command -v deno"; }
 
+test_polyglot_deno_uses_lts_release_line() {
+  assert_equals "2.9" "$(deno eval 'console.log(Deno.version.deno.split(".").slice(0, 2).join("."))')"
+}
+
 # ---------------------------------------------------------------------------
 # Python presence (re-declared here for polyglot)
 # ---------------------------------------------------------------------------
