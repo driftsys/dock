@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add pinned ShellCheck SARIF conversion to both lint variants.
+
 - Add Alpine and Debian GitLab reporting images with glab, SARIF conversion,
   reviewdog, and dependency-free TAP to JUnit conversion.
 
