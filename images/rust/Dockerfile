@@ -3,6 +3,8 @@
 FROM dock-core
 
 ARG VERSION=dev
+ARG CLIPPY_SARIF_VERSION=0.8.0
+ARG SARIF_FMT_VERSION=0.8.0
 # Install C/C++ toolchain and development libraries
 # DL3018: version pinning is at the OS level (inherited alpine:3.24 base)
 # hadolint ignore=DL3018
@@ -25,6 +27,10 @@ RUN curl -sSf https://sh.rustup.rs \
 # Install cargo-audit and cargo-deny
 RUN cargo install cargo-audit cargo-deny --locked
 
+# Build native SARIF tools separately to preserve the audit/deny cache layer.
+RUN cargo install clippy-sarif --version "${CLIPPY_SARIF_VERSION}" --locked && \
+    cargo install sarif-fmt --version "${SARIF_FMT_VERSION}" --locked
+
 # Point Cargo at the system CA bundle for corporate CA support.
 ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
 
@@ -36,4 +42,6 @@ RUN manifest.sh rust "${VERSION}" \
     "cargo-audit:cargo-audit --version" \
     "cargo-deny:cargo-deny --version" \
     "clippy:cargo clippy --version" \
+    "clippy-sarif:clippy-sarif --version" \
+    "sarif-fmt:sarif-fmt --version" \
     "rustfmt:rustfmt --version"
