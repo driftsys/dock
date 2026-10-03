@@ -54,6 +54,7 @@ Sizes are compressed (download) size, amd64.
 | `:core`        | `alpine:3.24` | **alpine** | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg, …                                                   |
 | `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny                       |
 | `:deno`        | `:core`       | **alpine** | ~88 MB  | ~137 MB | Deno, npx shim, npm shim                                                           |
+| `:glab`        | `:deno`       | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                                        |
 | `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                |
 | `:lint`        | `:core`       | **alpine** | ~94 MB  | ~138 MB | gitleaks, hadolint, shellcheck, shfmt, editorconfig-checker, git-std, prim (amd64) |
 | `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)                                    |
@@ -77,6 +78,7 @@ alpine:3.24
   └── :core          (~38 MB)
       ├── :rust      (~557 MB)
       ├── :deno      (~88 MB)
+      │   └── :glab      (GitLab reporting)
       ├── :lint      (~94 MB, amd64 only)
       ├── :node      (~54 MB)
       └── :pages     (~77 MB)
@@ -90,6 +92,7 @@ debian:trixie-slim
       ├── :rust-debian          (~551 MB)
       │   └── :polyglot-debian  (~625 MB)
       ├── :deno-debian          (~137 MB)
+      │   └── :glab-debian      (GitLab reporting)
       ├── :lint-debian          (~138 MB, amd64 only)
       ├── :node-debian          (~135 MB)
       ├── :python-debian        (~115 MB)
@@ -106,8 +109,8 @@ Default to **`:image`** — it points to the variant we recommend. Override only
 when you have a specific reason:
 
 - **Alpine (`-alpine`)** — smallest footprint; the default for `core`, `deno`,
-  `node`, `lint`, and `pages`. Pick `:rust-alpine` when you want static musl
-  binaries.
+  `glab`, `node`, `lint`, and `pages`. Pick `:rust-alpine` when you want static
+  musl binaries.
 - **Debian (`-debian`)** — broadest compatibility; the default for `rust` (the
   gnu tier-1 target), and the only option for `python`, `prose`, `polyglot`, and
   the JVM/Android images.

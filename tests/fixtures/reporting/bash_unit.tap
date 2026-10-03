@@ -1,0 +1,6 @@
+# Running tests in /tests/fixtures/reporting/bash_unit.sh
+not ok - test_fixture_failure
+#  expected [1] but was [2]
+# ./bash_unit.sh:3:test_fixture_failure()
+ok - test_fixture_success
+1..2

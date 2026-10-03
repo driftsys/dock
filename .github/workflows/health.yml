@@ -23,11 +23,13 @@ jobs:
           - core
           - rust
           - deno
+          - glab
           - node
           - lint
           - core-debian
           - rust-debian
           - deno-debian
+          - glab-debian
           - node-debian
           - python-debian
           - polyglot-debian

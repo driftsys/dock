@@ -122,6 +122,7 @@ jobs:
             core core-alpine core-debian
             rust rust-alpine rust-debian
             deno deno-alpine deno-debian
+            glab glab-alpine glab-debian
             node node-alpine node-debian
             python python-debian
             polyglot polyglot-debian
@@ -190,6 +191,7 @@ jobs:
             core-alpine core-debian
             rust-alpine rust-debian
             deno-alpine deno-debian
+            glab-alpine glab-debian
             node-alpine node-debian
             python-debian
             polyglot-debian
