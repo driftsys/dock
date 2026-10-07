@@ -23,13 +23,14 @@ their pipeline.
 
 ## Image catalog
 
-Sizes are compressed (download) size, amd64. The **`:image` →** column is the
-variant the bare `:image` tag resolves to.
+Sizes are compressed (download) size, amd64. Rust and polyglot estimates are
+measured on arm64. The **`:image` →** column is the variant the bare `:image`
+tag resolves to.
 
 | Image          | From       | `:image` → | Alpine  | Debian  | Contents                                                           |
 | -------------- | ---------- | ---------- | ------- | ------- | ------------------------------------------------------------------ |
 | `:core`        | alpine     | alpine     | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg                                      |
-| `:rust`        | `:core`    | debian     | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt                                |
+| `:rust`        | `:core`    | debian     | ~634 MB | ~459 MB | Rust stable, cargo, Clippy, rustfmt, nextest, LLVM coverage        |
 | `:deno`        | `:core`    | alpine     | ~88 MB  | ~137 MB | Deno runtime, npx/npm shims                                        |
 | `:glab`        | `:deno`    | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                        |
 | `:node`        | `:core`    | alpine     | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                |
@@ -37,7 +38,7 @@ variant the bare `:image` tag resolves to.
 | `:pages`       | `:core`    | alpine     | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee                                    |
 | `:python`      | `:core`    | debian     | —       | ~115 MB | Python 3, pip, ruff                                                |
 | `:prose`       | `:core`    | debian     | —       | ~106 MB | vale, typos, harper-cli                                            |
-| `:polyglot`    | `:rust`    | debian     | —       | ~625 MB | Rust + Deno + Python 3                                             |
+| `:polyglot`    | `:rust`    | debian     | —       | ~551 MB | Rust + Deno + Python 3                                             |
 | `:jvm`         | `:core`    | debian     | —       | ~241 MB | Temurin JDK 17                                                     |
 | `:android`     | `:jvm`     | debian     | —       | ~525 MB | Android SDK, build-tools                                           |
 | `:android-ndk` | `:android` | debian     | —       | ~1.7 GB | NDK + Rust + cargo-ndk                                             |
@@ -49,7 +50,7 @@ variant the bare `:image` tag resolves to.
 ```
 alpine:3.24
   └── :core          (~38 MB)
-      ├── :rust      (~557 MB)
+      ├── :rust      (~634 MB)
       ├── :deno      (~88 MB)
       │   └── :glab      (GitLab reporting)
       ├── :lint      (~94 MB, amd64 only)
@@ -62,8 +63,8 @@ alpine:3.24
 ```
 debian:trixie-slim
   └── :core-debian              (~89 MB)
-      ├── :rust-debian          (~551 MB)
-      │   └── :polyglot-debian  (~625 MB)
+      ├── :rust-debian          (~459 MB)
+      │   └── :polyglot-debian  (~551 MB)
       ├── :deno-debian          (~137 MB)
       │   └── :glab-debian      (GitLab reporting)
       ├── :lint-debian          (~138 MB, amd64 only)

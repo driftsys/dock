@@ -72,6 +72,7 @@ jobs:
       - name: Test workflows
         run: |
           bash tests/bash_unit tests/test_health_workflow.sh
+          bash tests/bash_unit tests/test_ci_workflow.sh
           bash tests/bash_unit tests/test_release_workflow.sh
 
   git-std:
@@ -139,7 +140,7 @@ jobs:
           }
 
           needs_all() {
-            echo "$changed" | grep -qE '^(scripts/|docker-bake\.hcl|tests/)'
+            echo "$changed" | grep -qE '^(scripts/|docker-bake\.hcl|tests/|\.github/workflows/(ci|health)\.yml)'
           }
 
           needs_core() {
@@ -196,23 +197,29 @@ jobs:
           fi
 
           if [ ${#images[@]} -eq 0 ]; then
-            echo "matrix=[]" >> "$GITHUB_OUTPUT"
+            echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
             echo "any=false" >> "$GITHUB_OUTPUT"
           else
-            json=$(printf '%s\n' "${images[@]}" | jq -R . | jq -sc .)
+            # Run Rust and its descendant on both native architectures.
+            json=$(printf '%s\n' "${images[@]}" | jq -R . | jq -sc '
+              {include: [ .[] as $image |
+                {image: $image, runner: "ubuntu-latest", platform: "linux/amd64"},
+                (if (["rust", "rust-debian", "polyglot-debian"] | index($image)) != null
+                 then {image: $image, runner: "ubuntu-24.04-arm", platform: "linux/arm64"}
+                 else empty end)
+              ]}')
             echo "matrix=${json}" >> "$GITHUB_OUTPUT"
             echo "any=true" >> "$GITHUB_OUTPUT"
           fi
 
   build-test:
-    name: Build & test (${{ matrix.image }})
+    name: Build & test (${{ matrix.image }}, ${{ matrix.platform }})
     needs: detect
     if: needs.detect.outputs.any == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
-      matrix:
-        image: ${{ fromJson(needs.detect.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v7
 
@@ -226,7 +233,7 @@ jobs:
         with:
           targets: ${{ matrix.image }}
           set: |
-            *.platform=linux/amd64
+            *.platform=${{ matrix.platform }}
             *.cache-from=
             *.cache-to=
 
@@ -236,6 +243,15 @@ jobs:
           BASH_UNIT_FLAGS="-f tap" REGISTRY=ghcr.io/driftsys/dock \
             bash tests/run.sh ${{ matrix.image }} \
             | tee test-results.tap
+
+      - name: Run offline coverage tests
+        if: matrix.image == 'rust' || matrix.image == 'rust-debian' || matrix.image == 'polyglot-debian'
+        run: |
+          case "${{ matrix.image }}" in
+            rust) tag=rust-alpine ;;
+            *) tag="${{ matrix.image }}" ;;
+          esac
+          bash tests/run-coverage.sh "ghcr.io/driftsys/dock:${tag}"
 
       - name: Test report
         if: always()

@@ -42,12 +42,16 @@ directory layout.
 
 ```bash
 just test        # Run the image bash_unit test suite
-just test-health # Check the health workflow without Docker (requires yq v4)
+just test-health # Check CI, health, and release workflows (requires yq v4)
 just lint        # hadolint + shellcheck + prim formatting and lint
 ```
 
 Tests live in `tests/`. Each image has a presence test (binaries exist and are
 on `$PATH`) and a sanity test (tools execute correctly).
+
+Rust and Debian polyglot build and execute tests on native amd64 and arm64
+runners. Their offline coverage fixture checks passing and failing nextest
+suites, JUnit, Cobertura, LCOV, and summary JSON.
 
 The weekly health workflow tests published images. Its matrix uses build target
 names: unsuffixed targets select `-alpine` tags, and `-debian` targets select

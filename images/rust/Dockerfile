@@ -5,6 +5,8 @@ FROM dock-core
 ARG VERSION=dev
 ARG CLIPPY_SARIF_VERSION=0.8.0
 ARG SARIF_FMT_VERSION=0.8.0
+ARG CARGO_NEXTEST_VERSION=0.9.146
+ARG CARGO_LLVM_COV_VERSION=0.9.1
 # Install C/C++ toolchain and development libraries
 # DL3018: version pinning is at the OS level (inherited alpine:3.24 base)
 # hadolint ignore=DL3018
@@ -15,28 +17,38 @@ RUN apk add --no-cache \
     pkgconf \
     openssl-dev
 
-# Install Rust via rustup (stable toolchain with clippy + rustfmt)
+# Install the minimal stable toolchain with formatting, lint, and matching LLVM tools
 ENV CARGO_HOME=/usr/local/cargo \
     RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSf https://sh.rustup.rs \
-    | sh -s -- -y --no-modify-path --default-toolchain stable \
-        --component clippy --component rustfmt
+    | sh -s -- -y --no-modify-path --default-toolchain stable --profile minimal \
+        --component clippy --component rustfmt --component llvm-tools-preview
 
 # Install cargo-audit and cargo-deny
-RUN cargo install cargo-audit cargo-deny --locked
+RUN cargo install cargo-audit cargo-deny --locked && \
+    rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git"
 
 # Build native SARIF tools separately to preserve the audit/deny cache layer.
 RUN cargo install clippy-sarif --version "${CLIPPY_SARIF_VERSION}" --locked && \
-    cargo install sarif-fmt --version "${SARIF_FMT_VERSION}" --locked
+    cargo install sarif-fmt --version "${SARIF_FMT_VERSION}" --locked && \
+    rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git"
+
+# Install official coverage binaries without retaining downloads or build caches.
+RUN --mount=type=bind,source=scripts/install-rust-coverage.sh,target=/tmp/install-rust-coverage.sh \
+    --mount=type=bind,source=scripts/rust-coverage.sha256,target=/tmp/rust-coverage.sha256 \
+    bash /tmp/install-rust-coverage.sh "${CARGO_NEXTEST_VERSION}" \
+        "${CARGO_LLVM_COV_VERSION}" /tmp/rust-coverage.sha256
 
 # Point Cargo at the system CA bundle for corporate CA support.
 ENV CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
-RUN manifest.sh rust "${VERSION}" \
+RUN host="$(rustc -vV | sed -n 's/^host: //p')" && \
+    llvm_bin="$(rustc --print sysroot)/lib/rustlib/${host}/bin" && \
+    manifest.sh rust "${VERSION}" \
     "rustc:rustc --version" \
     "cargo:cargo --version" \
     "cargo-audit:cargo-audit --version" \
@@ -44,4 +56,7 @@ RUN manifest.sh rust "${VERSION}" \
     "clippy:cargo clippy --version" \
     "clippy-sarif:clippy-sarif --version" \
     "sarif-fmt:sarif-fmt --version" \
-    "rustfmt:rustfmt --version"
+    "rustfmt:rustfmt --version" \
+    "cargo-nextest:cargo nextest --version" \
+    "cargo-llvm-cov:cargo llvm-cov --version" \
+    "llvm-tools-preview:${llvm_bin}/llvm-cov --version"

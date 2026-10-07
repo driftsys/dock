@@ -40,11 +40,14 @@ test_cargo_fixture_workflow() {
   dir="$(mktemp -d)"
   cp -r /fixtures/rust/. "$dir/"
 
-  cargo build   --manifest-path "${dir}/Cargo.toml"
-  cargo clippy  --manifest-path "${dir}/Cargo.toml" -- -D warnings
-  cargo fmt     --manifest-path "${dir}/Cargo.toml" -- --check
-  cargo audit   --file "${dir}/Cargo.lock"
-  cargo deny    --manifest-path "${dir}/Cargo.toml" check
+  # Keep runtime dependency downloads separate from the shipped tool cache.
+  local CARGO_HOME="$dir/cargo-home"
+  export CARGO_HOME
+  assert "cargo build --manifest-path '$dir/Cargo.toml'"
+  assert "cargo clippy --manifest-path '$dir/Cargo.toml' -- -D warnings"
+  assert "cargo fmt --manifest-path '$dir/Cargo.toml' -- --check"
+  assert "cargo audit --file '$dir/Cargo.lock'"
+  assert "cargo deny --manifest-path '$dir/Cargo.toml' check"
 
   rm -rf "$dir"
 }
@@ -82,5 +85,69 @@ test_clippy_sarif_conversion() {
   assert "sarif-fmt < '$dir/report.sarif' > '$dir/formatted.txt'"
   assert "grep -q 'redundant_closure' '$dir/formatted.txt'"
   assert_fails "jq -e . '$dir/formatted.txt'"
+  rm -rf "$dir"
+}
+
+# Missing tools, mismatched LLVM, or empty reports must fail these checks.
+test_cargo_nextest_present() { assert 'command -v cargo-nextest'; }
+test_cargo_llvm_cov_present() { assert 'command -v cargo-llvm-cov'; }
+
+test_coverage_tool_versions_match_manifest() {
+  local tool actual
+  for tool in cargo-nextest cargo-llvm-cov; do
+    actual="$(cargo "${tool#cargo-}" --version | awk 'NR == 1 {print $2}')"
+    assert_not_equals '' "$actual"
+    assert_equals "$actual" "$(jq -r --arg tool "$tool" '.tools[$tool]' /etc/dock/manifest.json)"
+  done
+}
+
+test_llvm_tools_match_active_rust() {
+  local host llvm_dir llvm_version
+  host="$(rustc -vV | sed -n 's/^host: //p')"
+  llvm_dir="$(rustc --print sysroot)/lib/rustlib/$host/bin"
+  llvm_version="$(rustc -vV | sed -n 's/^LLVM version: //p')"
+  assert "rustup component list --installed | grep -q '^llvm-tools-$host'"
+  assert "'$llvm_dir/llvm-cov' --version"
+  assert "'$llvm_dir/llvm-profdata' --version"
+  assert "'$llvm_dir/llvm-cov' --version | grep -F 'LLVM version $llvm_version'"
+  assert "'$llvm_dir/llvm-profdata' --version | grep -F 'LLVM version $llvm_version'"
+  assert_equals "$llvm_version" "$(jq -r '.tools["llvm-tools-preview"]' /etc/dock/manifest.json)"
+}
+
+test_rust_image_omits_installation_caches() {
+  assert_fails "test -d '$CARGO_HOME/registry'"
+  assert_fails "test -d '$CARGO_HOME/git'"
+  assert_fails "rustup component list --installed | grep -q '^rust-docs-'"
+}
+
+check_coverage_fixture_reports() {
+  local dir="$1" failures="$2"
+  assert "test -s '$dir/reports/junit.xml'"
+  assert "yq -p xml -o json '$dir/reports/junit.xml' | jq -e '[.. | objects | select(has(\"testcase\")) | .testcase | if type == \"array\" then .[] else . end] | length == 2'"
+  assert "yq -p xml -o json '$dir/reports/junit.xml' | jq -e '.testsuites[\"+@tests\"] == \"2\" and .testsuites[\"+@failures\"] == \"$failures\"'"
+  assert "test -s '$dir/reports/cobertura.xml'"
+  assert "yq -p xml -o json '$dir/reports/cobertura.xml' | jq -e '(.coverage[\"+@line-rate\"] | tonumber) > 0'"
+  assert "test -s '$dir/reports/lcov.info'"
+  assert "grep -q '^SF:.*src/lib.rs' '$dir/reports/lcov.info'"
+  assert "grep -q '^DA:[0-9][0-9]*,[1-9][0-9]*' '$dir/reports/lcov.info'"
+  assert "jq -e '.data[0].totals.lines | (.percent | type) == \"number\" and .percent > 0 and .count > 0 and .covered > 0' '$dir/reports/summary.json'"
+}
+
+test_coverage_fixture_success() {
+  local dir
+  dir="$(mktemp -d)"
+  cp -r /fixtures/rust-coverage/. "$dir/"
+  assert_status_code 0 "cd '$dir' && bash run.sh"
+  check_coverage_fixture_reports "$dir" 0
+  rm -rf "$dir"
+}
+
+test_coverage_fixture_failure_preserves_reports() {
+  local dir
+  dir="$(mktemp -d)"
+  cp -r /fixtures/rust-coverage/. "$dir/"
+  assert_status_code 100 "cd '$dir' && bash run.sh --features intentional-failure"
+  check_coverage_fixture_reports "$dir" 1
+  assert "yq -p xml -o json '$dir/reports/junit.xml' | jq -e '[.. | objects | select(has(\"failure\"))] | length == 1'"
   rm -rf "$dir"
 }

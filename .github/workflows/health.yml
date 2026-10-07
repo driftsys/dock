@@ -14,11 +14,12 @@ permissions:
 
 jobs:
   test:
-    name: Test (${{ matrix.image }})
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.image }}, ${{ matrix.runner || 'ubuntu-latest' }})
+    runs-on: ${{ matrix.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
+        runner: [ubuntu-latest]
         image:
           - core
           - rust
@@ -33,6 +34,13 @@ jobs:
           - node-debian
           - python-debian
           - polyglot-debian
+        include:
+          - image: rust
+            runner: ubuntu-24.04-arm
+          - image: rust-debian
+            runner: ubuntu-24.04-arm
+          - image: polyglot-debian
+            runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
 
@@ -57,6 +65,15 @@ jobs:
           BASH_UNIT_FLAGS="-f tap" REGISTRY=${{ env.REGISTRY }} \
             bash tests/run.sh ${{ matrix.image }} \
             | tee test-results.tap
+
+      - name: Run offline coverage tests
+        if: matrix.image == 'rust' || matrix.image == 'rust-debian' || matrix.image == 'polyglot-debian'
+        run: |
+          case "${{ matrix.image }}" in
+            rust) tag=rust-alpine ;;
+            *) tag="${{ matrix.image }}" ;;
+          esac
+          bash tests/run-coverage.sh "ghcr.io/driftsys/dock:${tag}"
 
       - name: Test report
         if: always()

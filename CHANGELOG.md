@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0] (2026-10-07)
+
+### Features
+
+- Add pinned nextest and LLVM coverage tools to both Rust variants and Debian
+  polyglot, with offline JUnit, Cobertura, LCOV, and JSON checks.
+- Execute Rust and polyglot CI and scheduled checks on native amd64 and arm64.
+- Reduce Rust image size with the minimal rustup profile and removal of tool
+  installation caches.
+
+[0.6.0]: https://github.com/driftsys/dock/compare/v0.5.0...v0.6.0
+
 ## [0.5.0] (2026-10-03)
 
 ### Features
