@@ -2,10 +2,13 @@
 # Host tests for the scheduled workflow. Requires mikefarah/yq v4.
 # Docker records image references instead of pulling or running containers.
 
+# shellcheck source=tests/workflow_helpers.sh
+source "$(dirname "${BASH_SOURCE[0]}")/workflow_helpers.sh"
+
 setup_suite() {
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
     WORKFLOW="${REPO_DIR}/.github/workflows/health.yml"
-    MATRIX="$(yq -r '.jobs.test.strategy.matrix.image[]' "$WORKFLOW")"
+    MATRIX="$(yq -r '.jobs.test.strategy.matrix | (.image[], .include[].image)' "$WORKFLOW")"
 }
 
 setup() {
@@ -107,4 +110,59 @@ test_health_runs_readonly_certificate_check() {
         assert "grep -F -- ' -e DOCK_TEST_READONLY_CA=1 ' '${DOCKER_CALLS}.args'"
         assert "grep -F -- ' -p test_uv_corporate_ca ' '${DOCKER_CALLS}.args'"
     done
+}
+
+
+test_health_schedules_rust_on_native_arm64() {
+    local image runners
+    for image in rust rust-debian polyglot-debian; do
+        runners="$(IMAGE="$image" yq -r '
+          .jobs.test.strategy.matrix.include[]
+          | select(.image == strenv(IMAGE)) | .runner' "$WORKFLOW")"
+        assert_equals 'ubuntu-24.04-arm' "$runners"
+    done
+}
+
+test_health_executes_coverage_without_networking() {
+    local image expected
+    for image in rust rust-debian polyglot-debian; do
+        case "$image" in
+            rust) expected=rust-alpine ;;
+            *) expected="$image" ;;
+        esac
+        : > "$DOCKER_CALLS"
+        : > "${DOCKER_CALLS}.args"
+        assert_status_code 0 "run_workflow_step 'Run offline coverage tests' '$image'"
+        assert_equals "run ghcr.io/driftsys/dock:$expected" "$(cat "$DOCKER_CALLS")"
+        assert "grep -F -- '--network none' '${DOCKER_CALLS}.args'"
+        assert "grep -F -- '-p test_coverage|test_llvm_tools' '${DOCKER_CALLS}.args'"
+    done
+}
+
+test_health_retains_amd64_alongside_arm64() {
+    local runners
+    # An explicit original runner axis prevents include from overwriting it.
+    runners="$(yq -r '.jobs.test.strategy.matrix.runner[]' "$WORKFLOW")"
+    assert_equals 'ubuntu-latest' "$runners"
+    local image
+    for image in rust rust-debian polyglot-debian; do
+        assert "IMAGE='$image' yq -e '.jobs.test.strategy.matrix.image | any_c(. == strenv(IMAGE))' '$WORKFLOW'"
+    done
+}
+
+test_health_consumes_both_native_runners() {
+    local runner template
+    template="$(yq -r '.jobs.test.runs-on' "$WORKFLOW")"
+    for runner in ubuntu-latest ubuntu-24.04-arm; do
+        assert_equals "$runner" "$(workflow_matrix_value "$template" runner "$runner")"
+    done
+}
+
+test_health_schedules_offline_coverage_for_all_affected_images() {
+    local coverage_predicate image
+    coverage_predicate="$(yq -r '.jobs.test.steps[] | select(.name == "Run offline coverage tests") | .if' "$WORKFLOW")"
+    for image in rust rust-debian polyglot-debian; do
+        assert "workflow_selects_image $(printf '%q' "$coverage_predicate") '$image'"
+    done
+    assert_fails "workflow_selects_image $(printf '%q' "$coverage_predicate") core"
 }

@@ -17,6 +17,7 @@ test-core:
 # Check scheduled images and release tag inputs without Docker (requires yq v4)
 test-health:
     @bash tests/bash_unit tests/test_health_workflow.sh
+    @bash tests/bash_unit tests/test_ci_workflow.sh
     @bash tests/bash_unit tests/test_release_workflow.sh
 
 # Lint: hadolint + shellcheck + prim fmt --check + prim lint

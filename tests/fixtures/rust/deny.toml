@@ -8,6 +8,7 @@ allow = [
   "Apache-2.0 WITH LLVM-exception",
   "ISC",
   "OpenSSL",
+  "Unicode-3.0",
 ]
 unused-allowed-license = "allow"
 

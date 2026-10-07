@@ -47,12 +47,13 @@ Some images are **Debian-only** (`python`, `prose`, `polyglot`, `jvm`,
 
 ### Available images
 
-Sizes are compressed (download) size, amd64.
+Sizes are compressed (download) size, amd64. Rust and polyglot estimates are
+measured on arm64.
 
 | Image          | From          | `:image` → | Alpine  | Debian  | Contents                                                                                             |
 | -------------- | ------------- | ---------- | ------- | ------- | ---------------------------------------------------------------------------------------------------- |
 | `:core`        | `alpine:3.24` | **alpine** | ~38 MB  | ~89 MB  | Shell, Git, curl, jq, yq, gpg, …                                                                     |
-| `:rust`        | `:core`       | **debian** | ~557 MB | ~551 MB | Rust stable, cargo, clippy, rustfmt, cargo-audit, cargo-deny, clippy-sarif, sarif-fmt                |
+| `:rust`        | `:core`       | **debian** | ~634 MB | ~459 MB | Rust stable, cargo, Clippy, rustfmt, audit/deny, SARIF, nextest, LLVM coverage                       |
 | `:deno`        | `:core`       | **alpine** | ~88 MB  | ~137 MB | Deno, npx shim, npm shim                                                                             |
 | `:glab`        | `:deno`       | **alpine** | —       | —       | glab, sarif-converter, reviewdog, tap2junit                                                          |
 | `:node`        | `:core`       | **alpine** | ~54 MB  | ~135 MB | Node.js 24 LTS, npm                                                                                  |
@@ -60,7 +61,7 @@ Sizes are compressed (download) size, amd64.
 | `:pages`       | `:core`       | **alpine** | ~77 MB  | ~134 MB | mdbook, typst, tera-cli, lychee, brotli (amd64)                                                      |
 | `:python`      | `:core`       | **debian** | —       | ~138 MB | Python 3, pip, uv, uvx, Ruff                                                                         |
 | `:prose`       | `:core`       | **debian** | —       | ~106 MB | vale, typos, harper-cli, Vale style packs                                                            |
-| `:polyglot`    | `:rust`       | **debian** | —       | ~710 MB | Rust + Deno + Python 3 + uv + uvx + Ruff                                                             |
+| `:polyglot`    | `:rust`       | **debian** | —       | ~551 MB | Rust + Deno + Python 3 + uv + uvx + Ruff                                                             |
 | `:jvm`         | `:core`       | **debian** | —       | ~241 MB | Temurin JDK 17                                                                                       |
 | `:android`     | `:jvm`        | **debian** | —       | ~525 MB | Android SDK (pin: `:android-37.2-debian`)                                                            |
 | `:android-ndk` | `:android`    | **debian** | —       | ~1.7 GB | NDK + Rust + cargo-ndk (pin: `:android-ndk-30-debian`)                                               |
@@ -69,6 +70,11 @@ The **`:image` →** column is which variant the bare `:image` tag resolves to.
 `python`, `prose`, `polyglot`, and the JVM/Android images are Debian-only (no
 `-alpine` tag). See [Choosing a variant](#choosing-a-variant).
 
+Both Rust variants and Debian polyglot include pinned nextest and LLVM coverage
+tools. See [Rust tests and coverage](docs/images/rust.md#tests-and-coverage) for
+JUnit, Cobertura, LCOV, and JSON reports, including reports after a failing
+test. No coverage tool installation is needed at job time.
+
 ## Inheritance Tree
 
 ### Alpine
@@ -76,7 +82,7 @@ The **`:image` →** column is which variant the bare `:image` tag resolves to.
 ```
 alpine:3.24
   └── :core          (~38 MB)
-      ├── :rust      (~557 MB)
+      ├── :rust      (~634 MB)
       ├── :deno      (~88 MB)
       │   └── :glab      (GitLab reporting)
       ├── :lint      (~94 MB, amd64 only)
@@ -89,8 +95,8 @@ alpine:3.24
 ```
 debian:trixie-slim
   └── :core-debian              (~89 MB)
-      ├── :rust-debian          (~551 MB)
-      │   └── :polyglot-debian  (~710 MB)
+      ├── :rust-debian          (~459 MB)
+      │   └── :polyglot-debian  (~551 MB)
       ├── :deno-debian          (~137 MB)
       │   └── :glab-debian      (GitLab reporting)
       ├── :lint-debian          (~138 MB, amd64 only)

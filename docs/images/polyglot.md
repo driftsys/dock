@@ -57,11 +57,15 @@ jobs:
 
 The image uses the same pinned uv and Ruff binaries, interpreter defaults, and
 certificate configuration as [the Python image](python.md). It also inherits
-`clippy-sarif` and `sarif-fmt` from Rust. See the Python page for lockfiles,
-inline script dependencies, CI caching, and Ruff SARIF reporting.
+`clippy-sarif`, `sarif-fmt`, nextest, cargo-llvm-cov, and the matching LLVM
+tools from Rust. See [Rust tests and coverage](rust.md#tests-and-coverage) for
+the inherited report workflow. See the Python page for lockfiles, inline script
+dependencies, CI caching, and Ruff SARIF reporting.
 
 ## Approximate size
 
 | Variant | Size    |
 | ------- | ------- |
-| Debian  | ~710 MB |
+| Debian  | ~551 MB |
+
+Compressed arm64 estimate; the Rust layer is shared with `:rust-debian`.
