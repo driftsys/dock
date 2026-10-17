@@ -38,3 +38,7 @@ clean:
 # Test the npx adapter with a controlled child process
 test-npx:
     deno test --allow-all tests/test_npx.ts
+
+# Test the npm adapter with a controlled child process
+test-npm:
+    deno test --allow-all tests/test_npm.ts
