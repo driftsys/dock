@@ -140,7 +140,7 @@ jobs:
           }
 
           needs_all() {
-            echo "$changed" | grep -qE '^(scripts/|docker-bake\.hcl|tests/|\.github/workflows/(ci|health)\.yml)'
+            echo "$changed" | grep -qE '^(scripts/|utils/|docker-bake\.hcl|tests/|\.github/workflows/(ci|health)\.yml)'
           }
 
           needs_core() {

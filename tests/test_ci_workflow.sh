@@ -88,3 +88,10 @@ test_ci_schedules_offline_coverage_for_all_affected_images() {
     done
     assert_fails "workflow_selects_image $(printf '%q' "$coverage_predicate") core"
 }
+
+test_ci_runs_image_checks_when_utility_changes() {
+    assert 'run_detection utils/npx.ts'
+    local matrix
+    matrix="$(sed -n 's/^matrix=//p' "$GITHUB_OUTPUT")"
+    assert "jq -e '.include | any(.image == \"deno\") and any(.image == \"deno-debian\") and any(.image == \"glab\") and any(.image == \"glab-debian\")' <<< \"\$matrix\""
+}
