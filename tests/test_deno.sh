@@ -94,3 +94,22 @@ test_npm_init() {
 # ---------------------------------------------------------------------------
 
 test_manifest_has_deno() { assert_manifest_tool '.tools.deno'; }
+
+# Run controlled child tests against the installed shim, not the source tree.
+test_npx_argument_translation() {
+  assert 'NPX_SHIM=/usr/local/bin/npx deno test --allow-all /tests/test_npx.ts'
+}
+
+test_npx_gitlab_ci_local_preview_without_node_or_npm_runtime() {
+  assert_fails 'command -v node'
+  assert_fails 'command -v nodejs'
+  assert 'head -1 /usr/local/bin/npm | grep -Fx "#!/bin/sh"'
+  local dir output status=0
+  dir="$(mktemp -d)"
+  printf 'preview-job:\n  script: echo "dock preview"\n' > "$dir/.gitlab-ci.yml"
+  output="$(cd "$dir" && npx --yes --package=gitlab-ci-local@4.75.0 gitlab-ci-local --preview 2>"$dir/stderr")" || status=$?
+  assert_equals 0 "$status"
+  assert_matches 'preview-job' "$output"
+  assert_matches 'dock preview' "$output"
+  rm -rf "$dir"
+}

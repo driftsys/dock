@@ -34,3 +34,7 @@ fmt:
 # Remove local build artefacts
 clean:
     docker buildx bake --set '*.output=type=cacheonly' --no-cache 2>/dev/null || true
+
+# Test the npx adapter with a controlled child process
+test-npx:
+    deno test --allow-all tests/test_npx.ts
