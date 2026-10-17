@@ -23,8 +23,8 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" && \
 # Point Deno at the system CA bundle for corporate CA support.
 ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt
 
-# Install npx shim — delegates `npx <pkg> [args...]` to `deno run -A npm:<pkg> [args...]`
-COPY scripts/npx.sh /usr/local/bin/npx
+# Install the limited Deno npx adapter.
+COPY --chmod=755 utils/npx.ts /usr/local/bin/npx
 
 # Install npm shim — delegates npm commands to Deno equivalents
 COPY scripts/npm.sh /usr/local/bin/npm
