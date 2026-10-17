@@ -51,6 +51,10 @@ just lint        # hadolint + shellcheck + prim formatting and lint
 Tests live in `tests/`. Each image has a presence test (binaries exist and are
 on `$PATH`) and a sanity test (tools execute correctly).
 
+`just test-npm` checks argument and process behavior with a controlled child. It
+pins production selection with explicit package arguments and checks that help
+describes the supported commands, options, and compatibility limits.
+
 Rust and Debian polyglot build and execute tests on native amd64 and arm64
 runners. Their offline coverage fixture checks passing and failing nextest
 suites, JUnit, Cobertura, LCOV, and summary JSON.

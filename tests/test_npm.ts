@@ -76,6 +76,19 @@ const cases: [string[], string[], boolean?][] = [
   ]],
   [["install", "--omit=dev"], ["install", "--prod"]],
   [["install", "--omit", "dev"], ["install", "--prod"]],
+  [["install", "--omit=dev", "one@1", "@scope/two@^2"], [
+    "install",
+    "--package-json",
+    "--prod",
+    "npm:one@1",
+    "npm:@scope/two@^2",
+  ]],
+  [["install", "one@latest", "--omit", "dev"], [
+    "install",
+    "--package-json",
+    "--prod",
+    "npm:one@latest",
+  ]],
   [["install", "-g", "tool@1.2.3"], [
     "install",
     "--global",
@@ -271,7 +284,42 @@ for (
     const result = await invoke(args);
     equal(result.code, 0);
     equal(result.err, "");
-    if (!result.out.includes("not full npm")) throw new Error(result.out);
+    for (
+      const fragment of [
+        "Usage: npm",
+        "Supported:",
+        "install/i/add",
+        "uninstall/remove/rm",
+        "ci/clean-install",
+        "run/run-script",
+        "test/t",
+        "exec:",
+        "init",
+        "help",
+        "--prefix",
+        "--global",
+        "--save-dev",
+        "--omit=dev",
+        "--if-present",
+        "--package=",
+        "-p <package>",
+        "--yes",
+        "[-- args...]",
+        "one package",
+        "/usr/local",
+        "global root",
+        "local working directory",
+        "ci uses Deno's frozen lockfile",
+        "init scaffolds a Deno project",
+        "not full npm",
+      ]
+    ) {
+      if (!result.out.includes(fragment)) {
+        throw new Error(
+          `Help is missing ${JSON.stringify(fragment)}: ${result.out}`,
+        );
+      }
+    }
   });
 }
 Deno.test("reports child launch failure", async () => {
