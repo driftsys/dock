@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0] (2026-10-17)
+
+### Features
+
+- add a tested npm adapter for Deno images ([#107]) ([4fa54c8])
+- support package selection in the Deno npx shim ([32428ec])
+
+### Bug Fixes
+
+- forward npx termination signals to the child ([dcd8c64])
+
+[0.7.0]: https://github.com/driftsys/dock/compare/v0.6.0...v0.7.0
+[4fa54c8]: https://github.com/driftsys/dock/commit/4fa54c8
+[#107]: https://github.com/driftsys/dock/issues/107
+[32428ec]: https://github.com/driftsys/dock/commit/32428ec
+[dcd8c64]: https://github.com/driftsys/dock/commit/dcd8c64
+
 ## [0.6.0] (2026-10-07)
 
 ### Features
