@@ -36,7 +36,7 @@ The `npx` and `npm` shims allow using npm ecosystem tools without installing
 Node.js. They delegate to Deno under the hood:
 
 ```bash
-# Run any npm package
+# Run an npm package executable
 npx prettier --check .
 
 # npm shim supports: install, ci, run, test, init
@@ -98,13 +98,15 @@ deno run --allow-all npm:gitlab-ci-local@4.75.0 --preview
 After the first positional argument, every argument is passed unchanged to
 Deno's npm executable. Versions, tags, and ranges without whitespace stay in the
 npm specifier. The working directory, standard streams, and child exit status
-are preserved.
+are preserved. SIGINT, SIGTERM, and SIGHUP are forwarded to the child, and the
+adapter waits for it to exit.
 
 For explicit package selection, the command must equal the package name without
-its scope or version: `@scope/tool@1.2.3` expects `tool`. Packages whose
-executable has another name, or which require selecting among several
-executables, are unsupported. Deno resolves the actual npm executable; the
-adapter does not inspect package metadata or emulate npm bin discovery.
+its scope or version: `@scope/tool@1.2.3` expects `tool`. Explicit command
+aliases are unsupported: the command token must match the package name, even
+when its binary has another name. Deno may resolve a sole binary whose name
+differs from the package. The adapter does not inspect package metadata or
+select among multiple executables.
 
 This is a limited adapter, not full npx compatibility. It rejects missing
 values, multiple package selections, unsupported adapter flags, and non-registry

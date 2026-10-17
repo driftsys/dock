@@ -94,14 +94,29 @@ for (
     equal(result.err, "controlled child stderr\n");
   });
 }
+for (const spec of ["tool@latest", "tool@^2.3.0", "tool"]) {
+  Deno.test(`preserves explicit selection ${spec}`, async () => {
+    const result = await invoke(["-p", spec, "tool"]);
+    equal(result.code, 0);
+    equal(JSON.parse(result.out).args, ["run", "--allow-all", `npm:${spec}`]);
+  });
+}
+
 Deno.test("propagates child failure status and stderr", async () => {
   const result = await invoke(["tool"], 37);
   equal(result.code, 37);
+  equal(JSON.parse(result.out), {
+    args: ["run", "--allow-all", "npm:tool"],
+    cwd: result.dir,
+    input: "input with spaces\n",
+  });
   equal(result.err, "controlled child stderr\n");
 });
 for (
   const args of [
     [],
+    ["--", "--package=tool", "tool"],
+    ["./tool"],
     ["--unknown"],
     ["--no"],
     ["-c", "tool"],
@@ -124,5 +139,78 @@ for (
     equal(result.code, 1);
     equal(result.out, "");
     if (!result.err.startsWith("npx:")) throw new Error(result.err);
+  });
+}
+
+for (const signal of ["SIGTERM", "SIGINT", "SIGHUP"] as Deno.Signal[]) {
+  Deno.test(`forwards ${signal} and waits for child termination`, async () => {
+    const dir = await Deno.makeTempDir();
+    let toolPid: number | undefined;
+    let child: Deno.ChildProcess | undefined;
+    try {
+      const quote = (value: string) =>
+        "'" + value.replaceAll("'", "'\\''") + "'";
+      await Deno.writeTextFile(
+        `${dir}/deno`,
+        `#!/bin/sh\nexec ${quote(Deno.execPath())} run --allow-all ${
+          quote(fixture)
+        } "$@"\n`,
+      );
+      await Deno.chmod(`${dir}/deno`, 0o755);
+      child = new Deno.Command(Deno.execPath(), {
+        args: ["run", "--allow-run", shim, "tool"],
+        env: { PATH: dir, NPX_TEST_WAIT: "1" },
+        stdin: "null",
+        stdout: "piped",
+        stderr: "null",
+      }).spawn();
+      const reader = child.stdout.getReader();
+      const ready = await reader.read();
+      reader.releaseLock();
+      toolPid = Number(decoder.decode(ready.value).trim());
+      if (!toolPid) throw new Error("Child did not report its PID");
+      child.kill(signal);
+      const timeout = setTimeout(() => {
+        try {
+          child?.kill("SIGKILL");
+        } catch { /* Already exited. */ }
+      }, 3000);
+      let status: Deno.CommandStatus;
+      try {
+        status = await child.status;
+      } finally {
+        clearTimeout(timeout);
+      }
+      equal(
+        status.code,
+        {
+          SIGTERM: 143,
+          SIGINT: 130,
+          SIGHUP: 129,
+        }[signal as "SIGTERM" | "SIGINT" | "SIGHUP"],
+      );
+      let alive = true;
+      try {
+        Deno.kill(toolPid, 0);
+      } catch (error) {
+        if (!(error instanceof Deno.errors.NotFound)) throw error;
+        alive = false;
+      }
+      equal(alive, false);
+    } finally {
+      if (toolPid) {
+        try {
+          Deno.kill(toolPid, "SIGKILL");
+        } catch { /* Already exited. */ }
+      }
+      if (child) {
+        try {
+          child.kill("SIGKILL");
+        } catch { /* Already exited. */ }
+        await child.status;
+        await child.stdout.cancel();
+      }
+      await Deno.remove(dir, { recursive: true });
+    }
   });
 }

@@ -52,7 +52,27 @@ try {
     stdout: "inherit",
     stderr: "inherit",
   }).spawn();
-  const status = await child.status;
+  const signals: Deno.Signal[] = ["SIGINT", "SIGTERM", "SIGHUP"];
+  const listeners = signals.map((signal) => {
+    const forward = () => {
+      try {
+        child.kill(signal);
+      } catch (error) {
+        // A signal can race with the child exiting.
+        if (!(error instanceof Deno.errors.NotFound)) throw error;
+      }
+    };
+    Deno.addSignalListener(signal, forward);
+    return { signal, forward };
+  });
+  let status: Deno.CommandStatus;
+  try {
+    status = await child.status;
+  } finally {
+    for (const { signal, forward } of listeners) {
+      Deno.removeSignalListener(signal, forward);
+    }
+  }
   Deno.exit(status.code);
 } catch (error) {
   console.error(
