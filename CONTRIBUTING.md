@@ -43,6 +43,7 @@ directory layout.
 ```bash
 just test        # Run the image bash_unit test suite
 just test-npx    # Controlled npx translation tests (requires Deno)
+just test-npm    # Controlled npm translation tests (requires Deno)
 just test-health # Check CI, health, and release workflows (requires yq v4)
 just lint        # hadolint + shellcheck + prim formatting and lint
 ```

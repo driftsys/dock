@@ -1,0 +1,10 @@
+{
+  "name": "dock-npm-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.cjs",
+    "test": "node app.cjs",
+    "fail": "node fail.cjs"
+  }
+}

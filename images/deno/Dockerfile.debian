@@ -26,8 +26,8 @@ ENV DENO_CERT=/etc/ssl/certs/ca-certificates.crt
 # Install the limited Deno npx adapter.
 COPY --chmod=755 utils/npx.ts /usr/local/bin/npx
 
-# Install npm shim — delegates npm commands to Deno equivalents
-COPY scripts/npm.sh /usr/local/bin/npm
+# Install the limited npm command adapter.
+COPY --chmod=755 utils/npm.ts /usr/local/bin/npm
 
 # Generate manifest
 COPY scripts/manifest.sh /usr/local/bin/manifest.sh
